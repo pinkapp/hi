@@ -1,0 +1,25 @@
+var dataString ='<chart caption="每日新注册用户统计" subCaption="(on 2012-06-19)" baseFont="宋体" baseFontSize="12" xAxisName="日期" yAxisName="新注册人数" yAxisMaxValue="100" bgColor="91AF46,FFFFFF"  divLineColor="91AF46" divLineAlpha="30" alternateHGridAlpha="5" canvasBorderColor="666666" baseFontColor="666666" lineColor="91AF46" numVDivlines="7" showAlternateVGridColor="1" anchorSides="3" anchorRadius="5" showValues="0">\n\
+	<set label="06-10" value="34" />\n\
+	<set label="06-11" value="34" />\n\
+	<set label="06-12" value="27" />\n\
+	<set label="06-13" value="42" />\n\
+	<set label="06-14" value="50" />\n\
+	<set label="06-15" value="68" />\n\
+	<set label="06-16" value="56" />\n\
+	<set label="06-17" value="48" />\n\
+	<set label="06-18" value="34" />\n\
+	<set label="06-19" value="30" />\n\
+\n\
+	<trendlines>\n\
+	<line startvalue="50"  endValue="80" displayValue="Warning" color="BC9F3F" isTrendZone="1" showOnTop="0" alpha="25" valueOnRight="1"/> \n\
+	<line startvalue="80"  endValue="100" displayValue="Critical" color="894D1B" isTrendZone="1" showOnTop="0" alpha="25" valueOnRight="1"/>   \n\
+	</trendlines>\n\
+<styles>\n\
+        <definition>\n\
+                    <style name="Anim1" type="animation" param="_alpha" start="0" duration="1" />\n\
+        </definition>\n\
+        <application>\n\
+            <apply toObject="TRENDLINES" styles="Anim1" />\n\
+        </application>\n\
+    </styles>\n\
+</chart>';

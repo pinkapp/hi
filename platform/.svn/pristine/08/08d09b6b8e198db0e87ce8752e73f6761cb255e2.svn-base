@@ -1,0 +1,537 @@
+package cc.ywxm.dao.impl.gop;
+
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.lang.StringUtils;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.stereotype.Repository;
+
+import cc.ywxm.action.Pageable;
+import cc.ywxm.dao.gop.UserDao;
+import cc.ywxm.model.gop.MoneyAssign;
+import cc.ywxm.model.gop.User;
+import cc.ywxm.utils.DateFormat;
+import cc.ywxm.utils.RSMapper;
+import cc.ywxm.vo.DailyNewUserCount;
+import cc.ywxm.vo.UserAreaCount;
+import cc.ywxm.vo.UserCareerCount;
+import cc.ywxm.vo.UserVo;
+import cc.ywxm.vo.UserVo1;
+import cc.ywxm.vo.UserVo2;
+
+@Repository
+public class UserDaoImpl implements UserDao
+{
+	@Resource
+	private HibernateTemplate hibernateTemplate;
+	@Resource
+	private JdbcTemplate jdbcTemplate;
+
+	@SuppressWarnings("unchecked")
+	public List<User> find(String username, String password)
+	{
+		List<User> users;
+		try
+		{
+			users = hibernateTemplate.find(
+					"from User o where o.username = ? and o.password = ?",
+					new Object[]
+					{ username, password });
+		} catch (DataAccessException e)
+		{
+			e.printStackTrace();
+			return null;
+		}
+
+		return users;
+	}
+
+	public User findById(Integer userId)
+	{
+		String sql = "SELECT t.userId,t.username, IF(t.sex=1,'男','女') AS sex,t.birthday,t1.careerName AS career,t.realname,t.cardId FROM users t LEFT JOIN career t1 ON t.career = t1.id where t.userId = ?";
+		sql = "select * from (" + sql + ")a";
+		return RSMapper.query(jdbcTemplate, sql, User.class, new Object[]
+		{ userId });
+	}
+
+	public void update(User u)
+	{
+		hibernateTemplate.update(u);
+
+	}
+
+	public void save(User user)
+	{
+		hibernateTemplate.save(user);
+	}
+
+	public List<User> find(User condition)
+	{
+		String hql = "from User o";
+		if (StringUtils.isNotEmpty(condition.getUsername()))
+		{
+			hql += " and o.username=?";
+		}
+		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	public User findByUsername(String username)
+	{
+		List<User> users = hibernateTemplate.find(
+				"from User o where o.username = ?", username);
+		if (users == null || users.size() == 0)
+			return null;
+		return users.get(0);
+	}
+
+	public List<UserVo> findPaged(UserVo condition, final Pageable pageable)
+	{
+		String sql = "SELECT t.userId, t.username, t.phone, IF(t.sex=1,'男','女') AS sex, t.ip, t.money, t.nickname, t.register_ip, t3.careeName,CONCAT(t.province,'-',t.city) AS area,(YEAR(CURDATE())-YEAR(STR_TO_DATE(birthday,'%Y-%m-%d'))) - (RIGHT(CURDATE(),5)<RIGHT(STR_TO_DATE(birthday,'%Y-%m-%d'),5)) AS age, t.statuscode FROM  USER t "
+				+ "LEFT JOIN career t3 ON t.career_id = t3.id WHERE 1 = 1";
+		if (condition != null)
+		{
+			List<Object> args = new ArrayList<Object>();
+			if (StringUtils.isNotEmpty(condition.getNickname()))
+			{
+				sql += " AND t.nickname like ?";
+				args.add("%" + condition.getNickname() + "%");
+			}
+			if (StringUtils.isNotEmpty(condition.getUsername()))
+			{
+				sql += " AND t.username like ?";
+				args.add("%" + condition.getUsername() + "%");
+			}
+			if (StringUtils.isNotEmpty(condition.getEmail()))
+			{
+				sql += " AND t.email = ?";
+				args.add(condition.getEmail());
+			}
+			if (StringUtils.isNotEmpty(condition.getRegister_ip()))
+			{
+				sql += " AND t.register_ip = ?";
+				args.add(condition.getRegister_ip());
+			}
+			if (condition.getStatusCode() != null)
+			{
+				sql += " AND t.statuscode = ?";
+				args.add(condition.getStatusCode());
+			}
+			sql += " ORDER BY t.userId desc";
+			return RSMapper.queryPage(jdbcTemplate, sql, pageable,
+					UserVo.class, args.toArray());
+		} else
+		{
+			sql += " ORDER BY t.userId desc";
+			return RSMapper
+					.queryPage(jdbcTemplate, sql, pageable, UserVo.class);
+		}
+
+	}
+
+	public void batchDelete(final Integer[] user_ids)
+	{
+		jdbcTemplate.batchUpdate("UPDATE users SET  = 1 WHERE userId = ?",
+				new BatchPreparedStatementSetter()
+				{
+
+					public void setValues(PreparedStatement ps, int i)
+							throws SQLException
+					{
+						ps.setInt(1, user_ids[i]);
+
+					}
+
+					public int getBatchSize()
+					{
+						return user_ids.length;
+					}
+				});
+	}
+
+	public void delele(User user)
+	{
+
+		jdbcTemplate.update("UPDATE users SET statuscode = 1 WHERE userId = ?",
+				new Object[]
+				{ user.getUserId() });
+
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<String> findList(final String sql, final Integer userId)
+	{
+		return (List<String>) hibernateTemplate.execute(new HibernateCallback()
+		{
+
+			public Object doInHibernate(Session session)
+					throws HibernateException, SQLException
+			{
+				return session.createSQLQuery(sql).setInteger(0, userId).list();
+			}
+		});
+	}
+
+	public void grant(Integer userId, Integer roleId)
+	{
+		String deleteSQL = "delete from user_role where userId = ?";
+		String insertSQL = "insert into user_role(userId, role_id) values(?, ?)";
+		jdbcTemplate.update(deleteSQL, new Object[]
+		{ userId });
+		// 如果是0，则是默认用户
+		if (roleId.intValue() != 0)
+		{
+			jdbcTemplate.update(insertSQL, new Object[]
+			{ userId, roleId });
+		}
+
+	}
+
+	public Short findRoleIdByUserId(final Integer userId)
+	{
+
+		final String sql = "SELECT t.role_id FROM user_role t WHERE t.userId = ?";
+		final String sql1 = "SELECT count(1) FROM user_role t WHERE t.userId = ?";
+		int i = jdbcTemplate.queryForInt(sql1, new Object[]
+		{ userId });
+		if (i == 0)
+		{
+			return 0;
+		}
+		return (Short) jdbcTemplate.queryForObject(sql, new Object[]
+		{ userId }, Short.class);
+		// return hibernateTemplate.execute(new HibernateCallback<Short>() {
+		// public Short doInHibernate(Session session)
+		// throws HibernateException, SQLException {
+		// return ((Byte) session.createSQLQuery(sql)
+		// .setInteger(0, userId).uniqueResult()).shortValue();
+		// }
+		// });
+	}
+
+	@SuppressWarnings("unchecked")
+	public User findByEmail(String email)
+	{
+		List<User> users = hibernateTemplate.find(
+				"from User o where o.email = ?", email);
+		if (users == null || users.size() == 0)
+			return null;
+		return users.get(0);
+	}
+
+	/**
+	 * 每日新注册用户统计
+	 */
+	public List<DailyNewUserCount> findDailyNewUserCount(String starttime,
+			String endtime)
+	{
+		String oneDay = starttime;
+		List<DailyNewUserCount> registercounts = new ArrayList<DailyNewUserCount>();
+		while (oneDay.compareTo(endtime) <= 0)
+		{
+			String sql = "SELECT COUNT(1) FROM users t WHERE LEFT(t.registertime,10) = ?";
+			List<Object> args = new ArrayList<Object>();
+			args.add(oneDay);
+			int count = jdbcTemplate.queryForInt(sql, args.toArray());
+			registercounts.add(new DailyNewUserCount(oneDay, count));
+			Date date = DateFormat.parse(oneDay, DateFormat.DATE_PATTERN_2);
+			// +1天
+			date.setTime(date.getTime() + 1000 * 60 * 60 * 24);
+			oneDay = DateFormat.format(date, DateFormat.DATE_PATTERN_2);
+		}
+		return registercounts;
+	}
+
+	public List<UserAreaCount> findAreaCount()
+	{
+		String sql = "SELECT * FROM (SELECT t.proName, COUNT(t2.userId) AS usercount FROM province t LEFT JOIN users t2 ON t.proName=t2.province GROUP BY t.proName UNION "
+				+ "SELECT '其它',COUNT(t1.userId)  AS usercount FROM province t RIGHT JOIN USER t1 ON t.proName=t1.province WHERE t.proName IS NULL) a ORDER BY a.usercount DESC";
+		return RSMapper.queryList(jdbcTemplate, sql, UserAreaCount.class);
+	}
+
+	public int findAgegroupCount(int startAge, int endAge)
+	{
+		String sql = "SELECT COUNT(*) FROM (SELECT userId, (YEAR(CURDATE())-YEAR(STR_TO_DATE(birthday,'%Y-%m-%d'))) - (RIGHT(CURDATE(),5)<RIGHT(STR_TO_DATE(birthday,'%Y-%m-%d'),5)) AS age FROM users) t WHERE t.age >= ? AND t.age<= ?";
+		return jdbcTemplate.queryForInt(sql, new Object[]
+		{ startAge, endAge });
+	}
+
+	public int findOtherAgegroupCount()
+	{
+		String sql = "SELECT COUNT(*) FROM (SELECT userId, (YEAR(CURDATE())-YEAR(STR_TO_DATE(birthday,'%Y-%m-%d'))) - (RIGHT(CURDATE(),5)<RIGHT(STR_TO_DATE(birthday,'%Y-%m-%d'),5)) AS age FROM users) t WHERE t.age IS NULL";
+		return jdbcTemplate.queryForInt(sql);
+	}
+
+	public List<UserCareerCount> findCareerCount()
+	{
+		String sql = "SELECT * FROM (SELECT a.career, COUNT(a.userId) usercount FROM (SELECT t1.userId, t.careeName AS career FROM career t LEFT JOIN users t1 ON t.id = t1.career_id "
+				+ "UNION SELECT t.userId, '其它' FROM USER t WHERE career_id IS NULL "
+				+ ") a GROUP BY a.career) b ORDER BY b.usercount DESC";
+		return RSMapper.queryList(jdbcTemplate, sql, UserCareerCount.class);
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<String> findUsersByUsername(String str)
+	{
+		String sql = "SELECT username FROM USER WHERE lower(username) LIKE ?";
+		return jdbcTemplate.queryForList(sql, new Object[]
+		{ "%" + str + "%" }, String.class);
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<String> findAllUsername()
+	{
+		String sql = "SELECT username FROM USER";
+		return jdbcTemplate.queryForList(sql, String.class);
+	}
+
+	public void updateMoney(final List<MoneyAssign> moneyAssigns)
+	{
+		String sql = "UPDATE user SET money = money + ? WHERE username = ?";
+		jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter()
+		{
+			public void setValues(PreparedStatement ps, int i)
+					throws SQLException
+			{
+				ps.setInt(1, moneyAssigns.get(i).getMoney());
+				ps.setString(2, moneyAssigns.get(i).getReceiver());
+
+			}
+
+			public int getBatchSize()
+			{
+				return moneyAssigns.size();
+			}
+		});
+	}
+
+	public List<UserVo1> findPaged(UserVo1 condition, Pageable pageable)
+	{
+		String sql = "SELECT t.userId, t.username, t2.rolename FROM users t LEFT JOIN user_role t1 ON t.userId = t1.userId LEFT JOIN role t2 ON t1.role_id=t2.role_id WHERE 1 = 1";
+		if (condition != null)
+		{
+			List<Object> args = new ArrayList<Object>();
+			if (StringUtils.isNotEmpty(condition.getUsername()))
+			{
+				sql += " AND t.username like ?";
+				args.add("%" + condition.getUsername() + "%");
+			}
+			if (StringUtils.isNotEmpty(condition.getRolename()))
+			{
+				if (condition.getRolename().equals("默认用户"))
+				{
+					sql += " AND t2.rolename IS NULL";
+				} else
+				{
+					sql += " AND t2.rolename = ?";
+					args.add(condition.getRolename());
+				}
+			}
+			sql += " ORDER BY t.userId desc";
+			return RSMapper.queryPage(jdbcTemplate, sql, pageable,
+					UserVo1.class, args.toArray());
+		} else
+		{
+			sql += " ORDER BY t.userId desc";
+			return RSMapper.queryPage(jdbcTemplate, sql, pageable,
+					UserVo1.class);
+		}
+	}
+
+	public List<UserVo> findByRegisterIp(String registerIp)
+	{
+		String sql = "SELECT t.userId, t.username, t.ip,  t.money, t.register_ip, t.registertime FROM  USER t WHERE 1 = 1";
+		if (registerIp != null)
+		{
+			List<Object> args = new ArrayList<Object>();
+			sql += " AND t.register_ip = ?";
+			args.add(registerIp.trim());
+			sql += " ORDER BY t.userId desc";
+			return RSMapper.queryList(jdbcTemplate, sql, UserVo.class, args
+					.toArray());
+		} else
+		{
+			sql += " ORDER BY t.userId desc";
+			return RSMapper.queryList(jdbcTemplate, sql, UserVo.class);
+		}
+	}
+
+	public int findRegisterTotalCount(Date date)
+	{
+		String sql = "SELECT COUNT(1) FROM users t WHERE t.registertime < ?";
+		date.setTime(date.getTime() + 1000 * 60 * 60 * 24l);
+		String time = DateFormat.format(date, DateFormat.DATE_PATTERN_2);
+		return jdbcTemplate.queryForInt(sql, new Object[]
+		{ time });
+	}
+
+	public int findSexCount(Integer sexflag)
+	{
+		String sql = "SELECT COUNT(1) FROM users WHERE sex = ?";
+		return jdbcTemplate.queryForInt(sql, new Object[]
+		{ sexflag });
+	}
+
+	public int findOtherSexCount()
+	{
+		String sql = "SELECT COUNT(1) FROM users WHERE sex is null";
+		return jdbcTemplate.queryForInt(sql);
+	}
+
+	public Integer findRegisterUsersPerday(String dstring)
+	{
+		String sql = "SELECT COUNT(1) FROM users t WHERE LEFT(t.registertime, 10) = ?";
+		return jdbcTemplate.queryForInt(sql, new Object[]
+		{ dstring });
+	}
+
+	public Integer findRegisterUsers(String dstring)
+	{
+		String sql = "SELECT COUNT(1) FROM users t WHERE t.registertime < ?";
+		Date d = DateFormat.parse(dstring, DateFormat.DATE_PATTERN_2);
+		d.setTime(d.getTime() + 1000 * 60 * 60 * 24l);
+		String time = DateFormat.format(d, DateFormat.DATE_PATTERN_2);
+		return jdbcTemplate.queryForInt(sql, new Object[]
+		{ time });
+	}
+
+	public void updateSecondaryPassword(Integer userId, String spasswd)
+	{
+		String sql = "UPDATE user SET spasswd = ? WHERE userId = ?";
+		jdbcTemplate.update(sql, new Object[]
+		{ spasswd, userId });
+	}
+
+	public String findSecondaryPassword(int userId)
+	{
+		String sql = "SELECT spasswd FROM users WHERE userId = ?";
+		return (String) jdbcTemplate.queryForObject(sql, new Object[]
+		{ userId }, String.class);
+	}
+
+	public String findEmail(String username)
+	{
+		String sql = "SELECT email FROM users WHERE username = ?";
+		return (String) jdbcTemplate.queryForObject(sql, new Object[]
+		{ username }, String.class);
+	}
+
+	public String findPhone(String username)
+	{
+		String sql = "SELECT phone FROM users WHERE username = ?";
+		return (String) jdbcTemplate.queryForObject(sql, new Object[]
+		{ username }, String.class);
+	}
+
+	public void resetPassword(String username, String password)
+	{
+		String sql = "UPDATE user SET password = ? WHERE username = ?";
+		jdbcTemplate.update(sql, new Object[]
+		{ password, username });
+	}
+
+	public String findPhone(int userId)
+	{
+		String sql = "SELECT phone FROM users WHERE userId = ?";
+		return (String) jdbcTemplate.queryForObject(sql, new Object[]
+		{ userId }, String.class);
+	}
+
+	public void resetPassword(int userId, String password)
+	{
+		String sql = "UPDATE user SET password = ? WHERE userId = ?";
+		jdbcTemplate.update(sql, new Object[]
+		{ password, userId });
+
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<User> findByExample(User example)
+	{
+		return hibernateTemplate.findByExample(example);
+	}
+
+	public List<User> find(int userId, String password)
+	{
+		return null;
+	}
+
+	public Integer findStatusCode(String username)
+	{
+		String sql = "SELECT statuscode FROM users WHERE username = ?";
+		return (Integer) jdbcTemplate.queryForObject(sql, new Object[]
+		{ username }, Integer.class);
+	}
+
+	public Integer findStatusCode(int userId)
+	{
+		String sql = "SELECT statuscode FROM users WHERE userId = ?";
+		return (Integer) jdbcTemplate.queryForObject(sql, new Object[]
+		{ userId }, Integer.class);
+	}
+
+	public void updateStatusCode(int userId, int statusCode)
+	{
+		String sql = "UPDATE user SET statuscode = ? WHERE userId = ?";
+		jdbcTemplate.update(sql, new Object[]
+		{ statusCode, userId });
+	}
+
+	public UserVo2 findUserVo2ById(int userId)
+	{
+		String sql = "SELECT userId, username, closereason, closeendtime, closetype FROM users WHERE userId = ?";
+		return RSMapper.query(jdbcTemplate, sql, UserVo2.class, userId);
+	}
+
+	public void close(Integer userId, Short closeType, String closeReason,
+			String closeEndtime)
+	{
+		String sql = "UPDATE user SET statuscode = 0, closereason = ?, closetype = ?, closeendtime = ? WHERE userId = ?";
+		jdbcTemplate.update(sql, new Object[]
+		{ closeReason, closeType, closeEndtime, userId });
+
+	}
+
+	public void recover(int userId)
+	{
+		String sql = "UPDATE user SET statuscode = 1, closereason = NULL, closetype = NULL, closeendtime = NULL WHERE userId = ?";
+		jdbcTemplate.update(sql, new Object[]
+		{ userId });
+	}
+
+	@SuppressWarnings("unchecked")
+	public User findByPhone(String phone)
+	{
+		List<User> users = hibernateTemplate.find(
+				"from User o where o.phone = ?", phone);
+		if (users == null || users.size() == 0)
+			return null;
+		return users.get(0);
+	}
+
+	public String findCardId(int userId)
+	{
+		String sql = "SELECT cardID FROM users WHERE userId = ?";
+		return (String) jdbcTemplate.queryForObject(sql, new Object[]
+		{ userId }, String.class);
+	}
+
+	public int count(String username, String password)
+	{
+		String sql = "select count(*) from users where username = ? and password = ?";
+		return jdbcTemplate.queryForInt(sql, new Object[]
+		{ username, password });
+	}
+}

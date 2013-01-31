@@ -1,0 +1,96 @@
+package cc.ywxm.action.game;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.annotation.Resource;
+
+import org.apache.struts2.json.JSONException;
+import org.apache.struts2.json.JSONUtil;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+
+import cc.ywxm.action.PageableAction;
+import cc.ywxm.service.game.MailInfoService;
+
+/**
+ * 邮件记录
+ * 
+ * @author hdc
+ * 
+ */
+@SuppressWarnings("serial")
+@Controller
+@Scope("prototype")
+public class MailInfoAction extends PageableAction
+{
+	private Integer player;
+	private String nickname;
+	private int type = 0;
+
+	@Resource
+	private MailInfoService mailInfoService;
+
+	/**
+	 * ajax doQuery
+	 * 
+	 * @return
+	 * @throws IOException
+	 * @throws JSONException
+	 */
+	public String gets() throws IOException, JSONException
+	{
+		String jsonString = "";
+		switch (type)
+		{
+
+		case 1:
+			jsonString = JSONUtil.serialize(mailInfoService.gets(rows, page, sort, order,
+					player));
+			break;
+		case 2:
+			jsonString = JSONUtil.serialize(mailInfoService.gets(rows, page, sort, order,
+					nickname));
+			break;
+		default:
+			break;
+		}
+		response.setContentType("text/xml;charset=utf-8");
+		response.setHeader("Cache-Control", "no-cache");
+		PrintWriter out = response.getWriter();
+		out.append(jsonString);
+		out.close();
+		return NONE;
+	}
+
+	public Integer getPlayer()
+	{
+		return player;
+	}
+
+	public void setPlayer(Integer player)
+	{
+		this.player = player;
+	}
+
+	public String getNickname()
+	{
+		return nickname;
+	}
+
+	public void setNickname(String nickname)
+	{
+		this.nickname = nickname;
+	}
+
+	public int getType()
+	{
+		return type;
+	}
+
+	public void setType(int type)
+	{
+		this.type = type;
+	}
+
+}

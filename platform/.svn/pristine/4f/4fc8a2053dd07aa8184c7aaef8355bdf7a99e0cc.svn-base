@@ -1,0 +1,52 @@
+body,h1,h2,h3,h4,h5,h6,hr,p,blockquote,dl,dt,dd,ul,ol,li,pre,form,fieldset,legend,button,input,textarea,th,td{margin: 0;padding: 0;}
+body,button,input,select,textarea {font: 12px/ 1.5 tahoma, arial, \5b8b\4f53;}
+#page,#header,#page,#content,#footer {margin-left: auto;margin-right: auto;}
+#header { height:100px; margin-bottom:5px;}
+#page {width: 950px;}
+#body {height: 600px};
+#footer { height:60px;}
+#container {margin:0 auto; width:100%;}
+
+ul .m1{font-size: 14px;}
+
+/*当content设定高度后，3像素会跑到content外侧，这样，我们用!important修正在ie下向左多浮动2像素，加上3像素的bug正好是5像素，所以在火狐和IE下显示是一样的*/
+.adminleft {float: left;width: 28%;}
+.adminright {margin-left: 10px;float: left;width: 70%;}
+
+/* 类似于挂件的东西都用这个 start */
+.widget {border: 1px solid #dadada;border-radius: 3px;-o-border-radius: 3px;-ms-border-radius: 3px;-moz-border-radius: 3px;-webkit-border-radius: 3px;margin-bottom: 10px;/* 以下是让容器居中 */margin-left: auto;margin-right: auto;}
+.widget .header {height: 32px;background: url('../images/widget_header.gif') repeat-x;border-bottom: 1px solid #dadada;overflow: hidden;}
+.widget .header .title {float: left;padding: 8px 10px;font-size: 15px;line-height: 100%;background: url('../images/widget_icon.gif') no-repeat left center;color: #333;}
+.widget .header .addition {float: right;padding: 10px 0px 8px 10px;margin-right: 5px;font-size: 12px;line-height: 12px;}
+.widget .body {padding: 10px;text-align: left;}
+/* 类似于挂件的东西都用这个 end */
+
+.info {font-size: 12px;}
+/* 提示信息样式 */
+.highLightInfo {color: red;font-size: 12px;}
+/* 链接 */
+a {color:#36c;text-decoration:none;cursor: hand;}
+a:hover {color:#f60;text-decoration:underline;}
+li {list-style-type: none;}
+.titleunderline {font-size: 14px;padding-top: 6px;border-bottom: 1px dashed #cccccc;overflow: hidden}
+/* 星号 */
+.asterisk {color: red;}
+/* datatable */
+.datatable {border: 1px solid #D6DDE6;border-collapse: collapse;width: 100%;}
+.datatable td {border: 1px solid #D6DDE6;padding: 5px;}
+.datatable th {border: 1px solid #828282;background-color: #BCBCBC;text-align: left;padding: 5px;}
+.datatable tr.altrow {background-color: #DFE7F2;color: #000000;}
+
+/* formtable */
+.formtable {border-collapse: collapse;width: 100%;font-size: 14px;}
+.formtable td {padding: 5px;}
+.formtable td input,select,textarea,button {font: 14px/ 1.5 tahoma, arial, \5b8b\4f53;}
+.formtable th {background-color: #BCBCBC;text-align: left;padding: 5px;}
+.formtable tr.altrow {background-color: #DFE7F2;color: #000000;}
+.formtable button[type=submit] {width: 86px;height: 27px;margin-right: 6px;border: 0;display: inline-block;text-indent: -9999px;overflow: hidden;vertical-align: middle;line-height: 100px;font-size: 0;background: url(../images/stuff.png) no-repeat 0 -100px;cursor: pointer;zoom: 1;}
+/* borderbox */
+.borderbox {border: 1px solid #dadada;border-radius: 3px;-o-border-radius: 3px;-ms-border-radius: 3px;-moz-border-radius: 3px;-webkit-border-radius: 3px;margin-bottom: 10px;margin-left: auto;margin-right: auto;padding: 10px;text-align: left;}
+/* clearfix div作为外部容器时不能被撑开完美解决 start */
+.clearfix:after {content: ".";display: block;height: 0;clear: both;visibility: hidden;}
+/* Hides from IE-mac \*/
+* html .clearfix {height: 1%;}

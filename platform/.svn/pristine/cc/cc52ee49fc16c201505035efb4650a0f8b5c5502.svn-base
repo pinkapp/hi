@@ -1,0 +1,63 @@
+package cc.ywxm.dao;
+
+import java.util.List;
+
+import cc.ywxm.model.Userlogin;
+import cc.ywxm.vo.DailyUserloginCount;
+import cc.ywxm.vo.DailyUserloginUserCount;
+
+/**
+ * 用户登录记录访问层
+ * 
+ * @author hdc
+ * 
+ * 
+ */
+public interface UserloginDao
+{
+	public void save(Userlogin userlogin);
+
+	public List<DailyUserloginCount> findDailyUserloginCount(String starttime,
+			String endtime);
+
+	public List<DailyUserloginUserCount> findDailyUserloginUserCount(
+			String starttime, String endtime);
+
+	/**
+	 * 查询每天的登录人数
+	 * 
+	 * @param dstring
+	 * @return
+	 */
+	public Integer findLoginUsersPerDay(String dstring);
+
+	/**
+	 * 某天登录次数在某次的用户数
+	 * 
+	 * @param startCount
+	 * @param endCount
+	 * @param dateString
+	 * @return
+	 */
+	public int findUserCount(int logincount, String dateString);
+
+	/**
+	 * 某天登录次数大于某次以上的用户数
+	 * 
+	 * @param startCount
+	 * @param endCount
+	 * @param dateString
+	 * @return
+	 */
+	public int findUserCountUp(int logincount, String dateString);
+
+	/**
+	 * 某天登录次数小于某次以下的用户数
+	 * 
+	 * @param startCount
+	 * @param endCount
+	 * @param dateString
+	 * @return
+	 */
+	public int findUserCountDown(int logincount, String dateString);
+}

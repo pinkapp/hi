@@ -1,0 +1,65 @@
+package cc.ywxm.service;
+
+import java.util.List;
+
+import cc.ywxm.action.Pageable;
+import cc.ywxm.model.gop.Letter;
+import cc.ywxm.model.gop.LetterInbox;
+import cc.ywxm.model.gop.LetterOutbox;
+import cc.ywxm.vo.LetterInboxVo;
+import cc.ywxm.vo.LetterOutboxVo;
+
+public interface LetterService
+{
+
+	public LetterOutbox findOutboxById(Long letterId);
+
+	public LetterInbox findInboxById(Long letterId);
+
+	/**
+	 * 把信件保存到发件箱
+	 * 
+	 * @param letter
+	 * @return
+	 */
+	public void store(Letter letter);
+
+	/**
+	 * 把信件投递到收件箱，无收件人则投递给所有人
+	 * 
+	 * @param letter
+	 * @return
+	 */
+	public void post(Letter letter);
+
+	public void batchInboxDelete(String letterIds);
+
+	public void batchOutboxDelete(String letterIds);
+
+	/**
+	 * 
+	 * @param username
+	 * @param pageable
+	 * @return
+	 */
+	public List<LetterOutboxVo> findOutboxByPage(String username,
+			Pageable pageable);
+
+	/**
+	 * 
+	 * @param username
+	 * @param pageable
+	 * @return
+	 */
+	public List<LetterInboxVo> findInboxByPage(String username,
+			Pageable pageable);
+
+	public void markInboxAllReaded(String username);
+
+	public void markInboxReaded(Long letterId);
+
+	public void inboxDelete(Long letterId);
+
+	public void outboxDelete(Long letterId);
+
+}

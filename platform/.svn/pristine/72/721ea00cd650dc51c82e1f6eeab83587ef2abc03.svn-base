@@ -1,0 +1,35 @@
+package cc.ywxm.vo;
+
+public class DailyNewUserCount
+{
+
+	private String registertime;
+	private Integer registercount;
+
+	public DailyNewUserCount(String registertime, Integer registercount)
+	{
+		super();
+		this.registertime = registertime;
+		this.registercount = registercount;
+	}
+
+	public String getRegistertime()
+	{
+		return registertime;
+	}
+
+	public void setRegistertime(String registertime)
+	{
+		this.registertime = registertime;
+	}
+
+	public Integer getRegistercount()
+	{
+		return registercount;
+	}
+
+	public void setRegistercount(Integer registercount)
+	{
+		this.registercount = registercount;
+	}
+}

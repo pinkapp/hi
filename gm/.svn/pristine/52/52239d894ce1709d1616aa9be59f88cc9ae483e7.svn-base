@@ -1,0 +1,84 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%
+String path = request.getContextPath();
+String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+%>
+
+<!DOCTYPE html>
+<html>
+<head>
+<base href="<%=basePath%>">
+
+<title>玩家公会信息</title>
+
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="keywords" content="英雄领域,亿网星漫">
+<meta http-equiv="description" content="Online Charge System">
+<link id="easyuiTheme" rel="stylesheet" type="text/css"
+	href="easyUI/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="easyUI/themes/icon.css">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+<script type="text/javascript" src="easyUI/jquery-1.8.0.min.js"></script>
+<script type="text/javascript" src="easyUI/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="easyUI/locale/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript">
+		function query(){
+			var param = {};
+			var name = $('#name').val();
+			param.name = name;
+			$('#info').html('');
+			$('#tab').datagrid({
+			    title:'公会信息',
+			    queryParams:param,
+			    singleSelect:true,
+				fitColumns:true,
+				height:380,
+				url:'gets/guildInfo',
+				loadMsg:'正在查询...',
+				onLoadSuccess:function(data){
+			    	$('#info').html('找到' + data.total + '个公会');
+				},
+				onLoadError:function(){
+				    alert('数据加载错误');
+				},
+				columns:[[
+					{field:'guildId',title:'公会ID',width:15},
+					{field:'name',title:'公会名称',width:40},
+					{field:'level',title:'公会等级',width:40},
+					{field:'exp',title:'公会经验',width:40},
+					{field:'leader',title:'创建者',width:40},
+					{field:'members',title:'人员',width:40}
+				]]
+			});
+		}
+		$(document).keydown(function(event){
+		  switch (event.keyCode) {
+		    case 13:
+		        query();
+				break;
+			default:
+				break;
+		   }
+		});
+	</script>
+</head>
+
+<body>
+	<div id="title">
+		<label>数据查询&gt;&gt;玩家公会信息</label>
+	</div>
+	<div id="thisform">
+		<fieldset>
+			<legend>查询条件</legend>
+			<label for="name">公会名称：</label><input id="name" type="text"
+				name="name" value="">&nbsp;&nbsp;
+			<button type="button" onclick="query();">模糊查询</button>
+			<label>&nbsp;&nbsp;注:要查询所有公会，公会名称请留空</label><br /> &nbsp;&nbsp;<label
+				id="info" style="color: red;"></label>
+		</fieldset>
+	</div>
+	<table id="tab"></table>
+</body>
+</html>

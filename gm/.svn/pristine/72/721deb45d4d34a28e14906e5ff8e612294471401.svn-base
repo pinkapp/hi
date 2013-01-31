@@ -1,0 +1,36 @@
+package cc.ywxm.dao.game;
+
+import java.util.List;
+
+import cc.ywxm.model.game.BaseInfo;
+
+/**
+ * 数据库原子操作
+ * 
+ * @author hdc
+ * 
+ */
+public interface BaseInfoDao
+{
+
+	void save(BaseInfo baseInfo);
+
+	void delete(BaseInfo baseInfo);
+
+	void update(BaseInfo baseInfo);
+
+	Integer findPlayerByNickname(String nickname);
+
+	BaseInfo findById(Integer player);
+
+	int count(String nickname);
+
+	List<BaseInfo> list(Integer rows, Integer page, String nickname);
+
+	List<BaseInfo> list(Integer rows, Integer page, String sort, String order,
+			String nickname);
+
+	int maxId();
+
+	boolean nicknameExist(String nickname);
+}

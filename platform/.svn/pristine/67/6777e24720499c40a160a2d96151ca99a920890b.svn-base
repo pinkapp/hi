@@ -1,0 +1,223 @@
+package cc.ywxm.action;
+
+import javax.annotation.Resource;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+
+import cc.ywxm.constant.Const;
+import cc.ywxm.service.UserService;
+import cc.ywxm.utils.BaseAction;
+import cc.ywxm.utils.RandomUtils;
+
+@SuppressWarnings("serial")
+@Controller
+@Scope("prototype")
+public class ForgotpassAction extends BaseAction
+{
+	@Resource
+	private UserService userService;
+	private int step = 1;
+	private String username;
+	private int findway = -1;
+	private String email;
+	private String phone;
+	// 验证码
+	private String verifyCode = "";
+	private String password;
+
+	// 发送验证码
+	public String sendVerifyCode()
+	{
+		String vc = RandomUtils.randString(6);
+		String[] strs = new String[2];
+		strs[0] = username;
+		strs[1] = vc;
+		switch (findway)
+		{
+		case 0:
+			userService.sendVerifyCodeByEmail(email, strs);
+			System.out.println("已通过邮箱" + email + "发送验证码：" + vc);
+			break;
+		case 1:
+			userService.sendVerifyCodeByPhone(phone, strs);
+			System.out.println("已通过手机" + phone + "发送验证码：" + vc);
+			break;
+		default:
+			break;
+		}
+		session.put(Const.VERIFY_CODE, vc);
+		return null;
+	}
+
+	/**
+	 * 找回密码
+	 * 
+	 * @return
+	 */
+	public String forgotpass()
+	{
+		// 第一步：输入用户名
+		// 第二步：选择找回方式
+		if (step == 2)
+		{
+			if (username == null || "".equals(username))
+			{
+				step--;
+				message = "您还没输入用户名呢";
+			} else
+			{
+				int yetUsername = userService.yetUsername(username);
+				if (yetUsername == 1)
+				{
+				} else
+				{
+					step--;
+					message = "您输入的用户名不存在呢";
+				}
+			}
+
+		}
+		// 第三步：验证身份
+		if (step == 3)
+		{
+			switch (findway)
+			{
+			// 邮箱找回方式
+			case 0:
+
+				email = userService.findEmail(username);
+				if (email == null || "".equals(email))
+				{
+					step--;
+					message = "您没有设置安全邮箱，请选择其它找回方式试一试";
+					break;
+				}
+				break;
+			// 手机找回方式
+			case 1:
+
+				phone = userService.findPhone(username);
+				if (phone == null || "".equals(phone))
+				{
+					step--;
+					message = "您没有设置安全手机，请选择其它找回方式试一试";
+					break;
+				}
+				break;
+
+			default:
+				step--;
+				message = "您没有选择正确的找回方式";
+				break;
+			}
+
+		}
+		// 第四步：密码重置
+		if (step == 4)
+		{
+			// session中获取验证码
+			Object vc = session.get(Const.VERIFY_CODE);
+			if (vc == null)
+			{
+				message = "您还没获取验证码呢";
+				step--;
+			} else
+			{
+				if (verifyCode.equals(vc))
+				{
+					session.remove(Const.VERIFY_CODE);
+					session.put(Const.VERIFY_FLAG, "checked");
+				} else
+				{
+					message = "验证码错误";
+					step--;
+				}
+			}
+		}
+		// 第五步：完成
+		if (step == 5)
+		{
+			Object verify_flag = session.get(Const.VERIFY_FLAG);
+			session.remove(Const.VERIFY_FLAG);
+			if ("checked".equals(verify_flag))
+			{
+				userService.resetPassword(username, password);
+			} else
+			{
+				message = "非法请求";
+			}
+		}
+		return SUCCESS;
+	}
+
+	public int getStep()
+	{
+		return step;
+	}
+
+	public void setStep(int step)
+	{
+		this.step = step;
+	}
+
+	public String getUsername()
+	{
+		return username;
+	}
+
+	public void setUsername(String username)
+	{
+		this.username = username;
+	}
+
+	public int getFindway()
+	{
+		return findway;
+	}
+
+	public void setFindway(int findway)
+	{
+		this.findway = findway;
+	}
+
+	public String getEmail()
+	{
+		return email;
+	}
+
+	public void setEmail(String email)
+	{
+		this.email = email;
+	}
+
+	public String getPhone()
+	{
+		return phone;
+	}
+
+	public void setPhone(String phone)
+	{
+		this.phone = phone;
+	}
+
+	public String getPassword()
+	{
+		return password;
+	}
+
+	public void setPassword(String password)
+	{
+		this.password = password;
+	}
+
+	public String getVerifyCode()
+	{
+		return verifyCode;
+	}
+
+	public void setVerifyCode(String verifyCode)
+	{
+		this.verifyCode = verifyCode;
+	}
+}

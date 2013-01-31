@@ -1,0 +1,102 @@
+package cc.ywxm.action.game;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Date;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+
+import cc.ywxm.action.BaseAction;
+import cc.ywxm.constant.Const;
+import cc.ywxm.datasource.CustomerContextHolder;
+import cc.ywxm.model.game.Hero;
+import cc.ywxm.model.game.RetentionRate;
+import cc.ywxm.model.gm.Server;
+import cc.ywxm.service.game.HeroInfoService;
+import cc.ywxm.service.game.RetentionRateService;
+import cc.ywxm.utils.DateFormat;
+import cc.ywxm.utils.JSONtool;
+
+/**
+ * 玩家留存率
+ * 
+ * @author hdc
+ * 
+ */
+@SuppressWarnings("serial")
+@Controller
+@Scope("prototype")
+public class RetentionRateAction extends BaseAction
+{
+	private String qdate1 = "2012-11-01";
+	private String qdate2 = "2012-12-02";;
+	private String currentDate;
+
+	@Resource
+	private RetentionRateService retentionRateService;
+
+	@Override
+	public String execute() throws Exception
+	{
+		currentDate = DateFormat.format(new Date(), DateFormat.DATE_PATTERN_2);
+		return super.execute();
+	}
+
+	/**
+	 * ajax gets
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
+	public String gets() throws IOException
+	{
+		Server dbsrv = (Server) session.get(Const.SESSION_DBSRV);
+		CustomerContextHolder.setCustomerType(dbsrv.getDataSource());
+		String jsonString = "";
+		List<RetentionRate> list = null;
+		list = retentionRateService.gets(qdate1, qdate2);
+		jsonString = JSONtool.serialize(list);
+		response.setContentType("text/xml;charset=utf-8");
+		response.setHeader("Cache-Control", "no-cache");
+		PrintWriter out = response.getWriter();
+		out.append(jsonString);
+		out.close();
+
+		return NONE;
+	}
+
+	public String getQdate1()
+	{
+		return qdate1;
+	}
+
+	public void setQdate1(String qdate1)
+	{
+		this.qdate1 = qdate1;
+	}
+
+	public String getQdate2()
+	{
+		return qdate2;
+	}
+
+	public void setQdate2(String qdate2)
+	{
+		this.qdate2 = qdate2;
+	}
+
+	public String getCurrentDate()
+	{
+		return currentDate;
+	}
+
+	public void setCurrentDate(String currentDate)
+	{
+		this.currentDate = currentDate;
+	}
+
+}

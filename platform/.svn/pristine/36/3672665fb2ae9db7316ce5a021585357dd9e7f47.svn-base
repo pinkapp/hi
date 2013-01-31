@@ -1,0 +1,101 @@
+package cc.ywxm.service.impl;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import cc.ywxm.dao.UserloginDao;
+import cc.ywxm.model.Userlogin;
+import cc.ywxm.service.UserloginService;
+import cc.ywxm.utils.DateFormat;
+import cc.ywxm.utils.DateUtils;
+import cc.ywxm.vo.DailyUserloginCount;
+import cc.ywxm.vo.DailyUserloginOneUserCount;
+import cc.ywxm.vo.DailyUserloginUserCount;
+
+@Service
+@Transactional
+public class UserloginServiceImpl implements UserloginService
+{
+	@Resource
+	private UserloginDao userloginDao;
+
+
+	public void add(Userlogin userlogin)
+	{
+		userloginDao.save(userlogin);
+	}
+
+	public List<DailyUserloginCount> findDailyUserloginCount(String month)
+	{
+		Date date = DateFormat.parse(month, "yyyy-MM");
+		Date firstDay = DateUtils.getfirstDayOfMonth(date);
+		Date lastDay = DateUtils.getLastDayOfMonth(date);
+		String starttime = DateFormat.format(firstDay,
+				DateFormat.DATE_PATTERN_2);
+		String endtime = DateFormat.format(lastDay, DateFormat.DATE_PATTERN_2);
+		String currenttime = DateFormat
+				.currentDateFormat(DateFormat.DATE_PATTERN_2);
+		if (endtime.compareTo(currenttime) > 0)
+		{
+			endtime = currenttime;
+		}
+		return userloginDao.findDailyUserloginCount(starttime, endtime);
+	}
+
+	public List<DailyUserloginUserCount> findDailyUserloginUserCount(
+			String month)
+	{
+		Date date = DateFormat.parse(month, "yyyy-MM");
+		Date firstDay = DateUtils.getfirstDayOfMonth(date);
+		Date lastDay = DateUtils.getLastDayOfMonth(date);
+		String starttime = DateFormat.format(firstDay,
+				DateFormat.DATE_PATTERN_2);
+		String endtime = DateFormat.format(lastDay, DateFormat.DATE_PATTERN_2);
+		String currenttime = DateFormat
+				.currentDateFormat(DateFormat.DATE_PATTERN_2);
+		if (endtime.compareTo(currenttime) > 0)
+		{
+			endtime = currenttime;
+		}
+		return userloginDao.findDailyUserloginUserCount(starttime, endtime);
+	}
+
+	public List<DailyUserloginOneUserCount> findDailyUserloginOneUserCount(
+			String month)
+	{
+		Date date = DateFormat.parse(month, "yyyy-MM");
+		Date firstDay = DateUtils.getfirstDayOfMonth(date);
+		Date lastDay = DateUtils.getLastDayOfMonth(date);
+		String starttime = DateFormat.format(firstDay,
+				DateFormat.DATE_PATTERN_2);
+		String endtime = DateFormat.format(lastDay, DateFormat.DATE_PATTERN_2);
+		List<DailyUserloginOneUserCount> test = new ArrayList<DailyUserloginOneUserCount>();
+		String oneDay = starttime;
+		String currenttime = DateFormat
+				.currentDateFormat(DateFormat.DATE_PATTERN_2);
+		if (endtime.compareTo(currenttime) > 0)
+		{
+			endtime = currenttime;
+		}
+		while (oneDay.compareTo(endtime) <= 0)
+		{
+			int l1Usercount = userloginDao.findUserCount(1, oneDay);
+			int l2Usercount = userloginDao.findUserCount(2, oneDay);
+			int l3Usercount = userloginDao.findUserCount(3, oneDay);
+			int l4moreUsercount = userloginDao.findUserCountUp(4, oneDay);
+			test.add(new DailyUserloginOneUserCount(oneDay, l1Usercount,
+					l2Usercount, l3Usercount, l4moreUsercount));
+			// +1天
+			date.setTime(date.getTime() + 1000 * 60 * 60 * 24);
+			oneDay = DateFormat.format(date, DateFormat.DATE_PATTERN_2);
+		}
+		return test;
+	}
+
+}

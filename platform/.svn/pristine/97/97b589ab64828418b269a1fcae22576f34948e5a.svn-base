@@ -1,0 +1,17 @@
+package cc.ywxm.constant;
+
+public class Const
+{
+
+	public static final String VERIFY_FLAG = "verifyflag";
+	public static final String AUTH_CODE = "authcode";
+	public static final String VERIFY_CODE = "verifycode";
+	public static final String MOBILE_VERIFY_CODE = "mobileverifycode";// 手机验证
+	public static final String SESSION_USERID = "sessionid";
+	public static final String SESSION_USERNAME = "logined_uname";
+	public static final String SESSION_AUTOLOGIN = "auto_login";
+	public static final String STATUS = "s";// 登录身份标识 1：以管理员身份登陆
+	public static final String COOKIE_NAME_LOGINUSER = "gop_login_id";
+	public static final int COOKIE_MAXAGE = 60 * 60 * 24 * 14;
+
+}

@@ -1,0 +1,25 @@
+package cc.ywxm.service;
+
+import java.util.List;
+
+import cc.ywxm.action.Pageable;
+import cc.ywxm.model.GameNotice;
+import cc.ywxm.vo.GameNoticeVo;
+
+public interface GameNoticeService
+{
+
+	public List<GameNotice> findAll();
+
+	public GameNotice findById(Integer gameNoticeId);
+
+	public void edit(GameNotice gameNotice);
+
+	public void add(GameNotice gameNotice);
+
+	public List<GameNoticeVo> findByPage(GameNoticeVo condition,
+			Pageable pageable);
+
+	public void delete(Integer gameNoticeId);
+
+}

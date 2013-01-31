@@ -1,0 +1,194 @@
+package cc.ywxm.service.impl.game;
+
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import cc.ywxm.dao.game.LoginDao;
+import cc.ywxm.dao.game.RegisterDao;
+import cc.ywxm.model.game.RetentionRate;
+import cc.ywxm.service.game.RetentionRateService;
+import cc.ywxm.utils.MathsUtils;
+
+/**
+ * 
+ * @author HuangDeCai
+ * @since 2012-12-4 14:49:57
+ */
+@Transactional
+@Service
+public class RetentionRateServiceImpl implements RetentionRateService
+{
+	@Resource
+	private LoginDao loginDao;
+	@Resource
+	private RegisterDao registerDao;
+
+	public RetentionRate get(String date)
+	{
+
+		return null;
+	}
+
+	public List<RetentionRate> gets(String startDate, String endDate)
+	{
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		Date sdate = null;
+		Date edate = null;
+		try
+		{
+			sdate = sdf.parse(startDate);
+			edate = sdf.parse(endDate);
+		} catch (ParseException e)
+		{
+			e.printStackTrace();
+			return null;
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+			return null;
+		}
+		List<RetentionRate> result = new ArrayList<RetentionRate>();
+
+		try
+		{
+			if (sdate.compareTo(edate) <= 0)
+			{
+				while (sdate.compareTo(edate) <= 0)
+				{
+					String date;// 当天
+					String date1;// 次日
+					int rcount = 0;// 注册玩家数
+					int lcount = 0;// 登录玩家数
+					int morrowlcount = 0;// 次日登录玩家数
+					int alternatelcount = 0;// 隔日登录玩家数
+					String rate1 = null;// 次日留存率[morrowlcount/rcount * 100]
+					String rate2 = null;// 隔日留存率[alternatelcount/lcount * 100]
+					List<Integer> players = null;// 当天注册玩家ID
+					StringBuffer sb = new StringBuffer();
+					String includePlayers = "";// 当天登录玩家ID
+					List<Integer> players1 = null;
+					StringBuffer sb1 = new StringBuffer();
+					String includePlayers1 = "";
+
+					date = sdf.format(sdate);
+					Date morrowDate = new Date();
+					morrowDate.setTime(sdate.getTime() + 1000 * 60 * 60 * 24l);
+					date1 = sdf.format(morrowDate);
+					try
+					{
+						players = registerDao.gets(date);
+					} catch (EmptyResultDataAccessException e)
+					{
+						players = new ArrayList<Integer>();
+					}
+					try
+					{
+						players1 = loginDao.gets(date);
+					} catch (EmptyResultDataAccessException e)
+					{
+						players1 = new ArrayList<Integer>();
+					}
+
+					for (int i = 0; i < players.size(); i++)
+					{
+						if (i == 0)
+						{
+							sb.append(players.get(i));
+						} else
+						{
+							sb.append("," + players.get(i));
+						}
+					}
+					includePlayers = sb.toString();
+
+					for (int i = 0; i < players1.size(); i++)
+					{
+						if (i == 0)
+						{
+							sb1.append(players1.get(i));
+						} else
+						{
+							sb1.append("," + players1.get(i));
+						}
+					}
+					includePlayers1 = sb1.toString();
+
+					try
+					{
+						rcount = registerDao.count(date);
+					} catch (EmptyResultDataAccessException e)
+					{
+						rcount = 0;
+					}
+					try
+					{
+						lcount = loginDao.count(date);
+					} catch (EmptyResultDataAccessException e)
+					{
+						lcount = 0;
+					}
+					try
+					{
+						if (includePlayers != null
+								&& !"".equals(includePlayers))
+						{
+							morrowlcount = loginDao
+									.count(date1, includePlayers);
+						}
+					} catch (EmptyResultDataAccessException e)
+					{
+						morrowlcount = 0;
+					}
+					try
+					{
+						if (includePlayers1 != null
+								&& !"".equals(includePlayers1))
+						{
+							alternatelcount = loginDao.count(date1,
+									includePlayers1);
+						}
+					} catch (EmptyResultDataAccessException e)
+					{
+						alternatelcount = 0;
+					}
+					RetentionRate rate = new RetentionRate();
+					rate.setDate(date);
+					rate.setRcount(rcount);
+					rate.setLcount(lcount);
+					rate.setMorrowlcount(morrowlcount);
+					rate.setAlternatelcount(alternatelcount);
+					if (rcount != 0)
+					{
+
+						double d = MathsUtils.div(morrowlcount, rcount, 4);
+						rate1 = new DecimalFormat("#.##%").format(d);
+					}
+					if (lcount != 0)
+					{
+						double d = MathsUtils.div(alternatelcount, lcount, 4);
+						rate2 = new DecimalFormat("#.##%").format(d);
+					}
+					rate.setRate1(rate1);
+					rate.setRate2(rate2);
+					result.add(rate);
+					sdate.setTime(sdate.getTime() + 1000 * 60 * 60 * 24l);
+				}
+			}
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+}

@@ -1,0 +1,103 @@
+package cc.ywxm.service.impl.platform;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import cc.ywxm.constant.Const;
+import cc.ywxm.model.platform.RechargeCount;
+import cc.ywxm.service.platform.RechargeCountService;
+
+@Transactional
+@Service
+public class RechargeCountServiceImpl implements RechargeCountService
+{
+
+	public List<RechargeCount> gets(String startDate, String endDate)
+	{
+		List<RechargeCount> result = new ArrayList<RechargeCount>();
+
+		SimpleDateFormat sdf = new SimpleDateFormat(Const.DATE_DATE_PATTERN);
+		Date start = null;
+		Date end = null;
+		try
+		{
+			start = sdf.parse(startDate);
+			end = sdf.parse(endDate);
+		} catch (ParseException e)
+		{
+			e.printStackTrace();
+			return result;
+		}
+		Date date1 = new Date();
+		date1.setTime(start.getTime());
+		while (date1.compareTo(end) <= 0)
+		{
+			String date = "";
+			int total = 0;
+			int total1 = 0;
+			date = sdf.format(date1);
+			total = (int) (Math.random() * 10000);
+			total1 = (int) (Math.random() * 1000);
+			date1.setTime(date1.getTime() + 1000 * 60 * 60 * 24l);
+			RechargeCount rechargeCount = new RechargeCount();
+			rechargeCount.setDate(date);
+			rechargeCount.setTotal(total);
+			rechargeCount.setTotal1(total1);
+			result.add(rechargeCount);
+		}
+
+		return result;
+	}
+
+	public String XMLData(String startDate, String endDate)
+	{
+		String result = "";
+		StringBuffer stringBuffer = new StringBuffer();
+		String subCaption = startDate + "至" + endDate;
+		List<RechargeCount> list = this.gets(startDate, endDate);
+		stringBuffer
+				.append("<chart canvasPadding='10' caption='充值统计' subCaption='(");
+		stringBuffer.append(subCaption);
+		stringBuffer
+				.append(")' yAxisName='总金额/总人数' baseFont='宋体' baseFontSize='12' bgColor='F7F7F7, E9E9E9'");
+		stringBuffer
+				.append(" numVDivLines='10' divLineAlpha='30' labelPadding ='10' yAxisValuesPadding ='10' showValues='0' rotateValues='1'");
+		stringBuffer
+				.append(" labelDisplay='Rotate' slantLabels='1' valuePosition='auto'>");
+
+		stringBuffer.append("<categories>");
+		for (RechargeCount rechargeCount : list)
+		{
+			stringBuffer.append("<category label='" + rechargeCount.getDate()
+					+ "' />");
+		}
+		stringBuffer.append("</categories>");
+
+		stringBuffer.append("<dataset seriesName='总金额' color='1D8BD1' >");
+		for (RechargeCount rechargeCount : list)
+		{
+			stringBuffer.append("<set value='" + rechargeCount.getTotal()
+					+ "' />");
+		}
+		stringBuffer.append("</dataset>");
+
+		stringBuffer.append("<dataset seriesName='总人数' color='F1683C' >");
+		for (RechargeCount rechargeCount : list)
+		{
+			stringBuffer.append("<set value='" + rechargeCount.getTotal1()
+					+ "' />");
+		}
+		stringBuffer.append("</dataset>");
+
+		stringBuffer.append("</chart>");
+		result = stringBuffer.toString();
+		return result;
+	}
+
+}

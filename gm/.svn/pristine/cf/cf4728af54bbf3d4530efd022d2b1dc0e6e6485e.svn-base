@@ -1,0 +1,257 @@
+package cc.ywxm.service.impl.gm;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import cc.ywxm.dao.gm.ManagerDao;
+import cc.ywxm.model.gm.Manager;
+import cc.ywxm.service.gm.ManagerService;
+import cc.ywxm.utils.PasswordUtils;
+
+@Transactional
+@Service
+public class ManagerServiceImpl implements ManagerService {
+	private Logger log = LoggerFactory.getLogger(this.getClass());
+	@Resource
+	private ManagerDao userDao;
+
+	public int login(String userName, String password) {
+		if (userName == null || "".equals(userName)) {
+			return 2;//用户名为空
+		}
+		if (password == null || "".equals(password)) {
+			return 3;//密码为空
+		}
+		password = PasswordUtils.generatePassword(password);
+		boolean b = false;
+		try {
+			b = userDao.exist(userName, password);
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			return 0;//未知错误
+		}
+		if (!b) {
+			return 4;// 用户名或者密码错误
+		} else {
+			return 1;//登录成功
+		}
+	}
+
+	public int add(String userName, String password, Short userType,
+			Boolean valid, String note) {
+
+		if (userName == null || "".equals(userName)) {
+			return 3;// 用户名为空
+		}
+		if (password == null || "".equals(password)) {
+			return 4;// 密码为空
+		}
+		boolean b = true;
+		try {
+			b = userDao.exist(userName.trim());
+		} catch (Exception e) {
+			log.error(e.getMessage());
+		}
+		if (b)
+			return 2;// 用户名重名
+
+		Manager user = new Manager(userName, password, String.valueOf(userType),
+				true, note);
+		try {
+			userDao.save(user);
+			return 1;// 成功
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			return 0;// 未知错误
+		}
+	}
+
+	public int remove(Integer userId) {
+		if (userId == null) {
+			return -1;// 无效ID
+		}
+		if (userId == 1) {
+			return 3;// 超级管理员无法删除
+		}
+		Manager user = null;
+		try {
+			user = userDao.findById(userId);
+		} catch (Exception e) {
+			log.error(e.getMessage());
+		}
+		if (user == null) {
+			return 2;// 用户不存在
+		}
+		try {
+			userDao.delete(user);
+			return 1;// 删除成功
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			return 0;// 未知错误
+		}
+
+	}
+
+	public Manager get(Integer userId) {
+		if (userId != null) {
+			try {
+				Manager user = userDao.findById(userId);
+				return user;
+			} catch (Exception e) {
+				log.error(e.getMessage());
+			}
+		}
+		return null;
+	}
+
+	public Map<String, Object> gets(Integer rows, Integer page,
+			String userName, Short userType, Boolean valid) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		try {
+			map
+					.put("rows", userDao.list(rows, page, userName, userType,
+							valid));
+			map.put("total", userDao.count(userName, userType, valid));
+			return map;
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			return null;
+		}
+
+	}
+
+	public int edit(Integer userId, String userName, Short userType,
+			Boolean valid, String note) {
+		if (userId == null) {
+			return -1;// ID无效
+		}
+		if (userId == 1) {
+			return 4;
+		}
+		Manager user = null;
+		try {
+			user = userDao.findById(userId);
+		} catch (Exception e) {
+			log.error(e.getMessage());
+		}
+
+		if (user == null) {
+			return 2;// 用户不存在
+		}
+
+		if (!user.getUserName().equals(userName)) {
+			boolean b = true;
+			try {
+				b = userDao.exist(userName.trim());
+			} catch (Exception e) {
+				log.error(e.getMessage());
+			}
+			if (b)
+				return 3;// 用户名重名
+		}
+		user.setUserName(userName);
+		user.setNote(note);
+		user.setValid(valid);
+		user.setUserType(String.valueOf(userType));
+		try {
+			userDao.update(user);
+			return 1;
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			return 0;
+		}
+	}
+
+	public Manager findByUserName(String userName) {
+		try {
+			return userDao.findByUserName(userName);
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			return null;
+		}
+	}
+
+	public int checkUserName(String userName) {
+		int result = 1;
+		try
+		{
+			result = userDao.exist(userName) ? 1 : 0;
+		} catch (Exception e)
+		{
+			log.error(e.getMessage());
+		}
+		return result;
+	}
+
+	public int password_edit(String userName, String pwd, String password) {
+		if (userName == null || pwd == null || password == null) {
+			return -1;
+		}
+		if (!userDao.exist(userName, PasswordUtils.generatePassword(pwd))) {
+			// 原密码错误
+			return 2;
+		} else {
+			password = PasswordUtils.generatePassword(password);
+			Manager user = userDao.findByUserName(userName);
+			user.setPassword(password);
+			try {
+				userDao.update(user);
+				return 1;
+			} catch (Exception e) {
+				log.error(e.getMessage());
+				return 0;
+			}
+
+		}
+
+	}
+
+	public int editPassword(Integer userId, String password) {
+		if (userId == null) {
+			return -1;// ID无效
+		}
+		Manager user = null;
+		try {
+			user = userDao.findById(userId);
+		} catch (Exception e) {
+			log.error(e.getMessage());
+		}
+
+		if (user == null) {
+			return 2;// 用户不存在
+		}
+		if (password == null || "".equals(password)) {
+			return 3;// 密码无效
+		}
+		password = PasswordUtils.generatePassword(password);
+		user.setPassword(password);
+		try {
+			userDao.update(user);
+			return 1;// 修改成功
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			return 0;// 未知错误
+		}
+	}
+
+	public Manager get_(Integer userId)
+	{
+		Manager result = null;
+		try
+		{
+			result = userDao.findById_(userId);
+		} catch (Exception e)
+		{
+			log.error(e.getMessage());
+		}
+		return result;
+	}
+
+}

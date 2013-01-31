@@ -1,0 +1,36 @@
+package cc.ywxm.service.game;
+
+import java.util.Map;
+
+public interface ConsumeLogService
+{
+
+	/**
+	 * 
+	 * @param rows
+	 * @param page
+	 * @param sort
+	 * @param order
+	 * @param player
+	 * @param startTime
+	 * @param endTime
+	 * @return
+	 */
+	Map<String, Object> gets(Integer rows, Integer page, String sort,
+			String order, Integer player, String startTime, String endTime);
+
+	/**
+	 * 
+	 * @param rows
+	 * @param page
+	 * @param sort
+	 * @param order
+	 * @param nickname
+	 * @param startTime
+	 * @param endTime
+	 * @return
+	 */
+	Map<String, Object> gets(Integer rows, Integer page, String sort,
+			String order, String nickname, String startTime, String endTime);
+
+}

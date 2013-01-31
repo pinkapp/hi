@@ -1,0 +1,41 @@
+package cc.ywxm.vo;
+
+public class GamePayMoneyVo
+{
+
+	private String gamename;
+	private Integer payMoney;
+
+	public GamePayMoneyVo()
+	{
+		super();
+	}
+
+	public GamePayMoneyVo(String gamename, Integer payMoney)
+	{
+		super();
+		this.gamename = gamename;
+		this.payMoney = payMoney;
+	}
+
+	public String getGamename()
+	{
+		return gamename;
+	}
+
+	public void setGamename(String gamename)
+	{
+		this.gamename = gamename;
+	}
+
+	public Integer getPayMoney()
+	{
+		return payMoney;
+	}
+
+	public void setPayMoney(Integer payMoney)
+	{
+		this.payMoney = payMoney;
+	}
+
+}

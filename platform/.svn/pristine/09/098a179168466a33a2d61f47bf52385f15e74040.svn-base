@@ -1,0 +1,277 @@
+package cc.ywxm.action.gop;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.apache.struts2.ServletActionContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+
+import cc.ywxm.action.PageableAction;
+import cc.ywxm.model.gop.Game;
+import cc.ywxm.service.GameService;
+import cc.ywxm.utils.DateFormat;
+import cc.ywxm.utils.FileUtils;
+import cc.ywxm.vo.GameVo;
+
+@Controller
+@Scope("prototype")
+public class GameAction extends PageableAction
+{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -9035230041221844399L;
+	@Resource
+	private GameService gameService;
+	private List<GameVo> games;
+	private GameVo gameVo;
+	private Game game;
+	private Integer gameId;
+	private File image;
+	private String imageFileName;
+	private String imageContentType;
+	private List<String> allowContentTypes = new ArrayList<String>();
+
+	/**
+	 * 游戏管理界面
+	 * 
+	 * @return
+	 */
+	public String game_manage()
+	{
+		games = gameService.findByPage(gameVo, this);
+		return SUCCESS;
+	}
+
+	/**
+	 * 游戏添加
+	 * 
+	 * @return
+	 */
+	public String game_add()
+	{
+
+		if (game == null)
+		{
+			return INPUT;
+		} else
+		{
+			allowContentTypes.add("image/pjpeg");
+			allowContentTypes.add("image/gif");
+			allowContentTypes.add("image/bmp");
+			allowContentTypes.add("image/x-png");
+			if (!allowContentTypes.contains(imageContentType))
+			{
+				imageFileName = null;
+				message = "文件类型不正确或者没选择文件";
+				return ERROR;
+			} else
+			{
+				String _uploadPath = ServletActionContext.getServletContext()
+						.getRealPath("/upload");
+				String _dateString = DateFormat
+						.currentDateFormat("yyyyMMddHHmmss");
+				String _saveFilePath = _uploadPath + "/gamelogo/";
+				// 当前时间+上传时文件名
+				imageFileName = _dateString + imageFileName;
+				FileUtils.coppyFile(image, _saveFilePath + imageFileName);
+				game.setGameLogo(imageFileName);
+				try
+				{
+					gameService.add(game);
+					message = "添加成功";
+				} catch (Exception e)
+				{
+					message = "添加失败";
+					e.printStackTrace();
+				}
+				return game_manage();
+			}
+		}
+
+	}
+
+	/**
+	 * 游戏删除
+	 * 
+	 * @return
+	 */
+	public String game_delete()
+	{
+		Game _game = gameService.findById(gameId);
+		boolean b = false;
+		try
+		{
+			gameService.delete(gameId);
+			b = true;
+		} catch (Exception e)
+		{
+			b = false;
+			e.printStackTrace();
+		}
+		games = gameService.findByPage(gameVo, this);
+		if (b == true)
+		{
+			// 把文件从磁盘中删除
+			String _logoFile = _game.getGameLogo();
+			if (_logoFile != null)
+			{
+				String _uploadPath = ServletActionContext.getServletContext()
+						.getRealPath("/upload");
+				String _saveFilePath = _uploadPath + "/gamelogo/";
+				FileUtils.removeFile(_saveFilePath + _logoFile);
+			}
+			message = "删除成功";
+		} else
+		{
+			message = "删除失败， 游戏可能被使用";
+		}
+		return game_manage();
+
+	}
+
+	/**
+	 * 游戏修改
+	 * 
+	 * @return
+	 */
+	public String game_edit()
+	{
+
+		if (game == null)
+		{
+			game = gameService.findById(gameId);
+			return INPUT;
+		} else
+		{
+			if (imageContentType != null)
+			{
+				allowContentTypes.add("image/pjpeg");
+				allowContentTypes.add("image/gif");
+				allowContentTypes.add("image/bmp");
+				allowContentTypes.add("image/x-png");
+				if (!allowContentTypes.contains(imageContentType))
+				{
+					imageFileName = null;
+					message = "文件类型不正确";
+					return ERROR;
+				} else
+				{
+
+					String _uploadPath = ServletActionContext
+							.getServletContext().getRealPath("/upload");
+					String _saveFilePath = _uploadPath + "/gamelogo/";
+					String _dateString = DateFormat
+							.currentDateFormat("yyyyMMddHHmmss");
+					Game _game = gameService.findById(game.getGameId());
+					// 当前时间+上传时文件名
+					imageFileName = _dateString + imageFileName;
+					String _srcImageFile = _saveFilePath + imageFileName;
+					FileUtils.coppyFile(image, _srcImageFile);
+					game.setGameLogo(imageFileName);
+					boolean b = false;
+					try
+					{
+						gameService.edit(game);
+						b = true;
+					} catch (Exception e)
+					{
+						b = false;
+						e.printStackTrace();
+					}
+					if (b)
+					{
+						String _logoFile = _game.getGameLogo();
+						// 把原文件从磁盘中删除
+						if (_logoFile != null)
+						{
+							FileUtils.removeFile(_saveFilePath + _logoFile);
+						}
+						message = "编辑成功";
+					} else
+					{
+						message = "编辑失败";
+					}
+				}
+			}
+
+			return game_manage();
+		}
+
+	}
+
+	public List<GameVo> getGames()
+	{
+		return games;
+	}
+
+	public void setGames(List<GameVo> games)
+	{
+		this.games = games;
+	}
+
+	public GameVo getGameVo()
+	{
+		return gameVo;
+	}
+
+	public void setGameVo(GameVo gameVo)
+	{
+		this.gameVo = gameVo;
+	}
+
+	public Game getGame()
+	{
+		return game;
+	}
+
+	public void setGame(Game game)
+	{
+		this.game = game;
+	}
+
+	public Integer getGameId()
+	{
+		return gameId;
+	}
+
+	public void setGameId(Integer gameId)
+	{
+		this.gameId = gameId;
+	}
+
+	public File getImage()
+	{
+		return image;
+	}
+
+	public void setImage(File image)
+	{
+		this.image = image;
+	}
+
+	public String getImageFileName()
+	{
+		return imageFileName;
+	}
+
+	public void setImageFileName(String imageFileName)
+	{
+		this.imageFileName = imageFileName;
+	}
+
+	public String getImageContentType()
+	{
+		return imageContentType;
+	}
+
+	public void setImageContentType(String imageContentType)
+	{
+		this.imageContentType = imageContentType;
+	}
+
+}

@@ -1,0 +1,2 @@
+yxly.client.url=http\://192.168.0.116\:8080/client
+yxly.client.servers.url=http\://192.168.0.116\:8080/client/servers.xml

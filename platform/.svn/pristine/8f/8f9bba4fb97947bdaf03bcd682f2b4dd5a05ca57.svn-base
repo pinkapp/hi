@@ -1,0 +1,54 @@
+package cc.ywxm.model;
+
+
+public class GameServer
+{
+
+	private Integer serverId;
+	private String serverName;
+	private String game;
+	private String otime;
+	private String url;
+	public Integer getServerId()
+	{
+		return serverId;
+	}
+	public void setServerId(Integer serverId)
+	{
+		this.serverId = serverId;
+	}
+	public String getServerName()
+	{
+		return serverName;
+	}
+	public void setServerName(String serverName)
+	{
+		this.serverName = serverName;
+	}
+	public String getGame()
+	{
+		return game;
+	}
+	public void setGame(String game)
+	{
+		this.game = game;
+	}
+	public String getOtime()
+	{
+		return otime;
+	}
+	public void setOtime(String otime)
+	{
+		this.otime = otime;
+	}
+	public String getUrl()
+	{
+		return url;
+	}
+	public void setUrl(String url)
+	{
+		this.url = url;
+	}
+
+
+}

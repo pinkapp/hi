@@ -1,0 +1,169 @@
+package cc.ywxm.service.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import cc.ywxm.action.Pageable;
+import cc.ywxm.dao.gop.LetterDao;
+import cc.ywxm.dao.gop.UserDao;
+import cc.ywxm.model.gop.Letter;
+import cc.ywxm.model.gop.LetterInbox;
+import cc.ywxm.model.gop.LetterOutbox;
+import cc.ywxm.service.LetterService;
+import cc.ywxm.utils.DateFormat;
+import cc.ywxm.vo.LetterInboxVo;
+import cc.ywxm.vo.LetterOutboxVo;
+
+@Service
+@Transactional
+public class LetterServiceImpl implements LetterService
+{
+	@Resource
+	private LetterDao letterDao;
+	@Resource
+	private UserDao userDao;
+
+	public List<LetterOutboxVo> findOutboxByPage(String username,
+			Pageable pageable)
+	{
+		return letterDao.findOutboxByPage(username, pageable);
+	}
+
+	public void store(Letter letter)
+	{
+		String posettime = DateFormat.currentDateFormat();
+		String receiver = letter.getReceiver();
+		if (receiver == null || "".equals(receiver))
+		{
+			receiver = "全部";
+		} else
+		{
+			receiver = receiver.trim();
+		}
+		if (receiver.endsWith(","))
+		{
+			receiver = receiver.substring(0, receiver.lastIndexOf(","));
+		}
+		LetterOutbox letterOutbox = new LetterOutbox(letter.getLettercontent(),
+				letter.getPoster(), receiver, posettime, letter.getSubject());
+		letterDao.save(letterOutbox);
+	}
+
+	public void post(Letter letter)
+	{
+		String reciever = letter.getReceiver();
+		String[] recievers = null;
+		if (reciever == null || "".equals(reciever))
+		{
+			List<String> usernames = userDao.findAllUsername();
+			recievers = usernames.toArray(new String[usernames.size()]);
+		} else
+		{
+			recievers = reciever.split(",");
+		}
+		List<LetterInbox> letterInboxes = new ArrayList<LetterInbox>();
+		for (String r : recievers)
+		{
+			r = r.trim();
+			if (!"".equals(r))
+			{
+				String receivetime = DateFormat.currentDateFormat();
+				LetterInbox letterInbox = new LetterInbox(letter
+						.getLettercontent(), letter.getPoster(), r,
+						receivetime, letter.getSubject());
+				letterInboxes.add(letterInbox);
+			}
+		}
+		letterDao.save(letterInboxes);
+	}
+
+	public List<LetterInboxVo> findInboxByPage(String username,
+			Pageable pageable)
+	{
+		return letterDao.findInboxByPage(username, pageable);
+	}
+
+	public LetterOutbox findOutboxById(Long letterId)
+	{
+		return letterDao.findOutboxById(letterId);
+	}
+
+	public LetterInbox findInboxById(Long letterId)
+	{
+		return letterDao.findInboxById(letterId);
+	}
+
+	public void batchInboxDelete(String letterIds)
+	{
+		if (letterIds == null || letterIds.length() == 0)
+		{
+			return;
+		}
+		String[] user_ids =
+		{ "" };
+		if (letterIds.indexOf(",") == -1)
+		{
+			user_ids[0] = letterIds;
+		} else
+		{
+			user_ids = letterIds.split(",");
+		}
+		Long[] ids = new Long[user_ids.length];
+		for (int i = 0; i < user_ids.length; i++)
+		{
+			ids[i] = Long.parseLong(user_ids[i]);
+
+		}
+		letterDao.batchInboxDelete(ids);
+	}
+
+	public void batchOutboxDelete(String letterIds)
+	{
+		if (letterIds == null || letterIds.length() == 0)
+		{
+			return;
+		}
+		String[] user_ids =
+		{ "" };
+		if (letterIds.indexOf(",") == -1)
+		{
+			user_ids[0] = letterIds;
+		} else
+		{
+			user_ids = letterIds.split(",");
+		}
+		Long[] ids = new Long[user_ids.length];
+		for (int i = 0; i < user_ids.length; i++)
+		{
+			ids[i] = Long.parseLong(user_ids[i]);
+
+		}
+		letterDao.batchOutboxDelete(ids);
+	}
+
+	public void markInboxAllReaded(String username)
+	{
+		letterDao.markInboxAllReaded(username);
+	}
+
+	public void inboxDelete(Long letterId)
+	{
+		letterDao.inboxDelete(letterId);
+	}
+
+	public void outboxDelete(Long letterId)
+	{
+		letterDao.outboxDelete(letterId);
+	}
+
+	public void markInboxReaded(Long letterId)
+	{
+		letterDao.markInboxReaded(letterId);
+	}
+
+}

@@ -1,0 +1,69 @@
+package cc.ywxm.service.impl.game;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import cc.ywxm.dao.game.BaseInfoDao;
+import cc.ywxm.dao.game.HeroDao;
+import cc.ywxm.model.game.Hero;
+import cc.ywxm.service.game.HeroInfoService;
+
+/**
+ * 
+ * @author HuangDeCai
+ * @since 2012-11-30 9:21:34
+ */
+@Transactional
+@Service
+public class HeroInfoServiceImpl implements HeroInfoService
+{
+	@Resource
+	private HeroDao heroDao;
+	@Resource
+	private BaseInfoDao baseInfoDao;
+
+	public List<Hero> gets(String nickname)
+	{
+		if (nickname == null || "".trim().equals(nickname))
+		{
+			return new ArrayList<Hero>();
+		}
+		nickname = nickname.trim();
+		try
+		{
+			Integer player = baseInfoDao.findPlayerByNickname(nickname);
+			return heroDao.list(player);
+		} catch (EmptyResultDataAccessException e)
+		{
+			// System.out.println(e.getMessage());
+			return new ArrayList<Hero>();
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+			return new ArrayList<Hero>();
+		}
+	}
+
+	public List<Hero> gets(Integer player)
+	{
+		if (player == null)
+		{
+			return new ArrayList<Hero>();
+		}
+		try
+		{
+			return heroDao.list(player);
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+			return new ArrayList<Hero>();
+		}
+	}
+
+}

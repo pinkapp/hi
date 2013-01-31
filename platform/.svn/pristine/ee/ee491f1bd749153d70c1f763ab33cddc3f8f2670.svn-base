@@ -1,0 +1,21 @@
+package cc.ywxm.dao.gop;
+
+import java.io.File;
+import java.util.List;
+
+import cc.ywxm.model.gop.MoneyAssign;
+
+public interface MoneyAssignDao
+{
+
+	public void save(List<MoneyAssign> moneyAssigns);
+
+	/**
+	 * 从excel读取通用货币发放数据
+	 * 
+	 * @param filePath
+	 * @return
+	 */
+	public List<MoneyAssign> readExcel(File file);
+
+}

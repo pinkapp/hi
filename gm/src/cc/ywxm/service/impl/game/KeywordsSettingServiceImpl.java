@@ -1,0 +1,262 @@
+package cc.ywxm.service.impl.game;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.supercsv.cellprocessor.constraint.UniqueHashCode;
+import org.supercsv.cellprocessor.ift.CellProcessor;
+import org.supercsv.io.CsvMapReader;
+import org.supercsv.io.CsvMapWriter;
+import org.supercsv.io.ICsvMapReader;
+import org.supercsv.prefs.CsvPreference;
+
+import cc.ywxm.constant.Const;
+import cc.ywxm.service.game.KeywordsSettingService;
+import cc.ywxm.utils.ZMQutils;
+
+/**
+ * 关键词设置业务接口实现
+ * 
+ * @author HuangDecai
+ * @since 2013-1-12 14:28:11
+ * 
+ */
+@Transactional
+@Service
+public class KeywordsSettingServiceImpl implements KeywordsSettingService
+{
+	private Logger log = LoggerFactory.getLogger(this.getClass());
+
+	public int setting(String keywords)
+	{
+		JSONObject jsonObject = new JSONObject();
+		try
+		{
+			if (keywords != null)
+			{
+				keywords = keywords.replace("\r\n", "");
+			}
+			jsonObject.put("keywords", keywords);
+			jsonObject.put("option", 3);
+			String jsonString = ZMQutils.call(0, Const.GM_KEYWORDS_SETTING, 0,
+					jsonObject.toString());
+			if (jsonString == null)
+			{
+				return CODE_FAIL;
+			}
+			jsonObject = new JSONObject(jsonString);
+			int result = jsonObject.getInt("result");
+			if (log.isDebugEnabled())
+			{
+				Map<Integer, String> map = new HashMap<Integer, String>();
+				map.put(0, "成功");
+				map.put(1, "没有提供这个方法");
+				map.put(2, "JSON解析失败");
+				map.put(3, "参数无效");
+				map.put(4, "资源不足");
+				log.debug("服务器返回结果：" + map.get(result));
+			}
+			if (result != 0)
+			{
+
+				return CODE_FAIL;
+			}
+			return CODE_SUCCESS;
+		} catch (JSONException e)
+		{
+			log.error(e.getMessage());
+			return CODE_JSON_ERROR;
+		} catch (IOException e)
+		{
+			log.error(e.getMessage());
+			return CODE_FAIL;
+		}
+
+	}
+
+	public int setting(File file, String extension, int option)
+	{
+		if (file == null)
+		{
+			return CODE_FILE_NULL;
+		}
+		if ("csv".equals(extension))
+		{
+			try
+			{
+				List<Map<String, Object>> data = readCsv(file);
+				System.out.println(String.format("data=%s", data));
+				List<String> list = new ArrayList<String>();
+				for (Map<String, Object> map : data)
+				{
+					Object o = map.get("关键字");
+					list.add((String) o);
+				}
+				String keywords = null;
+				StringBuilder sb = new StringBuilder();
+				for (int i = 0; i < list.size(); i++)
+				{
+					if (i == 0)
+					{
+						sb.append(list.get(i));
+					} else
+					{
+						sb.append("," + list.get(i));
+					}
+				}
+				keywords = sb.toString();
+				JSONObject jsonObject = new JSONObject();
+				try
+				{
+					jsonObject.put("keywords", keywords);
+					jsonObject.put("option", option);
+					String jsonString = ZMQutils
+							.call(0, Const.GM_KEYWORDS_SETTING, 0, jsonObject
+									.toString());
+					if (jsonString == null)
+					{
+						return CODE_FAIL;
+					}
+					jsonObject = new JSONObject(jsonString);
+					int result = jsonObject.getInt("result");
+					if (log.isDebugEnabled())
+					{
+						Map<Integer, String> map = new HashMap<Integer, String>();
+						map.put(0, "成功");
+						map.put(1, "没有提供这个方法");
+						map.put(2, "JSON解析失败");
+						map.put(3, "参数无效");
+						map.put(4, "资源不足");
+						log.debug("服务器返回结果：" + map.get(result));
+					}
+					if (result != 0)
+					{
+
+						return CODE_FAIL;
+					}
+					return CODE_SUCCESS;
+				} catch (JSONException e)
+				{
+					log.error(e.getMessage());
+					return CODE_JSON_ERROR;
+				} catch (IOException e)
+				{
+					log.error(e.getMessage());
+					return CODE_FAIL;
+				}
+			} catch (Exception e)
+			{
+				e.printStackTrace();
+				log.error(e.getMessage());
+				return CODE_FAIL;
+			}
+		} else
+		{
+			return CODE_FILEEXT_NOT_SUPPORT;
+		}
+	}
+
+	private static CellProcessor[] getProcessors()
+	{
+		final CellProcessor[] processors = new CellProcessor[]
+		{ new UniqueHashCode() };
+		return processors;
+	}
+
+	private List<Map<String, Object>> readCsv(File csvFile) throws Exception
+	{
+		List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
+		File file = csvFile;
+		ICsvMapReader mapReader = null;
+		try
+		{
+			log.debug("系统文件编码：" + System.getProperty("file.encoding"));
+			// 强制使用GBK文件编码，而不采用系统默认文件编码，因兼容windows系统
+			mapReader = new CsvMapReader(new InputStreamReader(
+					new FileInputStream(file), "GBK"),
+					CsvPreference.STANDARD_PREFERENCE);
+			// skip the header
+			final String[] header = mapReader.getHeader(true);
+			final CellProcessor[] processors = getProcessors();
+			Map<String, Object> map;
+			while ((map = mapReader.read(header, processors)) != null)
+			{
+				result.add(map);
+			}
+
+		} finally
+		{
+			if (mapReader != null)
+			{
+				mapReader.close();
+			}
+		}
+		return result;
+	}
+
+	private byte[] writeCsv(List<Map<String, Object>> data) throws Exception
+	{
+		final CellProcessor[] processors = getProcessors();
+		byte[] result = null;
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		OutputStreamWriter writer = new OutputStreamWriter(out);
+		CsvMapWriter mapWriter = null;
+		try
+		{
+			mapWriter = new CsvMapWriter(writer,
+					CsvPreference.STANDARD_PREFERENCE);
+			String[] header = new String[]
+			{ "关键字" };
+			mapWriter.writeHeader(header);
+			for (Map<String, Object> values : data)
+			{
+				mapWriter.write(values, header, processors);
+			}
+		} finally
+		{
+			if (mapWriter != null)
+			{
+				mapWriter.close();
+			}
+		}
+		result = out.toByteArray();
+		return result;
+	}
+
+	public byte[] get()
+	{
+		String keywords = "aaa,bbb,ccc,ddd,eeee,辅导费是否";
+		List<Map<String, Object>> data = new ArrayList<Map<String, Object>>();
+		try
+		{
+			String[] strs = keywords.split(",");
+			Map<String, Object> values = null;
+			for (int i = 0; i < strs.length; i++)
+			{
+				values = new HashMap<String, Object>();
+				values.put("关键字", strs[i]);
+				data.add(values);
+			}
+			return writeCsv(data);
+		} catch (Exception e)
+		{
+			log.error(e.getMessage());
+			return null;
+		}
+	}
+
+}

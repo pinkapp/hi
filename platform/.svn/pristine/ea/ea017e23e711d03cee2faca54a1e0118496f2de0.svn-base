@@ -1,0 +1,463 @@
+package cc.ywxm.action.gop;
+
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+
+import cc.ywxm.action.BaseAction;
+import cc.ywxm.constant.Const;
+import cc.ywxm.model.gop.Career;
+import cc.ywxm.model.gop.FriendlyLink;
+import cc.ywxm.model.gop.Game;
+import cc.ywxm.model.gop.GameOpen;
+import cc.ywxm.model.gop.GameServer;
+import cc.ywxm.model.gop.News;
+import cc.ywxm.model.gop.User;
+import cc.ywxm.service.GameServerService;
+import cc.ywxm.service.GameService;
+import cc.ywxm.service.UserService;
+
+@Controller
+// 多例模式,默认单例
+@Scope("prototype")
+public class IndexAction extends BaseAction
+{
+	private static final long serialVersionUID = 7946937947224811817L;
+
+	private Integer userId;
+	private String username;
+	private String password;
+	private String sex;
+	private String birthday;
+	private String career;
+	private String phone;
+	private String email;
+	private String realname;
+	private String cardId;
+	private String ip;
+	private String lastTime;
+	private String portraitUrl;
+	private String province;
+	private String city;
+	private String source;
+
+	private List<Career> careers;
+	private List<Game> games;
+	private Integer gameId;
+	private List<GameOpen> gameOpens;
+	private String careerName;
+	private List<FriendlyLink> friendlyLinks;
+	private List<News> newses;
+	private boolean manager = false;// 是否是管理人员
+	private List<String> rolenames;
+	private List<GameServer> gameServers;
+
+	@Resource
+	private UserService userService;
+	@Resource
+	private GameService gameService;
+	@Resource
+	private GameServerService gameServerService;
+
+	/**
+	 * 个人资料首页
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
+	public String user() throws Exception
+	{
+		userId = (Integer) session.get(Const.SESSION_USERID);
+		User user = userService.get(userId);
+		username = user.getUsername();
+		lastTime = user.getLastTime();
+		sex = user.getSex();
+		birthday = user.getBirthday();
+		province = user.getProvince();
+		city = user.getCity();
+		realname = user.getRealname();
+		cardId = user.getCardId();
+		portraitUrl = user.getPortraitUrl();
+		
+		//games = gameService.findAll();
+		return super.execute();
+	}
+
+	/**
+	 * 我要充值
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
+	public String order() throws Exception
+	{
+		games = gameService.findAll();
+		return super.execute();
+	}
+
+	/**
+	 * 游戏大厅
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
+	public String game() throws Exception
+	{
+		games = gameService.findAll();
+		return super.execute();
+	}
+
+	/**
+	 * 客服中心
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
+	public String service() throws Exception
+	{
+		return super.execute();
+	}
+
+	/**
+	 * 游戏论坛
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
+	public String bbs() throws Exception
+	{
+		return super.execute();
+	}
+
+	/**
+	 * 首页
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
+	public String index() throws Exception
+	{
+		if (!session.containsKey(Const.SESSION_USERID))
+		{
+			return LOGIN;
+		}
+		userId = (Integer) session.get(Const.SESSION_USERID);
+		User user = userService.get(userId);
+		username = user.getUsername();
+		lastTime = user.getLastTime();
+		// games = gameService.findAll();
+		gameServers = gameServerService.gets();
+		// gameOpens = gameService.findAllGameOpen();
+		// friendlyLinks = friendlyLinkService.findAll();
+		// newses = newsService.findAll();
+		return SUCCESS;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public String admin_main()
+	{
+		return SUCCESS;
+	}
+
+	/**
+	 * 框架头
+	 * 
+	 * @return
+	 */
+	public String topframe()
+	{
+		Integer userId = (Integer) session.get(Const.SESSION_USERID);
+		//User user = userService.get(userId);
+		// 根据用户ID查询用户的角色，目前一个用户只能是一个角色
+		rolenames = userService.getRolenamesByUserId(userId);
+		return SUCCESS;
+	}
+
+	/**
+	 * 我的礼券
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
+	public String giftcard() throws Exception
+	{
+		return "success";
+	}
+
+	/**
+	 * 使用过的礼券
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
+	public String giftcard_history() throws Exception
+	{
+		return "success";
+	}
+
+	public String getCareerName()
+	{
+		return careerName;
+	}
+
+	public void setCareerName(String careerName)
+	{
+		this.careerName = careerName;
+	}
+
+	public List<Game> getGames()
+	{
+		return games;
+	}
+
+	public void setGames(List<Game> games)
+	{
+		this.games = games;
+	}
+
+	public List<FriendlyLink> getFriendlyLinks()
+	{
+		return friendlyLinks;
+	}
+
+	public void setFriendlyLinks(List<FriendlyLink> friendlyLinks)
+	{
+		this.friendlyLinks = friendlyLinks;
+	}
+
+	public List<News> getNewses()
+	{
+		return newses;
+	}
+
+	public void setNewses(List<News> newses)
+	{
+		this.newses = newses;
+	}
+
+	public boolean isManager()
+	{
+		return manager;
+	}
+
+	public void setManager(boolean manager)
+	{
+		this.manager = manager;
+	}
+
+	public List<GameOpen> getGameOpens()
+	{
+		return gameOpens;
+	}
+
+	public void setGameOpens(List<GameOpen> gameOpens)
+	{
+		this.gameOpens = gameOpens;
+	}
+
+	public Integer getGameId()
+	{
+		return gameId;
+	}
+
+	public void setGameId(Integer gameId)
+	{
+		this.gameId = gameId;
+	}
+
+	public List<String> getRolenames()
+	{
+		return rolenames;
+	}
+
+	public void setRolenames(List<String> rolenames)
+	{
+		this.rolenames = rolenames;
+	}
+
+	public List<GameServer> getGameServers()
+	{
+		return gameServers;
+	}
+
+	public void setGameServers(List<GameServer> gameServers)
+	{
+		this.gameServers = gameServers;
+	}
+
+	public Integer getUserId()
+	{
+		return userId;
+	}
+
+	public void setUserId(Integer userId)
+	{
+		this.userId = userId;
+	}
+
+	public String getUsername()
+	{
+		return username;
+	}
+
+	public void setUsername(String username)
+	{
+		this.username = username;
+	}
+
+	public String getPassword()
+	{
+		return password;
+	}
+
+	public void setPassword(String password)
+	{
+		this.password = password;
+	}
+
+	public String getSex()
+	{
+		return sex;
+	}
+
+	public void setSex(String sex)
+	{
+		this.sex = sex;
+	}
+
+	public String getBirthday()
+	{
+		return birthday;
+	}
+
+	public void setBirthday(String birthday)
+	{
+		this.birthday = birthday;
+	}
+
+	public String getCareer()
+	{
+		return career;
+	}
+
+	public void setCareer(String career)
+	{
+		this.career = career;
+	}
+
+	public String getPhone()
+	{
+		return phone;
+	}
+
+	public void setPhone(String phone)
+	{
+		this.phone = phone;
+	}
+
+	public String getEmail()
+	{
+		return email;
+	}
+
+	public void setEmail(String email)
+	{
+		this.email = email;
+	}
+
+	public String getRealname()
+	{
+		return realname;
+	}
+
+	public void setRealname(String realname)
+	{
+		this.realname = realname;
+	}
+
+	public String getCardId()
+	{
+		return cardId;
+	}
+
+	public void setCardId(String cardId)
+	{
+		this.cardId = cardId;
+	}
+
+	public String getIp()
+	{
+		return ip;
+	}
+
+	public void setIp(String ip)
+	{
+		this.ip = ip;
+	}
+
+	public String getLastTime()
+	{
+		return lastTime;
+	}
+
+	public void setLastTime(String lastTime)
+	{
+		this.lastTime = lastTime;
+	}
+
+	public String getPortraitUrl()
+	{
+		return portraitUrl;
+	}
+
+	public void setPortraitUrl(String portraitUrl)
+	{
+		this.portraitUrl = portraitUrl;
+	}
+
+	public String getProvince()
+	{
+		return province;
+	}
+
+	public void setProvince(String province)
+	{
+		this.province = province;
+	}
+
+	public String getCity()
+	{
+		return city;
+	}
+
+	public void setCity(String city)
+	{
+		this.city = city;
+	}
+
+	public String getSource()
+	{
+		return source;
+	}
+
+	public void setSource(String source)
+	{
+		this.source = source;
+	}
+
+	public List<Career> getCareers()
+	{
+		return careers;
+	}
+
+	public void setCareers(List<Career> careers)
+	{
+		this.careers = careers;
+	}
+}

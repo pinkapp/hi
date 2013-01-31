@@ -1,0 +1,26 @@
+package cc.ywxm.test;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.json.JSONObject;
+
+import cc.ywxm.model.gm.Manager;
+
+public class Main
+{
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args)
+	{
+		Map<String ,Object> map = new HashMap<String, Object>();
+		map.put("dd", "dfdf");
+		map.put("map", new int[]{1,3,5,5,63,6544,454});
+		map.put("map", new Manager("ss","dff"));
+		JSONObject jsonObject = new JSONObject(map);
+		System.out.println(jsonObject);
+	}
+
+}

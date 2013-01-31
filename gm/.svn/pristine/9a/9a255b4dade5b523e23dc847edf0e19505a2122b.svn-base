@@ -1,0 +1,53 @@
+package cc.ywxm.dao.impl.game;
+
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.stereotype.Repository;
+
+import cc.ywxm.dao.game.FunctionBuildingDao;
+import cc.ywxm.model.game.FunctionBuilding;
+import cc.ywxm.model.game.FunctionBuildingId;
+import cc.ywxm.model.game.FunctionBuilding_;
+import cc.ywxm.utils.RSMapper;
+
+@Repository
+public class FunctionBuildingDaoImpl implements FunctionBuildingDao
+{
+	@Resource
+	private JdbcTemplate gameJdbcTemplate;
+	@Resource
+	private HibernateTemplate gameHibernateTemplate;
+
+	public void delete(FunctionBuilding fb)
+	{
+		gameHibernateTemplate.delete(fb);
+	}
+
+	public FunctionBuilding findById(FunctionBuildingId id)
+	{
+		return (FunctionBuilding) gameHibernateTemplate.get(FunctionBuilding.class,
+				id);
+	}
+
+	public void save(FunctionBuilding fb)
+	{
+		gameHibernateTemplate.save(fb);
+	}
+
+	public void update(FunctionBuilding fb)
+	{
+		gameHibernateTemplate.update(fb);
+	}
+
+	public List<FunctionBuilding_> list(Integer player)
+	{
+		String sql = "SELECT t.id, t.kind, t.x, t.y, t.aspect, t.level, t.progress, t.last_reap AS lastReap FROM function_building t WHERE t.player = ?";
+		sql = "select * from (" + sql + ")a";
+		return RSMapper.queryList(gameJdbcTemplate, sql, FunctionBuilding_.class,
+				player);
+	}
+}

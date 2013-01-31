@@ -1,0 +1,123 @@
+package cc.ywxm.action;
+
+import java.io.IOException;
+
+import javax.annotation.Resource;
+import javax.servlet.http.Cookie;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+
+import cc.ywxm.action.base.PageableAction;
+import cc.ywxm.constant.Const;
+import cc.ywxm.service.UserService;
+import cc.ywxm.utils.WebUtils;
+
+@SuppressWarnings("serial")
+@Controller
+@Scope("prototype")
+public class LoginAction extends PageableAction
+{
+
+	private String username;
+	private String password;
+	private String rand = "";
+
+	@Resource
+	private UserService userService;
+
+	/**
+	 * 账号登录
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
+	public String login() throws IOException
+	{
+		org.springframework.web.util.WebUtils.getCookie(request, "");
+		if (session.get(Const.AUTH_CODE) == null)
+		{
+			return INPUT;
+		}
+		if (!session.get(Const.AUTH_CODE).equals(rand))
+		{
+			message = "验证码错误,登录失败";
+			return INPUT;
+		}
+		// int code = userService.login(username, password);
+		String loginIp = WebUtils.getIpAddr(request);
+		int code = userService.login(username, password, loginIp);
+		switch (code)
+		{
+		case 1:
+			message = "登录成功";
+			break;
+		case 2:
+			message = "用户名为空，登录失败";
+			break;
+		case 3:
+			message = "用户名不存在，登录失败";
+			break;
+		case 4:
+			message = "密码，登录失败";
+			break;
+		case 5:
+			message = "登录失败";
+			break;
+
+		default:
+			message = "未知错误，登录失败";
+			break;
+		}
+		if (code != 1)
+		{
+			return INPUT;
+		}
+		Integer userId = userService.findByUsername(username).getUserId();
+		// 把参数放到session中
+		session.put(Const.SESSION_USERID, userId);
+		Cookie cookie = new Cookie(Const.COOKIE_NAME_LOGINUSER, userId + "");
+		cookie.setPath("/");
+		response.addCookie(cookie);
+		// response.sendRedirect("/");
+		// 论坛同步
+		// /ucsyn = userService.uc_user_synlogin(username, password);
+		// System.out.println("discuz：" + ucsyn);
+		// 游戏客户端同步
+		// syncString = userService.server_user_synlogin(username, password);
+
+		// System.out.println(syncString);
+		return SUCCESS;
+	}
+
+	public String getUsername()
+	{
+		return username;
+	}
+
+	public void setUsername(String username)
+	{
+		this.username = username;
+	}
+
+	public String getPassword()
+	{
+		return password;
+	}
+
+	public void setPassword(String password)
+	{
+		this.password = password;
+	}
+
+	public String getRand()
+	{
+		return rand;
+	}
+
+	public void setRand(String rand)
+	{
+		this.rand = rand;
+	}
+
+}

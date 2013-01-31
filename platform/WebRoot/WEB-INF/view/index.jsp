@@ -1,0 +1,148 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@page import="java.io.Writer"%>
+<%@ taglib prefix="s" uri="/struts-tags"%>
+<%
+String path = request.getContextPath();
+String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+%>
+<!DOCTYPE html>
+<html>
+	<head>
+		<base href="<%=basePath%>">
+		<title>亿网星漫游戏平台-首页</title>
+		<meta http-equiv="pragma" content="no-cache">
+		<meta http-equiv="cache-control" content="no-cache">
+		<meta http-equiv="expires" content="0">
+		<meta http-equiv="keywords" content="ywxm,游戏平台">
+		<meta http-equiv="description" content="游戏平台">
+		<link rel="stylesheet" type="text/css" href="css/styles.css">
+	</head>
+	<body>
+	    <div id="page" >
+		<jsp:include page="commons/header.jsp"></jsp:include>
+		<div id="body">
+		<div>
+			<!-- 用户  -->
+			<div class="borderbox">
+					<!-- 未登录 -->
+					<s:if test="username==null">
+					    <div id="login-box">
+						    <form action="login" method="post">
+						        <div class="field username-field">
+						            <label for="userName">账号</label>
+						            <input type="text" name="username" id="userName" class="login-text" value="" maxlength="32" tabindex="1">            	
+						        </div>
+								<div class="field">
+									<label for="password">密码</label>
+									<input type="password" name="password" id="password" class="login-text" value="" maxlength="20" tabindex="2">
+								</div>
+								<!--<div class="field">
+									<label for="rand">验证码</label>
+									<input name="rand" id="rand" class="login-text" tabindex="3">
+								</div>
+								<div class="field">
+									<label for="rand" style="width: 100"></label>
+									<img src="rand.action" onclick="changeValidateCode(this)" alt="点击刷新" />
+									<script type="text/javascript">
+									    function changeValidateCode(obj) {   
+									        var currentTime= new Date().getTime();   
+									        obj.src = "rand.action?d=" + currentTime;   
+									    }   
+									</script>
+								</div>
+						        -->
+						        <div class="submit">
+						            <input type="hidden" name="action">
+						            <input type="submit" class="login-submit" tabindex="5" />
+						            <a href="reg.jsp">注册</a>
+						            <!--<input type="checkbox"  name="autoLogin" value="true"><label>自动登录</label>-->
+						       </div>
+						       <div id="message"><s:label name="message" cssClass="highLightInfo" /></div>
+						    </form>
+						</div>
+					</s:if>
+					<!-- 已登录  -->
+					<s:else>
+						<table border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td>
+									<s:if test="portraitUrl==null||portraitUrl==''">
+										<img src="images/noavatar_middle.gif"
+											class="user_avatar" alt="" />
+									</s:if>
+									<s:else>
+										<img src="upload/portrait/${portraitUrl}"
+											class="user_avatar" alt="" />
+									</s:else>
+								</td>
+								<td>
+									<h2>
+										${username }[${userId }]
+									</h2>
+									<br>
+									<s:a href="user">
+										查看我的个人中心
+									</s:a>
+									<a href="logout" class="primaryColor">注销
+										&gt;&gt;</a>
+									<br>
+									<p>
+										<span>上次登录：${lastTime }</span>
+									</p>
+								</td>
+							</tr>
+						</table>
+					</s:else>
+					<!--<div style="padding: 25px;">
+						<a href="ftpasswd.jsp">找回密码</a>
+						<a href="#">用户安全</a>
+						<br>
+						<a href="#">修改密码</a>
+						<a href="#">游戏充值</a>
+					</div>
+			--></div>
+			<!-- 首页左边 -->
+			<div>
+				<!--最新开服-->
+				<div class="widget">
+					<div class="header">
+						<div class="title">
+							游戏服务器列表
+						</div>
+					</div>
+					<div class="body">
+						<table class="datatable">
+							<tr>
+								<td>
+									开服日期
+								</td>
+								<td>
+									游戏名称
+								</td>
+								<td>
+									服务器
+								</td>
+							</tr>
+							<s:iterator value="gameServers">
+								<tr>
+									<td>
+										${openDate }
+									</td>
+									<td>
+										${gameName }
+									</td>
+									<td>
+										<a href="linkGame?serverId=${serverId }&src=platfrom" title="点击进入游戏">${serverName }</a>
+									</td>
+								</tr>
+							</s:iterator>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+		</div>
+		<jsp:include page="commons/footer.jsp"></jsp:include>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,55 @@
+package cc.ywxm.dao.impl.gm;
+
+import javax.annotation.Resource;
+
+import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.stereotype.Repository;
+
+import cc.ywxm.dao.gm.ManagerTypeRightsDao;
+import cc.ywxm.model.gm.ManagerTypeRights;
+
+@Repository
+public class ManagerTypeRightsDaoImpl implements ManagerTypeRightsDao
+{
+	@Resource
+	private HibernateTemplate hibernateTemplate;
+
+	// @Resource
+	// private JdbcTemplate jdbcTemplate;
+
+	public void update(ManagerTypeRights managerTypeRights)
+	{
+		hibernateTemplate.update(managerTypeRights);
+	}
+
+	public ManagerTypeRights findById(Short userType)
+	{
+		return (ManagerTypeRights)hibernateTemplate.get(ManagerTypeRights.class, userType);
+	}
+
+	public void save(ManagerTypeRights managerTypeRights)
+	{
+		hibernateTemplate.save(managerTypeRights);
+	}
+
+	// public void delete(UserTypeRights managerTypeRights)
+	// {
+	// hibernateTemplate.delete(managerTypeRights);
+	// }
+
+	// public int count(Object... args)
+	// {
+	// String sql = "select count(1) from goods_type";
+	// return jdbcTemplate.queryForInt(sql, args);
+	// }
+	//
+	// public List<UserTypeRights> list(Integer rows, Integer page, Object...
+	// args)
+	// {
+	// String sql = "select * from goods_type";
+	// return RSMapper.queryPage(jdbcTemplate, sql, rows, page,
+	// UserTypeRights.class, args);
+	//
+	// }
+
+}

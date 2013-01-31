@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"dtds/struts-2.3.dtd">
+
+<struts>
+	<package name="struts-modules" extends="struts-root" namespace="/mods">
+	    <action name="retentionRate" class="retentionRateAction">
+	      <result>
+	        /WEB-INF/view/platform/retentionRate.jsp
+	      </result>
+	    </action>
+	    <action name="rechargeCount1" class="rechargeCount1Action">
+	      <result>
+	        /WEB-INF/view/platform/rechargeCount1.jsp
+	      </result>
+	    </action>
+	    <action name="careerCount" class="careerCountAction">
+	      <result>
+	        /WEB-INF/view/platform/careerCount.jsp
+	      </result>
+	    </action>
+	    <action name="ageGroupCount" class="ageGroupCountAction">
+	      <result>
+	        /WEB-INF/view/platform/ageGroupCount.jsp
+	      </result>
+	    </action>
+	    <action name="paywayCount" class="paywayCountAction">
+	      <result>
+	        /WEB-INF/view/platform/paywayCount.jsp
+	      </result>
+	    </action>
+	    <action name="rechargeRank2" class="rechargeRank2Action">
+	      <result>
+	        /WEB-INF/view/platform/rechargeRank2.jsp
+	      </result>
+	    </action>
+	    <action name="rechargeRank1" class="rechargeRank1Action">
+	      <result>
+	        /WEB-INF/view/platform/rechargeRank1.jsp
+	      </result>
+	    </action>
+	    <action name="rechargeRank" class="rechargeRankAction">
+	      <result>
+	        /WEB-INF/view/platform/rechargeRank.jsp
+	      </result>
+	    </action>
+	    <action name="rechargeCount" class="rechargeCountAction">
+	      <result>
+	        /WEB-INF/view/platform/rechargeCount.jsp
+	      </result>
+	    </action>
+	    <action name="loginCount" class="loginCountAction">
+	      <result>
+	        /WEB-INF/view/platform/loginCount.jsp
+	      </result>
+	    </action>
+	    <action name="regCount" class="regCountAction">
+	      <result>
+	        /WEB-INF/view/platform/regCount.jsp
+	      </result>
+	    </action>
+	    <action name="keywordsSetting" class="keywordsSettingAction">
+	      <result>
+	        /WEB-INF/view/game/keywordsSetting.jsp
+	      </result>
+	    </action>
+	    <action name="featLog" class="featLogAction">
+	      <result>
+	        /WEB-INF/view/game/featLog.jsp
+	      </result>
+	    </action>
+	    <action name="energyLog" class="energyLogAction">
+	      <result>
+	        /WEB-INF/view/game/energyLog.jsp
+	      </result>
+	    </action>
+	    <action name="mobilityLog" class="mobilityLogAction">
+	      <result>
+	        /WEB-INF/view/game/mobilityLog.jsp
+	      </result>
+	    </action>
+	    <action name="giftbagLog" class="giftbagLogAction">
+	      <result>
+	        /WEB-INF/view/game/giftbagLog.jsp
+	      </result>
+	    </action>
+	    <action name="rechargeLog" class="rechargeLogAction">
+	      <result>
+	        /WEB-INF/view/game/rechargeLog.jsp
+	      </result>
+	    </action>
+	    <action name="consumeLog" class="consumeLogAction">
+	      <result>
+	        /WEB-INF/view/game/consumeLog.jsp
+	      </result>
+	    </action>
+	    <action name="propInfo_edit" class="propInfoAction">
+	      <result>
+	        /WEB-INF/view/game/propInfo_edit.jsp
+	      </result>
+	    </action>
+	    <action name="funcBuildInfo_edit" class="funcBuildInfoAction">
+	      <result>
+	        /WEB-INF/view/game/funcBuildInfo_edit.jsp
+	      </result>
+	    </action>
+	    <action name="sendGold" class="sendGoldAction">
+	      <result>
+	        /WEB-INF/view/game/sendGold.jsp
+	      </result>
+	    </action>
+	    <action name="sendLetter" class="sendLetterAction">
+	      <result>
+	        /WEB-INF/view/game/sendLetter.jsp
+	      </result>
+	    </action>
+	    <action name="propInfo" class="propInfoAction">
+	      <result>
+	        /WEB-INF/view/game/propInfo.jsp
+	      </result>
+	    </action>
+	    <action name="mailInfo" class="mailInfoAction">
+	      <result>
+	        /WEB-INF/view/game/mailInfo.jsp
+	      </result>
+	    </action>
+	    <action name="arenaInfo" class="arenaInfoAction">
+	      <result>
+	        /WEB-INF/view/game/arenaInfo.jsp
+	      </result>
+	    </action>
+	    <action name="sameIP" class="sameIPAction">
+	      <result>
+	        /WEB-INF/view/game/sameIP.jsp
+	      </result>
+	    </action>
+	    <action name="loginLog" class="loginLogAction">
+	      <result>
+	        /WEB-INF/view/game/loginLog.jsp
+	      </result>
+	    </action>
+	    
+	    <action name="guildInfo" class="guildInfoAction">
+	      <result>
+	        /WEB-INF/view/game/guildInfo.jsp
+	      </result>
+	    </action>
+	    <action name="buildInfo" class="buildInfoAction">
+	      <result>
+	        /WEB-INF/view/game/buildInfo.jsp
+	      </result>
+	    </action>
+	    <action name="heroInfo" class="heroInfoAction">
+	      <result>
+	        /WEB-INF/view/game/heroInfo.jsp
+	      </result>
+	    </action>
+	    <action name="baseInfo" class="baseInfoAction">
+	      <result>
+	        /WEB-INF/view/game/baseInfo.jsp
+	      </result>
+	    </action>
+	    <action name="createPlayer" class="createPlayerAction">
+	      <result>
+	        /WEB-INF/view/game/createPlayer.jsp
+	      </result>
+	    </action>
+	    <action name="baseInfoEdit" class="baseInfoEditAction">
+	      <result>
+	        /WEB-INF/view/game/baseInfo_edit.jsp
+	      </result>
+	    </action>
+	    <action name="kick" class="kickAction">
+	      <result>
+	        /WEB-INF/view/game/kick.jsp
+	      </result>
+	    </action>
+	    <action name="closeIP" class="closeIPAction">
+	      <result>
+	        /WEB-INF/view/game/closeIP.jsp
+	      </result>
+	    </action>
+	    <action name="close" class="closeAction">
+	      <result>
+	        /WEB-INF/view/game/close.jsp
+	      </result>
+	    </action>
+	    <action name="gold_issue" class="testAction" method="issue">
+	      <result>
+	        /WEB-INF/view/game/gold_issue.jsp
+	      </result>
+	    </action>
+	    <action name="managerInfo" class="managerAction" method="managerInfo">
+	      <result>
+	        /WEB-INF/view/gm/managerInfo.jsp
+	      </result>
+	    </action>
+	    <action name="manager" class="managerAction" method="manager">
+	      <result>
+	        /WEB-INF/view/gm/manager.jsp
+	      </result>
+	    </action>
+	    <action name="manager_add" class="managerAction" method="add">
+	      <result>
+	        /WEB-INF/view/gm/manager_add.jsp
+	      </result>
+	    </action>
+	    <action name="manager_edit" class="managerAction" method="edit">
+	      <result>
+	        /WEB-INF/view/gm/manager_edit.jsp
+	      </result>
+	    </action>
+	    <action name="managerType" class="managerTypeAction" method="managerType">
+	      <result>
+	        /WEB-INF/view/gm/managerType.jsp
+	      </result>
+	    </action>
+	    <action name="managerType_add" class="managerTypeAction" method="add">
+	      <result>
+	        /WEB-INF/view/gm/managerType_add.jsp
+	      </result>
+	    </action>
+	    <action name="managerType_edit" class="managerTypeAction" method="edit">
+	      <result>
+	        /WEB-INF/view/gm/managerType_edit.jsp
+	      </result>
+	    </action>
+	    <action name="managerType_assign" class="managerTypeAction" method="assign">
+	      <result>
+	        /WEB-INF/view/gm/managerType_assign.jsp
+	      </result>
+	    </action>
+	    <action name="right" class="rightAction" method="right">
+	      <result>
+	        /WEB-INF/view/gm/right.jsp
+	      </result>
+	    </action>
+	    <action name="right_add" class="rightAction" method="add">
+	      <result>
+	        /WEB-INF/view/gm/right_add.jsp
+	      </result>
+	    </action>
+	    <action name="right_edit" class="rightAction" method="edit">
+	      <result>
+	        /WEB-INF/view/gm/right_edit.jsp
+	      </result>
+	    </action>
+	</package>
+</struts>

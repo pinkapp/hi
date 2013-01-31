@@ -1,0 +1,41 @@
+package cc.ywxm.vo;
+
+public class DailyRegisterTotalCount
+{
+
+	private String time;// 统计时间
+	private Integer registerTotalcount;
+
+	public DailyRegisterTotalCount()
+	{
+		super();
+	}
+
+	public DailyRegisterTotalCount(String time, Integer registerTotalcount)
+	{
+		super();
+		this.time = time;
+		this.registerTotalcount = registerTotalcount;
+	}
+
+	public String getTime()
+	{
+		return time;
+	}
+
+	public void setTime(String time)
+	{
+		this.time = time;
+	}
+
+	public Integer getRegisterTotalcount()
+	{
+		return registerTotalcount;
+	}
+
+	public void setRegisterTotalcount(Integer registerTotalcount)
+	{
+		this.registerTotalcount = registerTotalcount;
+	}
+
+}

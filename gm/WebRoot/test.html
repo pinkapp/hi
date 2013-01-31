@@ -1,0 +1,39 @@
+<!DOCTYPE>
+<html>
+  <head>
+    <title>test.html</title>
+	
+    <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+    <meta http-equiv="description" content="this is my page">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <script type="text/javascript">
+    function get(param){
+        var s = window.location.search;
+        var len = s.length;
+        if(len <= 1){
+        	return
+        }
+        s = s.substring(1, len);
+        var arr = s.split("&");
+        for(var i = 0; i < arr.length; i++){
+        	var s1 = arr[i];
+        	if(s1.indexOf(param) != -1){
+        		var arr1 = s1.split("=");
+        		if(arr1[0] == param){
+        			return arr1[1];
+        		}
+        	}
+        }
+    }
+    alert(get("id"));
+    </script>
+    <!--<link rel="stylesheet" type="text/css" href="./styles.css">-->
+
+  </head>
+  
+  <body>
+  <div >
+    <P ALIGN="LEFT" style="word-break:break-all;"><FONT FACE="Times New Roman" SIZE="12" COLOR="#F1DCC1" LETTERSPACING="0" KERNING="0">4:<FONT COLOR="#FEEA08">是ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss</FONT></FONT></P>
+  </div>
+  </body>
+</html>

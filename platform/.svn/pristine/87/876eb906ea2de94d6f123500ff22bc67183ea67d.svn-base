@@ -1,0 +1,118 @@
+package cc.ywxm.service;
+
+import java.util.List;
+
+import cc.ywxm.action.Pageable;
+import cc.ywxm.model.Order;
+import cc.ywxm.vo.ChargeTotalUserCount;
+import cc.ywxm.vo.DailyChargeMoneyCount;
+import cc.ywxm.vo.DailyChargeUserCount;
+import cc.ywxm.vo.GamePayMoneyCount;
+import cc.ywxm.vo.OrderVo;
+import cc.ywxm.vo.UserChargeRank;
+import cc.ywxm.vo.UserPaybankCount;
+import cc.ywxm.vo.UserPaywayCount;
+
+/**
+ * 用户通用货币充值业务层接口
+ * 
+ * @author hdc
+ * 
+ */
+public interface OrderService
+{
+	/**
+	 * 通用货币充值
+	 * 
+	 * @param order
+	 *            充值数据
+	 */
+	public void recharge(Order order);
+
+	/**
+	 * 分页查询指定用户ID的充值记录，以充值的先后反序排列
+	 * 
+	 * @param userId
+	 *            UID
+	 * @param pageable
+	 *            分页接口
+	 * @return 用户充值记录列表
+	 */
+	public List<OrderVo> findByPage(Integer userId, Pageable pageable);
+
+	/**
+	 * 查询统计用户充值方式，统计出各充值方式的用户数量
+	 * 
+	 * @return 各充值方式的用户数量列表
+	 */
+	public List<UserPaywayCount> findPaywayCount();
+
+	/**
+	 * 查询统计用户充值银行，统计出各银行的用户数量
+	 * 
+	 * @return 各银行的用户数量列表
+	 */
+	public List<UserPaybankCount> findPaybankCount();
+
+	/**
+	 * 用户充值排行（总排行），以用户充值总金额，从大到小排序
+	 * 
+	 * @return 各用户的充值总金额列表
+	 */
+	public List<UserChargeRank> findChargeRanklist();
+
+	/**
+	 * 指定月份查询每日充值用户数量统计
+	 * 
+	 * @param month
+	 *            指定月份字符串，格式 "yyyy-MM"
+	 * @return 每日充值用户数量列表
+	 */
+	public List<DailyChargeUserCount> findDailyChargeUserCount(String month);
+
+	/**
+	 * 单个用户充值总排行
+	 * 
+	 * @return
+	 */
+	public List<ChargeTotalUserCount> findChargeTotalUserCount();
+
+	/**
+	 * 指定月份用户充值排行（月排行），以用户充值总金额，从大到小排序
+	 * 
+	 * @param month
+	 *            指定月份字符串，格式 "yyyy-MM"
+	 * @return 各用户的充值总金额列表
+	 */
+	public List<UserChargeRank> findChargeRanklist(String month);
+
+	/**
+	 * 指定起始日期结束日期充值排行（时间段排行）
+	 * 
+	 * @param sday
+	 *            起始日期字符串，日期格式 "yyyy-MM-dd"
+	 * @param eday
+	 *            结束日期字符串，日期格式 "yyyy-MM-dd"
+	 * @return 各用户的充值总金额列表
+	 */
+	public List<UserChargeRank> findChargeRanklist(String sday, String eday);
+
+	/**
+	 * 指定月份查询查询每天不同游戏兑换游戏币的总金额
+	 * 
+	 * @param month
+	 *            指定月份字符串，格式 "yyyy-MM"
+	 * @return 每天不同游戏兑换游戏币的总金额列表
+	 */
+	public List<GamePayMoneyCount> findGamePayMoneyCount(String month);
+
+	/**
+	 * 指定月份每日充值总额统计
+	 * 
+	 * @param month
+	 *            指定月份字符串，格式 "yyyy-MM"
+	 * @return 充值总金额列表
+	 */
+	public List<DailyChargeMoneyCount> findDailyChargeMoneyCount(String month);
+
+}

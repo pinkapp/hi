@@ -1,0 +1,59 @@
+package cc.ywxm.utils;
+
+import com.discuz.client.Client;
+
+public class DiscuzUtils
+{
+
+	public static int register(String username, String password, String email)
+	{
+
+		Client uc = new Client();
+		String $returns = uc.uc_user_register(username, password, email);
+		int $uid = Integer.parseInt($returns);
+		return $uid;
+		// String info = null;
+		// if ($uid <= 0)
+		// {
+		// if ($uid == -1)
+		// {
+		// info = "用户名不合法";
+		// } else if ($uid == -2)
+		// {
+		// info = "包含要允许注册的词语";
+		// } else if ($uid == -3)
+		// {
+		// info = "用户名已经存在";
+		// } else if ($uid == -4)
+		// {
+		// info = "Email 格式有误";
+		// } else if ($uid == -5)
+		// {
+		// info = "Email 不允许注册";
+		// } else if ($uid == -6)
+		// {
+		// info = "该 Email 已经被注册";
+		// } else
+		// {
+		// info = "未定义错误";
+		// }
+		// } else
+		// {
+		// System.out.println("OK:" + $returns);
+		// }
+		// return info;
+
+	}
+
+	/*
+	 * 1:更新成功 0:没有做任何修改 -1:旧密码不正确 -4:Email 格式有误 -5:Email 不允许注册 -6:该 Email 已经被注册
+	 * -7:没有做任何修改 -8:该用户受保护无权限更改
+	 */
+	public static String editPassword(String username, String newpassword)
+	{
+		Client uc = new Client();
+		return uc.uc_user_edit(username, "", newpassword, "", 1, "", "");
+
+	}
+
+}

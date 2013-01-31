@@ -1,0 +1,16 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@ taglib prefix="s"  uri="/struts-tags" %>
+<%
+String path = request.getContextPath();
+String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+%>
+<div id="chartdiv"></div>
+<input type="hidden" value="${XMLData }" id="XMLData" />
+<script type="text/javascript">
+          //if (GALLERY_RENDERER && GALLERY_RENDERER.search(/javascript|flash/i)==0) 
+          //FusionCharts.setCurrentRenderer('javascript'); 
+          //alert(document.getElementById("sss").value);
+   var chart = new FusionCharts("Charts/Line.swf", "ChartId", "100%", "400", "0", "0");
+   chart.setXMLData(document.getElementById("XMLData").value);
+   chart.render("chartdiv");
+</script>

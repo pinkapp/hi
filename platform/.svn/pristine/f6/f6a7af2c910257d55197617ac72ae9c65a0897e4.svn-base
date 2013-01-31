@@ -1,0 +1,311 @@
+package cc.ywxm.model;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+/**
+ * Users entity. @author MyEclipse Persistence Tools
+ */
+@Entity
+@Table(name = "users", catalog = "website")
+public class User implements java.io.Serializable
+{
+
+	// Fields
+
+	private Integer userId;
+	private String username;
+	private String realname;
+	private String password;
+	private String sex;
+	private String birth;
+	private String career;
+	private String phone;
+	private String email;
+	private String cid;
+	private String lip;
+	private String lasttime;
+	private String purl;
+	private String province;
+	private String city;
+	private Integer money;
+	private String rip;
+	private String rtime;
+	private String spasswd;
+	private String status;
+	private String source;
+
+	// Constructors
+
+	/** default constructor */
+	public User()
+	{
+	}
+
+	/** full constructor */
+	public User(String username, String realname, String password, String sex,
+			String birth, String career, String phone, String email, String cid,
+			String lip, String lasttime, String purl, String province,
+			String city, Integer money, String rip, String rtime,
+			String spasswd, String status, String source)
+	{
+		this.username = username;
+		this.realname = realname;
+		this.password = password;
+		this.sex = sex;
+		this.birth = birth;
+		this.career = career;
+		this.phone = phone;
+		this.email = email;
+		this.cid = cid;
+		this.lip = lip;
+		this.lasttime = lasttime;
+		this.purl = purl;
+		this.province = province;
+		this.city = city;
+		this.money = money;
+		this.rip = rip;
+		this.rtime = rtime;
+		this.spasswd = spasswd;
+		this.status = status;
+		this.source = source;
+	}
+
+	// Property accessors
+	@Id
+	@GeneratedValue
+	@Column(name = "userId", unique = true, nullable = false)
+	public Integer getUserId()
+	{
+		return this.userId;
+	}
+
+	public void setUserId(Integer userId)
+	{
+		this.userId = userId;
+	}
+
+	@Column(name = "username", length = 50)
+	public String getUsername()
+	{
+		return this.username;
+	}
+
+	public void setUsername(String username)
+	{
+		this.username = username;
+	}
+
+	@Column(name = "realname", length = 50)
+	public String getRealname()
+	{
+		return this.realname;
+	}
+
+	public void setRealname(String realname)
+	{
+		this.realname = realname;
+	}
+
+	@Column(name = "password", length = 50)
+	public String getPassword()
+	{
+		return this.password;
+	}
+
+	public void setPassword(String password)
+	{
+		this.password = password;
+	}
+
+	@Column(name = "sex")
+	public String getSex()
+	{
+		return this.sex;
+	}
+
+	public void setSex(String sex)
+	{
+		this.sex = sex;
+	}
+
+	@Column(name = "birth", length = 50)
+	public String getBirth()
+	{
+		return this.birth;
+	}
+
+	public void setBirth(String birth)
+	{
+		this.birth = birth;
+	}
+
+	@Column(name = "career")
+	public String getCareer()
+	{
+		return this.career;
+	}
+
+	public void setCareer(String career)
+	{
+		this.career = career;
+	}
+
+	@Column(name = "phone", length = 50)
+	public String getPhone()
+	{
+		return this.phone;
+	}
+
+	public void setPhone(String phone)
+	{
+		this.phone = phone;
+	}
+
+	@Column(name = "email", length = 50)
+	public String getEmail()
+	{
+		return this.email;
+	}
+
+	public void setEmail(String email)
+	{
+		this.email = email;
+	}
+
+	@Column(name = "cid", length = 50)
+	public String getCid()
+	{
+		return this.cid;
+	}
+
+	public void setCid(String cid)
+	{
+		this.cid = cid;
+	}
+
+	@Column(name = "lip", length = 50)
+	public String getLip()
+	{
+		return this.lip;
+	}
+
+	public void setLip(String lip)
+	{
+		this.lip = lip;
+	}
+
+	@Column(name = "lasttime", length = 50)
+	public String getLasttime()
+	{
+		return this.lasttime;
+	}
+
+	public void setLasttime(String lasttime)
+	{
+		this.lasttime = lasttime;
+	}
+
+	@Column(name = "purl", length = 100)
+	public String getPurl()
+	{
+		return this.purl;
+	}
+
+	public void setPurl(String purl)
+	{
+		this.purl = purl;
+	}
+
+	@Column(name = "province", length = 50)
+	public String getProvince()
+	{
+		return this.province;
+	}
+
+	public void setProvince(String province)
+	{
+		this.province = province;
+	}
+
+	@Column(name = "city", length = 50)
+	public String getCity()
+	{
+		return this.city;
+	}
+
+	public void setCity(String city)
+	{
+		this.city = city;
+	}
+
+	@Column(name = "money")
+	public Integer getMoney()
+	{
+		return this.money;
+	}
+
+	public void setMoney(Integer money)
+	{
+		this.money = money;
+	}
+
+	@Column(name = "rip", length = 50)
+	public String getRip()
+	{
+		return this.rip;
+	}
+
+	public void setRip(String rip)
+	{
+		this.rip = rip;
+	}
+
+	@Column(name = "rtime", length = 50)
+	public String getRtime()
+	{
+		return this.rtime;
+	}
+
+	public void setRtime(String rtime)
+	{
+		this.rtime = rtime;
+	}
+
+	@Column(name = "spasswd", length = 100)
+	public String getSpasswd()
+	{
+		return this.spasswd;
+	}
+
+	public void setSpasswd(String spasswd)
+	{
+		this.spasswd = spasswd;
+	}
+
+	@Column(name = "status_")
+	public String getStatus()
+	{
+		return this.status;
+	}
+
+	public void setStatus(String status)
+	{
+		this.status = status;
+	}
+
+	@Column(name = "source")
+	public String getSource()
+	{
+		return this.source;
+	}
+
+	public void setSource(String source)
+	{
+		this.source = source;
+	}
+
+}

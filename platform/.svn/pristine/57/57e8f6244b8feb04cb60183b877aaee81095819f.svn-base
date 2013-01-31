@@ -1,0 +1,181 @@
+package cc.ywxm.dao.impl.gop;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.stereotype.Repository;
+
+import cc.ywxm.action.Pageable;
+import cc.ywxm.dao.gop.OrderDao;
+import cc.ywxm.model.gop.Order;
+import cc.ywxm.utils.DateFormat;
+import cc.ywxm.utils.RSMapper;
+import cc.ywxm.vo.DailyChargeUserCount;
+import cc.ywxm.vo.OrderVo;
+import cc.ywxm.vo.UserChargeRank;
+import cc.ywxm.vo.UserPaybankCount;
+import cc.ywxm.vo.UserPaywayCount;
+
+@Repository
+public class OrderDaoImpl implements OrderDao
+{
+	@Resource
+	private HibernateTemplate hibernateTemplate;
+	@Resource
+	private JdbcTemplate jdbcTemplate;
+
+	public void save(Order order)
+	{
+		hibernateTemplate.save(order);
+	}
+
+	public Order findById(Long orderId)
+	{
+		Order order = (Order)hibernateTemplate.get(Order.class, orderId);
+		return order;
+	}
+
+	public List<OrderVo> findByPage(Integer userId, Pageable pageable)
+	{
+		String sql = "SELECT t.order_id, t1.gamename, t2.game_server, t.ordermoney, t3.wayname, t4.bankname, t.ordertime FROM orders t LEFT JOIN game t1 ON t.game_id = t1.game_id LEFT JOIN game_open t2 ON t.open_id = t2.open_id LEFT JOIN payway t3 ON t.way_id = t3.way_id LEFT JOIN bank t4 ON t.bank_id = t4.bank_id WHERE t.user_id = ?";
+		List<Object> args = new ArrayList<Object>();
+		args.add(userId);
+		sql += " ORDER BY t.order_id desc";
+		return RSMapper.queryPage(jdbcTemplate, sql, pageable, OrderVo.class,
+				args.toArray());
+
+	}
+
+	public List<DailyChargeUserCount> findDailyChargeUserCount(
+			String starttime, String endtime)
+	{
+		String oneDay = starttime;
+		List<DailyChargeUserCount> usercounts = new ArrayList<DailyChargeUserCount>();
+		while (oneDay.compareTo(endtime) <= 0)
+		{
+			String sql = "SELECT COUNT(1) FROM (SELECT DISTINCT t.user_id FROM orders t WHERE LEFT(t.ordertime,10) = ?) t1";
+			List<Object> args = new ArrayList<Object>();
+			args.add(oneDay);
+			int count = jdbcTemplate.queryForInt(sql, args.toArray());
+			usercounts.add(new DailyChargeUserCount(oneDay, count));
+			Date date = DateFormat.parse(oneDay, DateFormat.DATE_PATTERN_2);
+			// +1天
+			date.setTime(date.getTime() + 1000 * 60 * 60 * 24);
+			oneDay = DateFormat.format(date, DateFormat.DATE_PATTERN_2);
+		}
+		return usercounts;
+	}
+
+	public List<UserChargeRank> findChargeRanklist()
+	{
+		String sql = "SELECT t1.username,SUM(t.ordermoney) AS chargetotal FROM orders t LEFT JOIN user t1 ON t.user_id = t1.user_id GROUP BY t.user_id ORDER BY SUM(t.ordermoney) desc LIMIT 200";
+		return RSMapper.queryList(jdbcTemplate, sql, UserChargeRank.class);
+
+	}
+
+	public List<UserChargeRank> findChargeRanklist(String month)
+	{
+		String sql = "SELECT t1.username,SUM(t.ordermoney) AS chargetotal FROM orders t LEFT JOIN user t1 ON t.user_id = t1.user_id WHERE LEFT(t.ordertime,7) = ? GROUP BY t.user_id ORDER BY SUM(t.ordermoney) desc LIMIT 200";
+		return RSMapper.queryList(jdbcTemplate, sql, UserChargeRank.class,
+				month);
+	}
+
+	public List<UserChargeRank> findChargeRanklist(String sday, String eday)
+	{
+		String sql = "SELECT t1.username,SUM(t.ordermoney) AS chargetotal FROM orders t LEFT JOIN user t1 ON t.user_id = t1.user_id WHERE LEFT(t.ordertime,10) >= ? AND LEFT(t.ordertime,10) <= ? GROUP BY t.user_id ORDER BY SUM(t.ordermoney) desc LIMIT 200";
+		return RSMapper.queryList(jdbcTemplate, sql, UserChargeRank.class,
+				sday, eday);
+	}
+
+	public int findChargeTotalUserCount(int startMoney, int endMoney)
+	{
+		String sql = "SELECT  COUNT(1) FROM (SELECT t1.username,SUM(t.ordermoney) AS chargetotal FROM orders t LEFT JOIN user t1 ON t.user_id = t1.user_id  GROUP BY t.user_id) a WHERE a.chargetotal >= ? AND a.chargetotal <= ?";
+		return jdbcTemplate.queryForInt(sql, new Object[]{startMoney, endMoney});
+	}
+
+	public int findChargeTotalUserCountUp(int money)
+	{
+		String sql = "SELECT  COUNT(1) FROM (SELECT t1.username,SUM(t.ordermoney) AS chargetotal FROM orders t LEFT JOIN user t1 ON t.user_id = t1.user_id  GROUP BY t.user_id) a WHERE a.chargetotal >= ?";
+		return jdbcTemplate.queryForInt(sql,new Object[]{money});
+	}
+
+	public int findChargeTotalUserCountDown(int money)
+	{
+		String sql = "SELECT  COUNT(1) FROM (SELECT t1.username,SUM(t.ordermoney) AS chargetotal FROM orders t LEFT JOIN user t1 ON t.user_id = t1.user_id  GROUP BY t.user_id) a WHERE a.chargetotal <= ?";
+		return jdbcTemplate.queryForInt(sql,new Object[]{ money});
+	}
+
+	public List<UserPaywayCount> findPaywayCount()
+	{
+		String sql = "SELECT t.wayname, COUNT(1) AS paycount FROM payway t LEFT JOIN orders t1 ON t.way_id = t1.way_id GROUP BY t.wayname";
+		return RSMapper.queryList(jdbcTemplate, sql, UserPaywayCount.class);
+	}
+
+	public List<UserPaybankCount> findPaybankCount()
+	{
+		String sql = "SELECT t.bankname, COUNT(1) AS paycount FROM bank t LEFT JOIN orders t1 ON t.bank_id = t1.bank_id GROUP BY t.bankname";
+		return RSMapper.queryList(jdbcTemplate, sql, UserPaybankCount.class);
+	}
+
+	public String findGamesPayMoneyCount(String dateString)
+	{
+		String sql = "SELECT GROUP_CONCAT(CONCAT(gamename,':',m)) gamespaymoney FROM (SELECT t1.gamename,SUM(paymoney) m FROM orders_pay t LEFT JOIN game t1 ON t.game_id = t1.game_id WHERE LEFT(t.paytime,10)=? GROUP BY t.game_id )a";
+		return (String)jdbcTemplate.queryForObject(sql, new Object[]{dateString},String.class);
+	}
+
+	public int findGamesPayMoneyCount(Integer game_id, String dateString)
+	{
+		if (game_id == null)
+		{
+			String sql = "SELECT SUM(paymoney) FROM orders_pay WHERE LEFT(paytime,10) = ?";
+			return jdbcTemplate.queryForInt(sql, new Object[]{dateString});
+		} else
+		{
+			String sql = "SELECT SUM(paymoney) FROM orders_pay WHERE game_id = ? AND LEFT(paytime,10) = ?";
+			return jdbcTemplate.queryForInt(sql, new Object[]{game_id, dateString});
+		}
+	}
+
+	public Integer findRechargeMoneyPerday(String dstring)
+	{
+		String sql = "SELECT SUM(ordermoney) FROM orders WHERE LEFT(ordertime,10) = ?";
+		return jdbcTemplate.queryForInt(sql, new Object[]{dstring});
+	}
+
+	public Integer findRechargeUsersPerday(String dstring)
+	{
+		String sql = "SELECT COUNT(1) FROM (SELECT DISTINCT t.user_id FROM orders t WHERE LEFT(t.ordertime,10) = ?) t1";
+		return jdbcTemplate.queryForInt(sql, new Object[]{dstring});
+	}
+
+	public Integer findExchangeGameMoneyPerday(String dstring)
+	{
+		String sql = "SELECT SUM(paymoney) FROM orders_pay WHERE LEFT(paytime,10) = ?";
+		return jdbcTemplate.queryForInt(sql, new Object[]{dstring});
+	}
+
+	public Integer findRechargeMoney(String dstring)
+	{
+		String sql = "SELECT SUM(ordermoney) FROM orders WHERE LEFT(ordertime,10) < ?";
+		Date d = DateFormat.parse(dstring, DateFormat.DATE_PATTERN_2);
+		d.setTime(d.getTime() + 1000 * 60 * 60 * 24l);
+		String time = DateFormat.format(d, DateFormat.DATE_PATTERN_2);
+		return jdbcTemplate.queryForInt(sql, new Object[]{time});
+
+	}
+
+	public Integer findExchangMoney(String dstring)
+	{
+		String sql = "SELECT SUM(paymoney) FROM orders_pay WHERE LEFT(paytime,10) < ?";
+		Date d = DateFormat.parse(dstring, DateFormat.DATE_PATTERN_2);
+		d.setTime(d.getTime() + 1000 * 60 * 60 * 24l);
+		String time = DateFormat.format(d, DateFormat.DATE_PATTERN_2);
+		return jdbcTemplate.queryForInt(sql, new Object[]{time});
+	}
+
+}

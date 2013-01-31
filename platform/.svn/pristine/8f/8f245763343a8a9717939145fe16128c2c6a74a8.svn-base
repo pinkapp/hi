@@ -1,0 +1,78 @@
+package cc.ywxm.vo;
+
+public class UserVo2
+{
+
+	// Fields
+	private Integer user_id;
+	private String username;
+	private String closeReason;
+	private Short closeType;
+	private String closeEndtime;
+
+	public UserVo2()
+	{
+		super();
+	}
+
+	public UserVo2(Integer user_id, String username, String closeReason,
+			Short closeType, String closeEndtime)
+	{
+		super();
+		this.user_id = user_id;
+		this.username = username;
+		this.closeReason = closeReason;
+		this.closeType = closeType;
+		this.closeEndtime = closeEndtime;
+	}
+
+	public Integer getUser_id()
+	{
+		return user_id;
+	}
+
+	public void setUser_id(Integer user_id)
+	{
+		this.user_id = user_id;
+	}
+
+	public String getUsername()
+	{
+		return username;
+	}
+
+	public void setUsername(String username)
+	{
+		this.username = username;
+	}
+
+	public String getCloseReason()
+	{
+		return closeReason;
+	}
+
+	public void setCloseReason(String closeReason)
+	{
+		this.closeReason = closeReason;
+	}
+
+	public Short getCloseType()
+	{
+		return closeType;
+	}
+
+	public void setCloseType(Short closeType)
+	{
+		this.closeType = closeType;
+	}
+
+	public String getCloseEndtime()
+	{
+		return closeEndtime;
+	}
+
+	public void setCloseEndtime(String closeEndtime)
+	{
+		this.closeEndtime = closeEndtime;
+	}
+}

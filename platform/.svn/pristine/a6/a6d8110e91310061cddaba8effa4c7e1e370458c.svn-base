@@ -1,0 +1,115 @@
+package cc.ywxm.model.gop;
+
+// default package
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+/**
+ * LetterOutbox entity. @author MyEclipse Persistence Tools
+ */
+@Entity
+@Table(name = "letter_outbox", catalog = "ywxm")
+public class LetterOutbox implements java.io.Serializable
+{
+
+	// Fields
+
+	private Long letterId;
+	private String lettercontent;
+	private String poster;
+	private String receiver;
+	private String posttime;
+	private String subject;
+
+	// Constructors
+
+	/** default constructor */
+	public LetterOutbox()
+	{
+	}
+
+	/** full constructor */
+	public LetterOutbox(String lettercontent, String poster, String receiver,
+			String posttime, String subject)
+	{
+		this.lettercontent = lettercontent;
+		this.poster = poster;
+		this.receiver = receiver;
+		this.posttime = posttime;
+		this.subject = subject;
+	}
+
+	// Property accessors
+	@Id
+	@GeneratedValue
+	@Column(name = "letter_id", unique = true, nullable = false)
+	public Long getLetterId()
+	{
+		return this.letterId;
+	}
+
+	public void setLetterId(Long letterId)
+	{
+		this.letterId = letterId;
+	}
+
+	@Column(name = "lettercontent", length = 10000)
+	public String getLettercontent()
+	{
+		return this.lettercontent;
+	}
+
+	public void setLettercontent(String lettercontent)
+	{
+		this.lettercontent = lettercontent;
+	}
+
+	@Column(name = "poster", length = 50)
+	public String getPoster()
+	{
+		return this.poster;
+	}
+
+	public void setPoster(String poster)
+	{
+		this.poster = poster;
+	}
+
+	@Column(name = "receiver", length = 50)
+	public String getReceiver()
+	{
+		return this.receiver;
+	}
+
+	public void setReceiver(String receiver)
+	{
+		this.receiver = receiver;
+	}
+
+	@Column(name = "posttime", length = 50)
+	public String getPosttime()
+	{
+		return this.posttime;
+	}
+
+	public void setPosttime(String posttime)
+	{
+		this.posttime = posttime;
+	}
+
+	@Column(name = "subject", length = 100)
+	public String getSubject()
+	{
+		return this.subject;
+	}
+
+	public void setSubject(String subject)
+	{
+		this.subject = subject;
+	}
+
+}

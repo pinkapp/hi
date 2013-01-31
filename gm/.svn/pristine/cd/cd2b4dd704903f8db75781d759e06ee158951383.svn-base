@@ -1,0 +1,112 @@
+package cc.ywxm.service.impl.platform;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import cc.ywxm.model.platform.RechargeRank;
+import cc.ywxm.service.platform.RechargeRankService;
+
+/**
+ * 玩家充值排行
+ * 
+ * @author HuangDeCai
+ * @since 2012-12-17 13:24:39
+ * 
+ */
+@Transactional
+@Service
+public class RechargeRankServiceImpl implements RechargeRankService
+{
+
+	public List<RechargeRank> gets()
+	{
+		List<RechargeRank> result = new ArrayList<RechargeRank>();
+		for (int i = 1; i < 51; i++)
+		{
+			RechargeRank rechargeRank = new RechargeRank();
+			rechargeRank.setNickname("user" + i);
+			rechargeRank.setTotal((int) (Math.random() * 10000));
+			result.add(rechargeRank);
+		}
+		Collections.sort(result);
+		for (RechargeRank rechargeRank : result)
+		{
+			rechargeRank.setRank(result.indexOf(rechargeRank) + 1);
+		}
+		return result;
+	}
+
+	public String XMLData()
+	{
+		String result = "";
+		StringBuffer stringBuffer = new StringBuffer();
+		List<RechargeRank> list = this.gets();
+		stringBuffer
+				.append("<chart caption='玩家充值排行(前50名)' baseFont='宋体' baseFontSize='12' yAxisName='充值总金额'");
+		stringBuffer
+				.append(" xAxisName='玩家昵称' bgColor='F1F1F1' showValues='1' canvasBorderThickness='1' canvasBorderColor='999999'");
+		stringBuffer
+				.append(" plotFillAngle='330' plotBorderColor='999999' showAlternateVGridColor='1' divLineAlpha='0'>");
+		stringBuffer.append("");
+		stringBuffer.append("");
+		for (RechargeRank rechargeRank : list)
+		{
+			stringBuffer.append("<set value='" + rechargeRank.getTotal());
+			stringBuffer.append("' label='" + rechargeRank.getNickname());
+			stringBuffer.append("' toolText='第" + rechargeRank.getRank()
+					+ "名'/>");
+		}
+		stringBuffer.append("</chart>");
+		result = stringBuffer.toString();
+		return result;
+	}
+
+	public String XMLData(int year, int month)
+	{
+		String result = "";
+		StringBuffer stringBuffer = new StringBuffer();
+		List<RechargeRank> list = this.gets(year, month);
+		stringBuffer
+				.append("<chart caption='玩家月充值排行(前50名)' baseFont='宋体' baseFontSize='12' yAxisName='充值总金额'");
+		stringBuffer
+				.append(" xAxisName='玩家昵称' bgColor='F1F1F1' showValues='1' canvasBorderThickness='1' canvasBorderColor='999999'");
+		stringBuffer
+				.append(" plotFillAngle='330' plotBorderColor='999999' showAlternateVGridColor='1' divLineAlpha='0'>");
+		stringBuffer.append("");
+		stringBuffer.append("");
+		for (RechargeRank rechargeRank : list)
+		{
+			stringBuffer.append("<set value='" + rechargeRank.getTotal());
+			stringBuffer.append("' label='" + rechargeRank.getNickname());
+			stringBuffer.append("' toolText='第" + rechargeRank.getRank()
+					+ "名'/>");
+		}
+		stringBuffer.append("</chart>");
+		result = stringBuffer.toString();
+		return result;
+	}
+
+	public List<RechargeRank> gets(int year, int month)
+	{
+		//System.out.println(year + "-" + month);
+		List<RechargeRank> result = new ArrayList<RechargeRank>();
+		for (int i = 1; i < 51; i++)
+		{
+			RechargeRank rechargeRank = new RechargeRank();
+			rechargeRank.setNickname("user" + i);
+			rechargeRank.setTotal((int) (Math.random() * 1000));
+			result.add(rechargeRank);
+		}
+		Collections.sort(result);
+		for (RechargeRank rechargeRank : result)
+		{
+			rechargeRank.setRank(result.indexOf(rechargeRank) + 1);
+		}
+		return result;
+	}
+
+}

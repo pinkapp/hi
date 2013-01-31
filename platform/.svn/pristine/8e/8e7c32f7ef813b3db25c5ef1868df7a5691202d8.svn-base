@@ -1,0 +1,80 @@
+package cc.ywxm.service.impl;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import cc.ywxm.dao.MoneyAssignDao;
+import cc.ywxm.dao.UserDao;
+import cc.ywxm.model.MoneyAssign;
+import cc.ywxm.service.MoneyAssignService;
+import cc.ywxm.utils.DateFormat;
+
+@Service
+@Transactional
+public class MoneyAssignServiceImpl implements MoneyAssignService
+{
+	@Resource
+	private MoneyAssignDao moneyAssignDao;
+	@Resource
+	private UserDao userDao;
+
+	public void assign(MoneyAssign moneyAssign)
+	{
+		String reciever = moneyAssign.getReceiver();
+		String[] recievers = null;
+		if (reciever == null || "".equals(reciever))
+		{
+			List<String> usernames = userDao.findAllUsername();
+			recievers = usernames.toArray(new String[usernames.size()]);
+		} else
+		{
+			recievers = reciever.split(",");
+		}
+		List<MoneyAssign> moneyAssigns = new ArrayList<MoneyAssign>();
+		for (String r : recievers)
+		{
+			r = r.trim();
+			if (!"".equals(r) && userDao.findByUsername(r) != null)
+			{
+				String assigntime = DateFormat.currentDateFormat();
+				MoneyAssign ma = new MoneyAssign(moneyAssign.getAssigner(), r,
+						assigntime, moneyAssign.getAssignreason(), moneyAssign
+								.getMoney());
+				moneyAssigns.add(ma);
+			}
+		}
+
+		userDao.updateMoney(moneyAssigns);
+		moneyAssignDao.save(moneyAssigns);
+
+	}
+
+	/**
+	 * 用户批量导入
+	 * 
+	 * @param moneyAssigns
+	 * @return
+	 */
+	public void assign(File file, String assigner)
+	{
+		List<MoneyAssign> moneyAssigns = moneyAssignDao.readExcel(file);
+		List<MoneyAssign> moneyAssigns2 = new ArrayList<MoneyAssign>();
+		for (MoneyAssign moneyAssign : moneyAssigns)
+		{
+			if (userDao.findByUsername(moneyAssign.getReceiver()) != null)
+			{
+				moneyAssign.setAssigner(assigner);
+				moneyAssigns2.add(moneyAssign);
+			}
+		}
+		userDao.updateMoney(moneyAssigns2);
+		moneyAssignDao.save(moneyAssigns2);
+	}
+
+}

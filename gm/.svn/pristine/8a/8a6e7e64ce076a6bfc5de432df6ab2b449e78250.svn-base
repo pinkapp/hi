@@ -1,0 +1,24 @@
+package cc.ywxm.dao.gm;
+
+import cc.ywxm.model.gm.ManagerTypeRights;
+
+/**
+ * 数据库原子操作
+ * 
+ * @author hdc
+ * 
+ */
+public interface ManagerTypeRightsDao
+{
+	 void save(ManagerTypeRights userTypeRights);
+
+	// void delete(UserTypeRights userTypeRights);
+
+	void update(ManagerTypeRights userTypeRights);
+
+	ManagerTypeRights findById(Short typeId);
+
+	// int count(Object... args);
+
+	// List<UserTypeRights> list(Integer rows, Integer page, Object... args);
+}

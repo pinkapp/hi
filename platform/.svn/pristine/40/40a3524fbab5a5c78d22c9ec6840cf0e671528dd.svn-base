@@ -1,0 +1,59 @@
+package cc.ywxm.vo;
+
+public class UserPaywayCount
+{
+	private String wayname;
+	private Integer paycount;
+	private String percent;
+
+	public UserPaywayCount()
+	{
+		super();
+	}
+
+	public UserPaywayCount(String wayname, Integer paycount, String percent)
+	{
+		super();
+		this.wayname = wayname;
+		this.paycount = paycount;
+		this.percent = percent;
+	}
+
+	public UserPaywayCount(String wayname, Integer paycount)
+	{
+		super();
+		this.wayname = wayname;
+		this.paycount = paycount;
+	}
+
+	public String getWayname()
+	{
+		return wayname;
+	}
+
+	public void setWayname(String wayname)
+	{
+		this.wayname = wayname;
+	}
+
+	public Integer getPaycount()
+	{
+		return paycount;
+	}
+
+	public void setPaycount(Integer paycount)
+	{
+		this.paycount = paycount;
+	}
+
+	public String getPercent()
+	{
+		return percent;
+	}
+
+	public void setPercent(String percent)
+	{
+		this.percent = percent;
+	}
+
+}

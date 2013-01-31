@@ -1,0 +1,88 @@
+package cc.ywxm.action.gop;
+
+import java.io.OutputStream;
+import java.util.Date;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+
+import cc.ywxm.action.BaseAction;
+import cc.ywxm.service.SummaryService;
+import cc.ywxm.utils.DateFormat;
+import cc.ywxm.utils.ExportExcel;
+import cc.ywxm.vo.SummaryVo;
+
+@SuppressWarnings("serial")
+@Controller
+@Scope("prototype")
+public class SummaryAction extends BaseAction
+{
+	@Resource
+	private SummaryService summaryService;
+	private List<SummaryVo> summaries;
+	private String month = DateFormat.format(new Date(), "yyyy-MM");
+
+	public String summary()
+	{
+		String currentMonth = DateFormat.format(new Date(), "yyyy-MM");
+		if (month.compareTo(currentMonth) > 0)
+		{
+			message = "暂无数据";
+			return SUCCESS;
+		}
+		summaries = summaryService.count(month);
+		return SUCCESS;
+	}
+
+	public String summary_export()
+	{
+		String currentMonth = DateFormat.format(new Date(), "yyyy-MM");
+		if (month.compareTo(currentMonth) > 0)
+		{
+			message = "暂无数据";
+			return INPUT;
+		}
+		summaries = summaryService.count(month);
+		ExportExcel<SummaryVo> exporter = new ExportExcel<SummaryVo>();
+		OutputStream out = null;
+		try
+		{
+			response.setContentType("octets/stream");
+			response.addHeader("Content-Disposition", "attachment;filename="
+					+ DateFormat.currentDateFormat("yyyyMMdd") + ".xls");
+			out = response.getOutputStream();
+			exporter.exportExcel("数据汇总", new String[]
+			{ "日期", "日注册用户数", "总注册用户数", "日登录用户数", "日充值货币金额", "日充值用户数", "日ARPU",
+					"日兑换货币金额", "日剩余货币余额" }, summaries, out, "yyyy-MM-dd");
+			out.close();
+			return null;
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+
+	public String getMonth()
+	{
+		return month;
+	}
+
+	public void setMonth(String month)
+	{
+		this.month = month;
+	}
+
+	public List<SummaryVo> getSummaries()
+	{
+		return summaries;
+	}
+
+	public void setSummaries(List<SummaryVo> summaries)
+	{
+		this.summaries = summaries;
+	}
+}

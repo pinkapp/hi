@@ -1,0 +1,151 @@
+package cc.ywxm.interceptor;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.struts2.ServletActionContext;
+import org.springframework.stereotype.Component;
+
+import cc.ywxm.constant.Const;
+import cc.ywxm.model.User;
+import cc.ywxm.service.UserService;
+
+import com.opensymphony.xwork2.ActionInvocation;
+import com.opensymphony.xwork2.ActionProxy;
+import com.opensymphony.xwork2.interceptor.Interceptor;
+
+@Component
+public class SafeInterceptor implements Interceptor
+{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6783914372473093519L;
+	private List<String> actions = new ArrayList<String>();
+	private List<String> urls = new ArrayList<String>();// 白名单
+	@Resource
+	private UserService userService;
+
+	public void destroy()
+	{
+
+	}
+
+	public void init()
+	{
+
+	}
+
+	/**
+	 * 登录拦截器，权限拦截器（/admin）
+	 */
+	public String intercept(ActionInvocation actionInvocation) throws Exception
+	{
+		System.out.println("begin check login interceptor!");
+		actions.add("login");//登录
+		actions.add("reg");//注册
+		actions.add("");//首页
+		actions.add("game");
+		actions.add("service");
+		actions.add("rand");//生成验证码图片
+		actions.add("resource_change");
+		actions.add("forgotpass");
+		String actionName = actionInvocation.getInvocationContext().getName();
+		Map<String, Object> parameters = actionInvocation
+				.getInvocationContext().getParameters();
+		Set<String> keyset = parameters.keySet();
+		for (String string : keyset)
+		{
+			System.out.println(string + "," + parameters.get(string));
+		}
+		if (actions.contains(actionName))
+		{
+			System.out
+					.println("exit check login, because this is login action.");
+			return actionInvocation.invoke();
+		}
+		// 确认Session中是否存在LOGIN
+		Map<String, Object> session = actionInvocation.getInvocationContext()
+				.getSession();
+		ActionProxy ap = actionInvocation.getProxy();
+		Integer userId = (Integer) session.get(Const.SESSION_USERID);
+		if (userId != null)
+		{
+			System.out.println("already login!");
+			List<String> rolenames = userService.getRolenamesByUserId(userId);// 根据用户ID查看用户角色
+			if (rolenames == null || rolenames.size() == 0)
+			{// 默认用户
+				if (ap.getNamespace().indexOf("admin") != -1)
+				{
+					return "nopermission";// 没有权限，返回首页
+				}
+			}
+			String url = ap.getNamespace() + "/" + ap.getActionName();
+			urls.add("/admin/login");
+			urls.add("/admin/left");
+			urls.add("/admin/right");
+			urls.add("/admin/index");
+			urls.add("/admin/head");
+			urls.add("/admin/logout");
+			urls.add("/admin/userinfo");
+			urls.add("/admin/editpass");
+			if (ap.getNamespace().indexOf("admin") != -1)
+			{// 只验证URL中命名空间中包含admin的
+				List<String> functionURLs = userService
+						.getFunctionURLsByUserId(userId);// 该用户可以访问的URL
+				User u = userService.get(userId);
+				if (functionURLs == null || functionURLs.size() == 0)
+				{// 默认用户或未赋予任何权限的管理用户
+					return "nopermission";// 没有权限
+				}
+				if (urls.contains(url))
+				{
+					return actionInvocation.invoke();
+				}
+				for (String functionURL : functionURLs)
+				{
+					if (functionURL.indexOf(url) != -1)
+					{
+						System.out.println(u.getUsername() + "("
+								+ u.getUserId() + "):" + url + ",pass!");
+						return actionInvocation.invoke();
+					} else
+					{
+						continue;
+					}
+				}
+				System.out.println(u.getUsername() + "(" + u.getUserId() + "):"
+						+ url + ",no permission!");
+				return "nopermission";// 没有权限
+
+			} else
+			{
+				return actionInvocation.invoke();
+			}
+		} else
+		{
+			/**
+			 * 登录后返回登录前页面
+			 */
+			// 获取HttpServletRequest对象
+			HttpServletRequest request = ServletActionContext.getRequest();
+			StringBuffer url = request.getRequestURL();
+			String queryString = request.getQueryString();
+			// System.out.println("QueryString=" + request.getQueryString());
+			if (request.getQueryString() != null)
+			{
+				url.append("?" + queryString);
+			}
+			session.put("prePage", url.toString());// 存入session，方便调用
+			System.out.println("no login, forward login page!");// 否则终止后续操作，返回LOGIN
+			System.out.println("after login, go to " + url);
+			return "login";
+		}
+	}
+}

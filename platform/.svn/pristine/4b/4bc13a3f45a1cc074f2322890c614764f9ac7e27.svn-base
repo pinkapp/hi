@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+    <!-- 头像 -->
+	<package name="portrait" extends="struts-default" namespace="/portrait">
+		<action name="selectUpload" class="portraitAction" method="selectUpload">
+			<result>
+				/WEB-INF/view/user/user_edit_portrait.jsp
+			</result>
+		</action>
+		<action name="cut" class="portraitAction" method="cut">
+			<result type="redirectAction">
+				<param name="actionName">user</param>
+				<param name="namespace">/</param>
+			</result>
+		</action>
+	</package>
+	<!-- 用户 -->
+	<package name="user" extends="default" namespace="/user">
+		<action name="search" class="userAction" method="search">
+			<result name="success">/WEB-INF/view/user_search.jsp</result>
+		</action>
+		<action name="edit" class="userAction" method="edit">
+			<result name="input">/WEB-INF/view/user/user_edit.jsp</result>
+			<result type="redirectAction">
+				<param name="actionName">user</param>
+				<param name="namespace">/</param>
+			</result>
+		</action>
+		<action name="editpass" class="userAction" method="editpass">
+			<result>
+				/WEB-INF/view/user/user_editpass.jsp
+			</result>
+		</action>
+		<action name="forgotpass" class="forgotpassAction" method="forgotpass">
+			<result>
+				/WEB-INF/view/forgotpass/forgotpass.jsp
+			</result>
+		</action>
+		<action name="edit_portrait" class="userAction" method="edit_portrait">
+			<result name="input">/WEB-INF/view/user/user_edit_portrait.jsp</result>
+			<result type="redirectAction">
+				<param name="actionName">user</param>
+				<param name="namespace">/</param>
+			</result>
+		</action>
+		<action name="cardidauth" class="userAction" method="cardidauth">
+			<result>
+				/WEB-INF/view/user/user_cardidauth.jsp
+			</result>
+		</action>
+		<action name="security" class="userAction" method="security">
+			<result>
+				/WEB-INF/view/user/user_security.jsp
+			</result>
+		</action>
+		<action name="mobile_verify" class="userAction" method="mobile_verify">
+			<result>
+				/WEB-INF/view/user/user_mobile_verify.jsp
+			</result>
+		</action>
+		<action name="mobile_update" class="userAction" method="mobile_update">
+			<result>
+				/WEB-INF/view/user/user_mobile_verify.jsp
+			</result>
+		</action>
+		<action name="spasswd" class="userAction" method="spasswd">
+			<result name="input">
+				/WEB-INF/view/user/user_spasswd.jsp
+            </result>
+			<result>
+				/WEB-INF/view/user/user_spasswd.jsp
+            </result>
+		</action>
+	</package>
+	<!-- 充值 -->
+	<package name="order" extends="default" namespace="/order">
+		<action name="history" class="orderAction" method="history">
+			<result name="history">
+				/WEB-INF/view/order/order_history.jsp
+			</result>
+		</action>
+		<action name="recharge" class="orderAction" method="recharge">
+			<result name="input">
+				/WEB-INF/view/order/order_recharge.jsp
+			</result>
+		</action>
+	</package>
+	<!-- 礼品卡 -->
+	<package name="giftcard" extends="default" namespace="/giftcard">
+		<action name="history" class="giftcardAction" method="history">
+			<result name="history">
+				/WEB-INF/view/giftcard/giftcard_history.jsp
+			</result>
+		</action>
+	</package>
+</struts>

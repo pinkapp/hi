@@ -1,0 +1,116 @@
+package cc.ywxm.service.impl.game;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import cc.ywxm.dao.game.BaseInfoDao;
+import cc.ywxm.dao.game.LoginDao;
+import cc.ywxm.model.game.BaseInfo;
+import cc.ywxm.model.game.SameIP;
+import cc.ywxm.service.game.SameIPService;
+
+/**
+ * 
+ * @author HuangDeCai
+ * @since 2012-12-6 16:46:52
+ */
+@Transactional
+@Service
+public class SameIPServiceImpl implements SameIPService
+{
+	@Resource
+	private LoginDao loginDao;
+	@Resource
+	private BaseInfoDao baseInfoDao;
+
+	public List<SameIP> gets(String IP)
+	{
+		List<SameIP> result = new ArrayList<SameIP>();
+		List<Integer> players = null;
+		try
+		{
+			players = loginDao.listByIP(IP);
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		if (players != null)
+		{
+			BaseInfo baseInfo = null;
+			for (Integer player : players)
+			{
+				try
+				{
+					baseInfo = baseInfoDao.findById(player);
+					SameIP sameIP = new SameIP();
+					sameIP.setPlayer(player);
+					sameIP.setGold(baseInfo.getGold());
+					sameIP.setLevel(baseInfo.getLevel());
+					sameIP.setNickname(baseInfo.getNickname());
+					result.add(sameIP);
+
+				} catch (Exception e)
+				{
+					e.printStackTrace();
+					continue;
+				}
+			}
+
+		}
+		return result;
+	}
+
+	public List<SameIP> gets(String startIP, String endIP)
+	{
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		Date sdate = null;
+		Date edate = null;
+		try
+		{
+			sdate = sdf.parse(startIP);
+			edate = sdf.parse(endIP);
+		} catch (ParseException e)
+		{
+			e.printStackTrace();
+			return null;
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+			return null;
+		}
+		List<SameIP> result = new ArrayList<SameIP>();
+
+		try
+		{
+			if (sdate.compareTo(edate) <= 0)
+			{
+				while (sdate.compareTo(edate) <= 0)
+				{
+					//String date = null;// 当天
+					//int count = 0;// 登录总数
+					//date = sdf.format(sdate);
+					//count = loginDao.count(date);
+					SameIP loginInfo = new SameIP();
+					// loginInfo.setDate(date);
+					// System.out.println(count);
+					// loginInfo.setCount(count);
+					result.add(loginInfo);
+					sdate.setTime(sdate.getTime() + 1000 * 60 * 60 * 24l);
+				}
+			}
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+}

@@ -1,0 +1,88 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%
+String path = request.getContextPath();
+String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+%>
+
+<!DOCTYPE html>
+<html>
+<head>
+<base href="<%=basePath%>">
+
+<title>邮件记录</title>
+
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="keywords" content="英雄领域,亿网星漫">
+<meta http-equiv="description" content="Online Charge System">
+<link id="easyuiTheme" rel="stylesheet" type="text/css"
+	href="easyUI/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="easyUI/themes/icon.css">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+<script type="text/javascript" src="easyUI/jquery-1.8.0.min.js"></script>
+<script type="text/javascript" src="easyUI/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="easyUI/locale/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript">
+		function query(type){
+			var param = {};
+			var player = $('#player').val();
+			var nickname = $('#nickname').val();
+			param.player = player;
+			param.nickname = nickname;
+			param.type = type;
+			$('#info').html('');
+			$('#tab').datagrid({
+			    title:'邮件记录',
+			    queryParams:param,
+				singleSelect:true,
+				idField:'player',
+				pagination:true,
+				fitColumns:true,
+				height:400,
+				url:'gets/mailInfo',
+				loadMsg:'正在查询...',
+				onLoadSuccess:function(data){
+				    if(data.total == 0){
+				    	$('#info').html('无邮件');
+				    }else{
+				    	$('#info').html('共找到' + data.total + '封邮件');
+				    }
+				},
+				onLoadError:function(){
+				    alert('数据加载错误');
+				},
+				columns:[[
+					{field:'nickname',title:'发送人',width:10},
+					{field:'nickname1',title:'接收人',width:10},
+					{field:'subject',title:'主题',width:30},
+					{field:'hasAttach',title:'带附件',width:20},
+					{field:'type',title:'邮件类型',width:10,sortable:true},
+					{field:'read_',title:'已读',width:10,sortable:true},
+					{field:'time',title:'过期时间',width:20,sortable:true}
+				]]
+			});
+		}
+	</script>
+</head>
+
+<body>
+	<div id="title">
+		<label>数据查询&gt;&gt;邮件记录</label>
+	</div>
+	<div id="thisform">
+		<fieldset>
+			<legend>查询条件</legend>
+			<label for="player">&nbsp;&nbsp;按玩家ID：</label><input id="player"
+				type="text" name="player" value="" data-options="min:0,precision:0"
+				class="easyui-numberbox">&nbsp;&nbsp;
+			<button type="button" onclick="query(1);">查询</button>
+			<br /> <label for="nickname">按玩家昵称：</label><input id="nickname"
+				type="text" name="nickname" value="">&nbsp;&nbsp;
+			<button type="button" onclick="query(2);">查询</button>
+			<br />&nbsp;&nbsp;<label id="info" style="color: red;"></label>
+		</fieldset>
+	</div>
+	<table id="tab"></table>
+</body>
+</html>

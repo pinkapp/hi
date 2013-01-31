@@ -1,0 +1,261 @@
+package cc.ywxm.action.gop;
+
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+
+import cc.ywxm.action.PageableAction;
+import cc.ywxm.constant.Const;
+import cc.ywxm.model.Letter;
+import cc.ywxm.model.LetterInbox;
+import cc.ywxm.model.LetterOutbox;
+import cc.ywxm.service.LetterService;
+import cc.ywxm.service.UserService;
+import cc.ywxm.vo.LetterInboxVo;
+import cc.ywxm.vo.LetterOutboxVo;
+
+/**
+ * 信件
+ * 
+ * @author hdc
+ * 
+ */
+@Controller
+@Scope("prototype")
+public class LetterAction extends PageableAction
+{
+	private static final long serialVersionUID = 7124276462012505850L;
+	private Long letterId;
+	private String letterIds;
+	private Letter letter;
+	private LetterOutbox outbox;
+	private LetterInbox inbox;
+	private List<LetterOutboxVo> outboxes;
+	private List<LetterInboxVo> inboxes;
+	@Resource
+	private LetterService letterService;
+	@Resource
+	private UserService userService;
+	private boolean allUser = false;
+
+	public String letter_inbox_view()
+	{
+		inbox = letterService.findInboxById(letterId);
+		letterService.markInboxReaded(letterId);
+		return SUCCESS;
+	}
+
+	public String letter_outbox_view()
+	{
+		outbox = letterService.findOutboxById(letterId);
+		return SUCCESS;
+	}
+
+	public String letter_post()
+	{
+		if (letter == null)
+		{
+			return INPUT;
+		} else
+		{
+			Integer _userId = (Integer) session.get(Const.SESSION_USERID);
+			String poster = userService.get(_userId).getUsername();
+			letter.setPoster(poster);
+			try
+			{
+				// 保存到发件箱
+				letterService.store(letter);
+				// 投递到收件箱
+				letterService.post(letter);
+				message = "发信成功";
+			} catch (Exception e)
+			{
+				message = "发信失败";
+				e.printStackTrace();
+			}
+			return INPUT;
+		}
+	}
+
+	/**
+	 * 发件箱
+	 * 
+	 */
+	public String letter_outbox()
+	{
+		Integer _userId = (Integer) session.get(Const.SESSION_USERID);
+		String username = userService.get(_userId).getUsername();
+		outboxes = letterService.findOutboxByPage(username, this);
+		return SUCCESS;
+	}
+
+	/**
+	 * 收件箱
+	 * 
+	 */
+	public String letter_inbox()
+	{
+		Integer _userId = (Integer) session.get(Const.SESSION_USERID);
+		String username = userService.get(_userId).getUsername();
+		inboxes = letterService.findInboxByPage(username, this);
+		return SUCCESS;
+	}
+
+	/**
+	 * 删除发件箱信件（批量）
+	 * 
+	 * @return
+	 */
+	public String letter_outbox_bdelete()
+	{
+		letterService.batchOutboxDelete(letterIds);
+		return letter_outbox();
+	}
+
+	/**
+	 * 删除发件箱信件
+	 * 
+	 * @return
+	 */
+	public String letter_outbox_delete()
+	{
+		try
+		{
+			letterService.outboxDelete(letterId);
+			message = "删除成功";
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+			message = "删除失败";
+		}
+		return letter_outbox();
+	}
+
+	/**
+	 * 删除收件箱信件(批量)
+	 * 
+	 * @return
+	 */
+	public String letter_inbox_bdelete()
+	{
+		letterService.batchInboxDelete(letterIds);
+		response.setCharacterEncoding("utf-8");
+		response.setContentType("text/html");
+		return letter_inbox();
+	}
+
+	/**
+	 * 删除收件箱信件
+	 * 
+	 * @return
+	 */
+	public String letter_inbox_delete()
+	{
+		try
+		{
+			letterService.inboxDelete(letterId);
+			message = "删除成功";
+		} catch (Exception e)
+		{
+			message = "删除失败";
+			e.printStackTrace();
+		}
+		return letter_inbox();
+	}
+
+	/**
+	 * 全部标记为已读
+	 * 
+	 * @return
+	 */
+	public String letter_markInboxAllReaded()
+	{
+		Integer _userId = (Integer) session.get(Const.SESSION_USERID);
+		String username = userService.get(_userId).getUsername();
+		letterService.markInboxAllReaded(username);
+		return letter_inbox();
+	}
+
+	public Long getLetterId()
+	{
+		return letterId;
+	}
+
+	public void setLetterId(Long letterId)
+	{
+		this.letterId = letterId;
+	}
+
+	public String getLetterIds()
+	{
+		return letterIds;
+	}
+
+	public void setLetterIds(String letterIds)
+	{
+		this.letterIds = letterIds;
+	}
+
+	public List<LetterOutboxVo> getOutboxes()
+	{
+		return outboxes;
+	}
+
+	public void setOutboxes(List<LetterOutboxVo> outboxes)
+	{
+		this.outboxes = outboxes;
+	}
+
+	public List<LetterInboxVo> getInboxes()
+	{
+		return inboxes;
+	}
+
+	public void setInboxes(List<LetterInboxVo> inboxes)
+	{
+		this.inboxes = inboxes;
+	}
+
+	public LetterOutbox getOutbox()
+	{
+		return outbox;
+	}
+
+	public void setOutbox(LetterOutbox outbox)
+	{
+		this.outbox = outbox;
+	}
+
+	public LetterInbox getInbox()
+	{
+		return inbox;
+	}
+
+	public void setInbox(LetterInbox inbox)
+	{
+		this.inbox = inbox;
+	}
+
+	public Letter getLetter()
+	{
+		return letter;
+	}
+
+	public void setLetter(Letter letter)
+	{
+		this.letter = letter;
+	}
+
+	public boolean isAllUser()
+	{
+		return allUser;
+	}
+
+	public void setAllUser(boolean allUser)
+	{
+		this.allUser = allUser;
+	}
+}

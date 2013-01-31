@@ -1,0 +1,84 @@
+package cc.ywxm.vo;
+
+public class LetterInboxVo
+{
+
+	private Long letter_id;
+	private String lettercontent;
+	private String poster;
+	private String receiver;
+	private String receivetime;
+	private Short readflag;
+	private String subject;
+
+	public String getLettercontent()
+	{
+		return lettercontent;
+	}
+
+	public void setLettercontent(String lettercontent)
+	{
+		this.lettercontent = lettercontent;
+	}
+
+	public String getPoster()
+	{
+		return poster;
+	}
+
+	public void setPoster(String poster)
+	{
+		this.poster = poster;
+	}
+
+	public String getReceiver()
+	{
+		return receiver;
+	}
+
+	public void setReceiver(String receiver)
+	{
+		this.receiver = receiver;
+	}
+
+	public Long getLetter_id()
+	{
+		return letter_id;
+	}
+
+	public void setLetter_id(Long letter_id)
+	{
+		this.letter_id = letter_id;
+	}
+
+	public Short getReadflag()
+	{
+		return readflag;
+	}
+
+	public void setReadflag(Short readflag)
+	{
+		this.readflag = readflag;
+	}
+
+	public String getSubject()
+	{
+		return subject;
+	}
+
+	public void setSubject(String subject)
+	{
+		this.subject = subject;
+	}
+
+	public String getReceivetime()
+	{
+		return receivetime;
+	}
+
+	public void setReceivetime(String receivetime)
+	{
+		this.receivetime = receivetime;
+	}
+
+}

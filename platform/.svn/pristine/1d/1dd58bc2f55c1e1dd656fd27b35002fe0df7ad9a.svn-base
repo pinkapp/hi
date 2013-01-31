@@ -1,0 +1,835 @@
+package cc.ywxm.service.impl;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.struts2.json.JSONException;
+import org.apache.struts2.json.JSONUtil;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import cc.ywxm.action.Pageable;
+import cc.ywxm.dao.gop.GameServerDao;
+import cc.ywxm.dao.gop.UserDao;
+import cc.ywxm.model.gop.GameServer;
+import cc.ywxm.model.gop.User;
+import cc.ywxm.secret.Auth;
+import cc.ywxm.service.UserService;
+import cc.ywxm.utils.DateFormat;
+import cc.ywxm.utils.DateUtils;
+import cc.ywxm.utils.DiscuzUtils;
+import cc.ywxm.utils.PasswordUtils;
+import cc.ywxm.utils.WebUtils;
+import cc.ywxm.vo.DailyNewUserCount;
+import cc.ywxm.vo.DailyRegisterTotalCount;
+import cc.ywxm.vo.UserAgegroupCount;
+import cc.ywxm.vo.UserAreaCount;
+import cc.ywxm.vo.UserCareerCount;
+import cc.ywxm.vo.UserSexCount;
+import cc.ywxm.vo.UserVo;
+import cc.ywxm.vo.UserVo1;
+import cc.ywxm.vo.UserVo2;
+
+import com.discuz.client.Client;
+import com.discuz.util.XMLHelper;
+
+@Service
+@Transactional
+public class UserServiceImpl implements UserService
+{
+	@Resource
+	private UserDao userDao;
+	@Resource
+	private GameServerDao gameServerDao;
+
+	public int login(String username, String password)
+	{
+		if (username == null || "".equals(username))
+		{
+			return 2;// 用户名为空
+		}
+		User user = null;
+		try
+		{
+			user = userDao.findByUsername(username);
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		if (user == null)
+		{
+			return 3;// 用户不存在
+		}
+		if (password == null || "".equals(password))
+		{
+			return 4;// 密码为空
+		}
+		Client uc = new Client();
+		String result = null;
+		try
+		{
+			result = uc.uc_user_login(username, password);
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+			// return 6;
+		}
+		System.out.println("discuz：" + result);
+		password = PasswordUtils.generatePassword(password);
+		int n = 0;
+		try
+		{
+			n = userDao.count(username, password);
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+			return 0;
+		}
+		if (n == 1)
+		{
+			return 1;// 登录成功
+		} else
+		{
+			return 5;// 登录失败
+		}
+
+	}
+
+	public User get(Integer userId)
+	{
+		try
+		{
+			return userDao.findById(userId);
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public void edit(User user)
+	{
+		User u = userDao.findById(user.getUserId());
+		user.setPassword(null);
+		try
+		{
+			WebUtils.setNotNull(user, u);
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		userDao.update(u);
+
+	}
+
+	@Deprecated
+	public void add(User user)
+	{
+		/** discuz 用户同步代码开始 */
+		int i = DiscuzUtils.register(user.getUsername(), user.getPassword(),
+				user.getEmail());
+		if (i <= 0)
+		{
+			return;
+		}
+		/** discuz 用户同步代码结束 */
+		user.setPassword(PasswordUtils.generatePassword(user.getPassword()));// 密码加密
+		user.setRegistertime(DateFormat.currentDateFormat());
+		userDao.save(user);
+	}
+
+	public User findByUsername(String username)
+	{
+		return userDao.findByUsername(username);
+	}
+
+	public boolean checkUsername(String username)
+	{
+		if (userDao.findByUsername(username) == null)
+		{
+			// 验证discuz里面用户名是否存在
+			Client uc = new Client();
+			String info = null;
+			try
+			{
+				info = uc.uc_get_user(username, 0);
+			} catch (Exception e)
+			{
+				e.printStackTrace();
+				return true;// 存在
+			}
+			System.out.println("discuz:" + info);
+			if ("0".equals(info))
+			{
+				return false;// 不存在
+			} else
+			{
+				return true;
+			}
+		} else
+		{
+			return true;
+		}
+	}
+
+	public boolean checkEmail(String email)
+	{
+		if (userDao.findByEmail(email) == null)
+		{
+			return false;
+		} else
+		{
+			return true;
+		}
+	}
+
+	public List<UserVo> findPaged(UserVo condition, Pageable pageable)
+	{
+		return userDao.findPaged(condition, pageable);
+	}
+
+	public void batchDelete(String userIds)
+	{
+		if (userIds == null || userIds.length() == 0)
+		{
+			return;
+		}
+		String[] user_ids =
+		{ "" };
+		if (userIds.indexOf(",") == -1)
+		{
+			user_ids[0] = userIds;
+		} else
+		{
+			user_ids = userIds.split(",");
+		}
+		Integer[] ids = new Integer[user_ids.length];
+		for (int i = 0; i < user_ids.length; i++)
+		{
+			ids[i] = Integer.parseInt(user_ids[i]);
+
+		}
+		userDao.batchDelete(ids);
+	}
+
+	public List<String> getRolenamesByUserId(Integer userId)
+	{
+		String sql = "SELECT t.rolename FROM role t INNER JOIN user_role t1 ON t.role_id = t1.role_id WHERE t1.user_id = ?";
+		return userDao.findList(sql, userId);
+	}
+
+	public void delete(Integer userId)
+	{
+		User user = userDao.findById(userId);
+		userDao.delele(user);
+	}
+
+	public List<String> getFunctionURLsByUserId(Integer userId)
+	{
+		String sql = "SELECT t3.functionurl FROM user_role t LEFT JOIN role t1 ON t.role_id = t1.role_id LEFT JOIN role_function t2 ON t1.role_id = t2.role_id LEFT JOIN function t3 ON t2.function_id = t3.function_id WHERE t.user_id = ?";
+		return userDao.findList(sql, userId);
+	}
+
+	public void grant(Integer userId, Integer roleId)
+	{
+		userDao.grant(userId, roleId);
+	}
+
+	public Short findRoleIdByUserId(Integer userId)
+	{
+		return userDao.findRoleIdByUserId(userId);
+	}
+
+	public void recover(int userId)
+	{
+		userDao.recover(userId);
+	}
+
+	public List<DailyNewUserCount> findDailyNewUserCount(String month)
+	{
+		Date date = DateFormat.parse(month, "yyyy-MM");
+		Date firstDay = DateUtils.getfirstDayOfMonth(date);
+		Date lastDay = DateUtils.getLastDayOfMonth(date);
+		String starttime = DateFormat.format(firstDay,
+				DateFormat.DATE_PATTERN_2);
+		String endtime = DateFormat.format(lastDay, DateFormat.DATE_PATTERN_2);
+		String currenttime = DateFormat
+				.currentDateFormat(DateFormat.DATE_PATTERN_2);
+		if (endtime.compareTo(currenttime) > 0)
+		{
+			endtime = currenttime;
+		}
+		return userDao.findDailyNewUserCount(starttime, endtime);
+	}
+
+	public List<DailyRegisterTotalCount> findDailyRegisterTotalCount(
+			String month)
+	{
+		Date date = DateFormat.parse(month, "yyyy-MM");
+		Date firstDay = DateUtils.getfirstDayOfMonth(date);
+		Date lastDay = DateUtils.getLastDayOfMonth(date);
+		String starttime = DateFormat.format(firstDay,
+				DateFormat.DATE_PATTERN_2);
+		String endtime = DateFormat.format(lastDay, DateFormat.DATE_PATTERN_2);
+		String currenttime = DateFormat
+				.currentDateFormat(DateFormat.DATE_PATTERN_2);
+		// 如果截止日期大于当前日期
+		if (endtime.compareTo(currenttime) > 0)
+		{
+			endtime = currenttime;
+		}
+		String oneDay = starttime;
+		List<DailyRegisterTotalCount> drtcs = new ArrayList<DailyRegisterTotalCount>();
+		while (oneDay.compareTo(endtime) <= 0)
+		{
+
+			int registerCount = userDao.findRegisterTotalCount(DateFormat
+					.parse(oneDay, DateFormat.DATE_PATTERN_2));
+			drtcs.add(new DailyRegisterTotalCount(oneDay, registerCount));
+			// +1天
+			date.setTime(date.getTime() + 1000 * 60 * 60 * 24);
+			oneDay = DateFormat.format(date, DateFormat.DATE_PATTERN_2);
+		}
+		return drtcs;
+	}
+
+	public List<UserAreaCount> findAreaCount()
+	{
+		return userDao.findAreaCount();
+	}
+
+	public List<UserCareerCount> findCareerCount()
+	{
+		return userDao.findCareerCount();
+	}
+
+	public List<UserAgegroupCount> findAgegroupCount()
+	{
+		List<UserAgegroupCount> userAgegroupCounts = new ArrayList<UserAgegroupCount>();
+		userAgegroupCounts.add(new UserAgegroupCount("10岁以下", 0));
+		userAgegroupCounts.add(new UserAgegroupCount("10-14", 0));
+		userAgegroupCounts.add(new UserAgegroupCount("15-18", 0));
+		userAgegroupCounts.add(new UserAgegroupCount("19-23", 0));
+		userAgegroupCounts.add(new UserAgegroupCount("24-28", 0));
+		userAgegroupCounts.add(new UserAgegroupCount("29-33", 0));
+		userAgegroupCounts.add(new UserAgegroupCount("34-40", 0));
+		userAgegroupCounts.add(new UserAgegroupCount("40以上", 0));
+		userAgegroupCounts.add(new UserAgegroupCount("其它", 0));
+		for (UserAgegroupCount userAgegroupCount : userAgegroupCounts)
+		{
+			if (userAgegroupCount.getAgegroup().equals("10岁以下"))
+			{
+				userAgegroupCount
+						.setUsercount(userDao.findAgegroupCount(0, 10));
+			} else if (userAgegroupCount.getAgegroup().equals("40以上"))
+			{
+				userAgegroupCount.setUsercount(userDao.findAgegroupCount(40,
+						100));
+
+			} else if (userAgegroupCount.getAgegroup().equals("其它"))
+			{
+				userAgegroupCount
+						.setUsercount(userDao.findOtherAgegroupCount());
+			} else
+			{
+				String[] ages = userAgegroupCount.getAgegroup().split("-");
+				userAgegroupCount.setUsercount(userDao.findAgegroupCount(
+						Integer.parseInt(ages[0]), Integer.parseInt(ages[1])));
+			}
+		}
+		return userAgegroupCounts;
+	}
+
+	public List<String> findUsersByUsername(String str)
+	{
+		return userDao.findUsersByUsername(str);
+	}
+
+	public List<UserVo1> findPaged(UserVo1 condition, Pageable pageable)
+	{
+		return userDao.findPaged(condition, pageable);
+	}
+
+	public List<UserVo> findByRegisterIp(String registerIp)
+	{
+		return userDao.findByRegisterIp(registerIp);
+	}
+
+	public List<UserSexCount> findSexCount()
+	{
+		List<UserSexCount> userSexCounts = new ArrayList<UserSexCount>();
+		int usercount1 = userDao.findSexCount(1);
+		userSexCounts.add(new UserSexCount("男", usercount1));
+		int usercount0 = userDao.findSexCount(0);
+		userSexCounts.add(new UserSexCount("女", usercount0));
+		int othercount = userDao.findOtherSexCount();
+		userSexCounts.add(new UserSexCount("其它", othercount));
+		return userSexCounts;
+	}
+
+	public void setSecondaryPassword(Integer userId, String spasswd)
+	{
+		if (StringUtils.isNotEmpty(spasswd))
+		{
+			spasswd = PasswordUtils.generatePassword(spasswd);
+		}
+
+		userDao.updateSecondaryPassword(userId, spasswd);
+
+	}
+
+	public int yetSecondaryPassword(int userId)
+	{
+		String spasswd = userDao.findSecondaryPassword(userId);
+		if (spasswd == null || "".equals(spasswd))
+		{
+			return 0;
+		} else
+		{
+			return 1;
+		}
+	}
+
+	public int yetUsername(String username)
+	{
+		User u = userDao.findByUsername(username);
+		if (u == null)
+		{
+			return 0;
+		} else
+		{
+			return 1;
+		}
+	}
+
+	public String findEmail(String username)
+	{
+		return userDao.findEmail(username);
+	}
+
+	public String findPhone(String username)
+	{
+		return userDao.findPhone(username);
+	}
+
+	public void resetPassword(String username, String password)
+	{
+		if (StringUtils.isNotEmpty(password))
+		{
+			password = PasswordUtils.generatePassword(password);
+		}
+		userDao.resetPassword(username, password);
+		DiscuzUtils.editPassword(username, password);
+	}
+
+	public void sendVerifyCodeByEmail(String email, String[] strs)
+	{
+
+	}
+
+	public void sendVerifyCodeByPhone(String phone, String[] strs)
+	{
+
+	}
+
+	public int yetPhone(int userId)
+	{
+		String phone = userDao.findPhone(userId);
+		if (phone == null || "".equals(phone))
+		{
+			return 0;
+		} else
+		{
+			return 1;
+		}
+	}
+
+	public String findPhone(int userId)
+	{
+		return userDao.findPhone(userId);
+	}
+
+	public void resetPassword(int userId, String password)
+	{
+		if (StringUtils.isNotEmpty(password))
+		{
+			password = PasswordUtils.generatePassword(password);
+		}
+		userDao.resetPassword(userId, password);
+		User u = userDao.findById(userId);
+		DiscuzUtils.editPassword(u.getUsername(), password);
+
+	}
+
+	public User login(int userId, String password)
+	{
+		if (StringUtils.isNotEmpty(password))
+		{
+			password = PasswordUtils.generatePassword(password);
+		}
+		List<User> users = userDao.find(userId, password);
+		if (users == null || users.size() == 0)
+		{
+			return null;
+		}
+		return users.get(0);
+	}
+
+	public Integer statusCode(String username)
+	{
+		User u = userDao.findByUsername(username);
+		int statusCode = userDao.findStatusCode(username);
+		if (u == null)
+		{
+			return -1;
+		} else
+		{
+			return statusCode;
+		}
+	}
+
+	public Integer statusCode(int userId)
+	{
+		User u = userDao.findById(userId);
+		int statusCode = userDao.findStatusCode(userId);
+		if (u == null)
+		{
+			return -1;
+		} else
+		{
+			return statusCode;
+		}
+	}
+
+	public void updateStatusCode(int userId, int statusCode)
+	{
+		userDao.updateStatusCode(userId, statusCode);
+
+	}
+
+	public UserVo2 findUserVo2ById(int userId)
+	{
+		return userDao.findUserVo2ById(userId);
+	}
+
+	public void close(UserVo2 user2)
+	{
+		userDao.close(user2.getUser_id(), user2.getCloseType(), user2
+				.getCloseReason(), user2.getCloseEndtime());
+	}
+
+	public boolean checkPhone(String phone)
+	{
+		User u = userDao.findByPhone(phone);
+		if (u == null)
+		{
+			return false;
+		} else
+		{
+			return true;
+		}
+
+	}
+
+	public String findCardId(int userId)
+	{
+		return userDao.findCardId(userId);
+	}
+
+	public int yetCardId(Integer userId)
+	{
+		String cardId = userDao.findCardId(userId);
+		if (cardId == null || "".equals(cardId))
+		{
+			return 0;
+		} else
+		{
+			return 1;
+		}
+	}
+
+	public int add(String username, String password, String realname,
+			String cardId, String email, String regAddress)
+	{
+		if (username == null || "".equals(username))
+		{
+			return 2;// 用户名为空
+		}
+		if (password == null || "".equals(password))
+		{
+			return 3;// 密码为空
+		}
+		User user = null;
+		try
+		{
+			user = userDao.findByUsername(username);
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+			return 0;// 未知错误
+		}
+		if (user != null)
+		{
+			return 4;// 用户名重名
+		}
+		if (email == null || "".equals(email))
+		{
+			return 5;// 电邮为空
+		}
+		Client uc = new Client();
+		String result = null;
+		try
+		{
+			result = uc.uc_user_register(username, password, email);
+		} catch (Exception e1)
+		{
+			e1.printStackTrace();
+		}
+		System.out.println("discuz:" + result);
+		user = new User();
+		user.setUsername(username);
+		password = PasswordUtils.generatePassword(password);
+		user.setPassword(password);
+		user.setRealname(realname);
+		user.setCardId(cardId);
+		user.setRegIp(regAddress);
+
+		try
+		{
+			userDao.save(user);
+			return 1;// 保存成功
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+			return 0;// 未知错误
+		}
+
+	}
+
+	public String uc_user_synlogin(String username, String password)
+	{
+		Client uc = new Client();
+		String result = null;
+		try
+		{
+			result = uc.uc_user_login(username, password);
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		// System.out.println("discuz：" + result);
+		LinkedList<String> rs = XMLHelper.uc_unserialize(result);
+		if (rs.size() > 0)
+		{
+			int $uid = Integer.parseInt(rs.get(0));
+			// String $username = rs.get(1);
+			// String $password = rs.get(2);
+			// String $email = rs.get(3);
+			if ($uid > 0)
+			{
+				String ucsynlogin = uc.uc_user_synlogin($uid);
+				return ucsynlogin;
+			} else if ($uid == -1)
+			{
+				return "无此用户，论坛登录失败";
+			} else if ($uid == -2)
+			{
+				return "密码错误，论坛登录失败";
+			} else
+			{
+				return "未知错误，论坛登录失败";
+			}
+		} else
+		{
+			return "论坛登录失败";
+		}
+
+	}
+
+	public int login(String username, String password, String loginIp)
+	{
+		if (username == null || "".equals(username))
+		{
+			return 2;// 用户名为空
+		}
+		User user = null;
+		try
+		{
+			user = userDao.findByUsername(username);
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		if (user == null)
+		{
+			return 3;// 用户不存在
+		}
+		if (password == null || "".equals(password))
+		{
+			return 4;// 密码为空
+		}
+		password = PasswordUtils.generatePassword(password);
+		int n = 0;
+		try
+		{
+			n = userDao.count(username, password);
+			user.setIp(loginIp);
+			user.setLastTime(DateFormat.currentDateFormat());
+			userDao.update(user);
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+			return 0;
+		}
+		if (n == 1)
+		{
+			return 1;// 登录成功
+		} else
+		{
+			return 5;// 登录失败
+		}
+	}
+
+	public String uc_user_synlogout()
+	{
+		Client uc = new Client();
+		return uc.uc_user_synlogout();
+	}
+
+	public String server_user_synlogin(String username, String password)
+	{
+		if (username == null || "".equals(username))
+		{
+			return "用户名为空";// 用户名为空
+		}
+		if (password == null || "".equals(password))
+		{
+			return "密码为空";// 密码为空
+		}
+		password = PasswordUtils.generatePassword(password);
+		List<User> users = userDao.find(username, password);
+		if (users == null || users.size() != 1)
+		{
+			return "用户名或密码错误";
+		}
+		List<GameServer> gameServers = gameServerDao.findNewest();
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("action", "login");
+		map.put("id", users.get(0).getUserId());
+		String syncString = "";
+		for (GameServer gameServer : gameServers)
+		{
+
+			syncString += "<iframe style='display: none;' src='"
+					+ gameServer.getUrl() + "/cookie.php?code=" + shift(map)
+					+ "'></iframe>";
+		}
+		return syncString;
+	}
+
+	/**
+	 * 把map转换成字符串 map--json---auth加密---url转码
+	 * 
+	 * @param map
+	 * @return
+	 */
+	public String shift(Map<String, Object> map)
+	{
+		String string = null;
+		try
+		{
+			string = JSONUtil.serialize(map);
+		} catch (JSONException e1)
+		{
+			e1.printStackTrace();
+			return "-1";
+		}
+		Auth auth = new Auth();
+		string = auth.authcode(string, Auth.ENCODE);
+		try
+		{
+			string = URLEncoder.encode(string, "utf-8");
+		} catch (UnsupportedEncodingException e1)
+		{
+			e1.printStackTrace();
+			return "-2";
+		}
+		return string;
+	}
+
+	public String server_user_synlogout()
+	{
+		List<GameServer> gameServers = gameServerDao.findNewest();
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("action", "logout");
+		String syncString = "";
+		for (GameServer gameServer : gameServers)
+		{
+
+			syncString += "<iframe style='display: none;' src='"
+					+ gameServer.getUrl() + "/cookie.php?code=" + shift(map)
+					+ "'></iframe>";
+		}
+		return syncString;
+	}
+
+	public String encrypt(String username, String password)
+	{
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("username", username);
+		map.put("password", password);
+		String string = null;
+		try
+		{
+			string = JSONUtil.serialize(map);
+		} catch (JSONException e1)
+		{
+			e1.printStackTrace();
+			return "-1";
+		}
+		Auth auth = new Auth();
+		string = auth.authcode(string, Auth.ENCODE);
+		try
+		{
+			string = URLEncoder.encode(string, "utf-8");
+		} catch (UnsupportedEncodingException e1)
+		{
+			e1.printStackTrace();
+			return "-2";
+		}
+		return string;
+	}
+
+	@SuppressWarnings("unchecked")
+	public Map<String, Object> decrypt(String encryptString)
+	{
+		String string = encryptString;
+		try
+		{
+			string = URLDecoder.decode(string, "utf-8");
+		} catch (UnsupportedEncodingException e)
+		{
+			e.printStackTrace();
+		}
+		Auth auth = new Auth();
+		string = auth.authcode(string, Auth.DECODE);
+		try
+		{
+			return (Map<String, Object>) JSONUtil.deserialize(string);
+		} catch (JSONException e)
+		{
+			e.printStackTrace();
+		}
+		return null;
+	}
+}

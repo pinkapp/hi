@@ -1,0 +1,50 @@
+package cc.ywxm.vo;
+
+public class BankVo
+{
+	private Integer bank_id;
+	private String bankname;
+	private String banklogo;
+	private Integer pay_id;
+
+	public Integer getBank_id()
+	{
+		return bank_id;
+	}
+
+	public void setBank_id(Integer bank_id)
+	{
+		this.bank_id = bank_id;
+	}
+
+	public String getBankname()
+	{
+		return bankname;
+	}
+
+	public void setBankname(String bankname)
+	{
+		this.bankname = bankname;
+	}
+
+	public String getBanklogo()
+	{
+		return banklogo;
+	}
+
+	public void setBanklogo(String banklogo)
+	{
+		this.banklogo = banklogo;
+	}
+
+	public Integer getPay_id()
+	{
+		return pay_id;
+	}
+
+	public void setPay_id(Integer pay_id)
+	{
+		this.pay_id = pay_id;
+	}
+
+}

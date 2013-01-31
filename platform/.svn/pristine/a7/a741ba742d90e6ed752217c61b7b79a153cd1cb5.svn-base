@@ -1,0 +1,57 @@
+package cc.ywxm.vo;
+
+/**
+ * @author hdc
+ */
+
+public class GameNoticeVo
+{
+
+	// Fields
+
+	private Integer notice_id;
+	private String gamename;
+	private String noticetitle;
+	private String noticecontent;
+
+	public Integer getNotice_id()
+	{
+		return notice_id;
+	}
+
+	public void setNotice_id(Integer notice_id)
+	{
+		this.notice_id = notice_id;
+	}
+
+	public String getGamename()
+	{
+		return gamename;
+	}
+
+	public void setGamename(String gamename)
+	{
+		this.gamename = gamename;
+	}
+
+	public String getNoticetitle()
+	{
+		return noticetitle;
+	}
+
+	public void setNoticetitle(String noticetitle)
+	{
+		this.noticetitle = noticetitle;
+	}
+
+	public String getNoticecontent()
+	{
+		return noticecontent;
+	}
+
+	public void setNoticecontent(String noticecontent)
+	{
+		this.noticecontent = noticecontent;
+	}
+
+}

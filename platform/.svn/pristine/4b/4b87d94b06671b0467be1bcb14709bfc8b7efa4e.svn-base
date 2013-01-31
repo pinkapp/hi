@@ -1,0 +1,1215 @@
+package cc.ywxm.action.gop;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+
+import cc.ywxm.action.PageableAction;
+import cc.ywxm.service.OrderService;
+import cc.ywxm.service.UserService;
+import cc.ywxm.service.UserloginService;
+import cc.ywxm.utils.DateFormat;
+import cc.ywxm.utils.ExportExcel;
+import cc.ywxm.utils.MathsUtils;
+import cc.ywxm.vo.ChargeTotalUserCount;
+import cc.ywxm.vo.DailyChargeMoneyCount;
+import cc.ywxm.vo.DailyChargeUserCount;
+import cc.ywxm.vo.DailyNewUserCount;
+import cc.ywxm.vo.DailyRegisterTotalCount;
+import cc.ywxm.vo.DailyUserloginCount;
+import cc.ywxm.vo.DailyUserloginOneUserCount;
+import cc.ywxm.vo.DailyUserloginUserCount;
+import cc.ywxm.vo.UserAgegroupCount;
+import cc.ywxm.vo.UserAreaCount;
+import cc.ywxm.vo.UserCareerCount;
+import cc.ywxm.vo.UserPaybankCount;
+import cc.ywxm.vo.UserPaywayCount;
+import cc.ywxm.vo.UserSexCount;
+
+/**
+ * 平台统计
+ * 
+ * @author hdc
+ * 
+ */
+@Controller
+@Scope("prototype")
+public class UserCountAction extends PageableAction
+{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6760313902442960793L;
+
+	@Resource
+	private UserService userService;
+	@Resource
+	private UserloginService userloginService;
+	@Resource
+	private OrderService orderService;
+	private List<DailyNewUserCount> dailyNewUserCounts;
+	private List<DailyUserloginCount> dailyUserloginCounts;
+	private List<DailyUserloginOneUserCount> dailyUserloginOneUserCounts;
+	private List<DailyChargeUserCount> dailyChargeUserCounts;
+	private List<DailyChargeMoneyCount> dailyChargeMoneyCounts;
+	private List<DailyUserloginUserCount> dailyUserloginUserCounts;
+	private List<UserPaywayCount> userPaywayCounts;
+	private List<ChargeTotalUserCount> chargeTotalUserCounts;
+	private List<UserPaybankCount> userPaybankCounts;
+	private List<UserAreaCount> userAreaCounts;
+	private List<UserAgegroupCount> userAgegroupCounts;
+	private List<UserCareerCount> userCareerCounts;
+	private List<UserSexCount> userSexCounts;
+	private List<DailyRegisterTotalCount> dailyRegisterTotalCounts;
+	private String month = DateFormat.format(new Date(), "yyyy-MM");
+
+	// charts 数据
+	private String dataString;
+	private String dataString2;
+	private int part;
+
+	/**
+	 * 每日新注册用户统计导出excel
+	 * 
+	 * @return
+	 */
+	public String user_dailyNewUserCount_export()
+	{
+		dailyNewUserCounts = userService.findDailyNewUserCount(month);
+		ExportExcel<DailyNewUserCount> exporter = new ExportExcel<DailyNewUserCount>();
+		OutputStream out = null;
+		try
+		{
+			response.setContentType("octets/stream");
+			response.addHeader("Content-Disposition", "attachment;filename="
+					+ DateFormat.currentDateFormat("yyyyMMdd") + ".xls");
+			out = response.getOutputStream();
+			exporter.exportExcel("每日注册用户统计", new String[]
+			{ "日期", "注册用户数" }, dailyNewUserCounts, out, "yyyy-MM-dd");
+			out.close();
+			return null;
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+			return ERROR;
+		}
+
+	}
+
+	/**
+	 * 每日新注册用户统计
+	 * 
+	 * @return
+	 */
+	public String user_dailyNewUserCount()
+	{
+		StringBuffer stringBuffer = new StringBuffer();
+		dailyNewUserCounts = userService.findDailyNewUserCount(month);
+		String s1 = "<chart caption='每日注册用户统计' subCaption='("
+				+ month
+				+ ")' baseFont='宋体' baseFontSize='12' xAxisName='日期' yAxisName='注册用户数' bgColor='91AF46,FFFFFF'  divLineColor='91AF46' divLineAlpha='30' alternateHGridAlpha='5' canvasBorderColor='666666' baseFontColor='666666' lineColor='91AF46' numVDivlines='7' showAlternateVGridColor='1' anchorSides='3' anchorRadius='5' labelDisplay='Rotate' slantLabels='1' showValues='0'>";
+		stringBuffer.append(s1);
+		for (DailyNewUserCount dailyNewUserCount : dailyNewUserCounts)
+		{
+			stringBuffer.append("<set label='"
+					+ dailyNewUserCount.getRegistertime() + "' value='"
+					+ dailyNewUserCount.getRegistercount() + "' />");
+		}
+		String s2 = "<styles>";
+		String s3 = "<definition><style name='Anim1' type='animation' param='_alpha' start='0' duration='1' /></definition>";
+		String s4 = "<application><apply toObject='TRENDLINES' styles='Anim1' /></application>";
+		String s5 = "</styles>";
+		String s6 = "</chart>";
+		stringBuffer.append(s2);
+		stringBuffer.append(s3);
+		stringBuffer.append(s4);
+		stringBuffer.append(s5);
+		stringBuffer.append(s6);
+		dataString = stringBuffer.toString();
+		return SUCCESS;
+	}
+
+	/**
+	 * 总注册用户统计
+	 * 
+	 * @return
+	 */
+	public String user_dailyRegisterTotalCount()
+	{
+		StringBuffer stringBuffer = new StringBuffer();
+		dailyRegisterTotalCounts = userService
+				.findDailyRegisterTotalCount(month);
+		String s1 = "<chart caption='总注册用户数统计' subCaption='("
+				+ month
+				+ ")' baseFont='宋体' baseFontSize='12' xAxisName='日期' yAxisName='用户总数' bgColor='91AF46,FFFFFF'  divLineColor='91AF46' divLineAlpha='30' alternateHGridAlpha='5' canvasBorderColor='666666' baseFontColor='666666' lineColor='91AF46' numVDivlines='7' showAlternateVGridColor='1' anchorSides='3' anchorRadius='5' labelDisplay='Rotate' slantLabels='1' showValues='0'>";
+		stringBuffer.append(s1);
+		for (DailyRegisterTotalCount dailyRegisterTotalCount : dailyRegisterTotalCounts)
+		{
+			stringBuffer.append("<set label='"
+					+ dailyRegisterTotalCount.getTime() + "' value='"
+					+ dailyRegisterTotalCount.getRegisterTotalcount() + "' />");
+		}
+		String s2 = "<styles>";
+		String s3 = "<definition><style name='Anim1' type='animation' param='_alpha' start='0' duration='1' /></definition>";
+		String s4 = "<application><apply toObject='TRENDLINES' styles='Anim1' /></application>";
+		String s5 = "</styles>";
+		String s6 = "</chart>";
+		stringBuffer.append(s2);
+		stringBuffer.append(s3);
+		stringBuffer.append(s4);
+		stringBuffer.append(s5);
+		stringBuffer.append(s6);
+		dataString = stringBuffer.toString();
+		return SUCCESS;
+	}
+
+	/**
+	 * 总注册用户统计导出excel
+	 * 
+	 * @return
+	 */
+	public String user_dailyRegisterTotalCount_export()
+	{
+		dailyRegisterTotalCounts = userService
+				.findDailyRegisterTotalCount(month);
+		ExportExcel<DailyRegisterTotalCount> exporter = new ExportExcel<DailyRegisterTotalCount>();
+		OutputStream out = null;
+		try
+		{
+			response.setContentType("octets/stream");
+			response.addHeader("Content-Disposition", "attachment;filename="
+					+ DateFormat.currentDateFormat("yyyyMMdd") + ".xls");
+			out = response.getOutputStream();
+			exporter.exportExcel("总注册用户统计", new String[]
+			{ "日期", "用户总数" }, dailyRegisterTotalCounts, out, "yyyy-MM-dd");
+			out.close();
+			return null;
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+			return ERROR;
+		}
+
+	}
+
+	/**
+	 * 每日用户登录次数统计
+	 * 
+	 * @return
+	 */
+	public String user_dailyUserloginCount()
+	{
+		StringBuffer stringBuffer = new StringBuffer();
+		String s1 = "<chart caption='每日登录次数统计' subCaption='("
+				+ month
+				+ ")' baseFont='宋体' baseFontSize='12' xAxisName='日期' yAxisName='登录次数' bgColor='91AF46,FFFFFF'  divLineColor='91AF46' divLineAlpha='30' alternateHGridAlpha='5' canvasBorderColor='666666' baseFontColor='666666' lineColor='91AF46' numVDivlines='7' showAlternateVGridColor='1' anchorSides='3' anchorRadius='5' labelDisplay='Rotate' slantLabels='1' showValues='0'>";
+		stringBuffer.append(s1);
+		dailyUserloginCounts = userloginService.findDailyUserloginCount(month);
+		for (DailyUserloginCount dailyUserloginCount : dailyUserloginCounts)
+		{
+			stringBuffer.append("<set label='"
+					+ dailyUserloginCount.getLogintime() + "' value='"
+					+ dailyUserloginCount.getLogincount() + "' />");
+		}
+		String s2 = "<styles>";
+		String s3 = "<definition><style name='Anim1' type='animation' param='_alpha' start='0' duration='1' /></definition>";
+		String s4 = "<application><apply toObject='TRENDLINES' styles='Anim1' /></application>";
+		String s5 = "</styles>";
+		String s6 = "</chart>";
+		stringBuffer.append(s2);
+		stringBuffer.append(s3);
+		stringBuffer.append(s4);
+		stringBuffer.append(s5);
+		stringBuffer.append(s6);
+		dataString = stringBuffer.toString();
+		return SUCCESS;
+	}
+
+	/**
+	 * 每日用户登录次数统计导出excel
+	 * 
+	 * @return
+	 */
+	public String user_dailyUserloginCount_export()
+	{
+		dailyUserloginCounts = userloginService.findDailyUserloginCount(month);
+		ExportExcel<DailyUserloginCount> exporter = new ExportExcel<DailyUserloginCount>();
+		OutputStream out = null;
+		try
+		{
+			response.setContentType("octets/stream");
+			response.addHeader("Content-Disposition", "attachment;filename="
+					+ DateFormat.currentDateFormat("yyyyMMdd") + ".xls");
+			out = response.getOutputStream();
+			exporter.exportExcel("每日登录次数统计", new String[]
+			{ "日期", "登录次数" }, dailyUserloginCounts, out, "yyyy-MM-dd");
+			out.close();
+			return null;
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+			return ERROR;
+		}
+
+	}
+
+	/**
+	 * 单个用户日登录次数统计
+	 * 
+	 * @return
+	 */
+	public String user_dailyUserloginOneUserCount()
+	{
+		StringBuffer stringBuffer = new StringBuffer();
+		String s1 = "<chart canvasPadding='10' caption='单个用户日登陆次数统计' subCaption='("
+				+ month
+				+ ")' yAxisName='用户数' baseFont='宋体' baseFontSize='12' bgColor='F7F7F7, E9E9E9' numVDivLines='10' divLineAlpha='30'  labelPadding ='10' yAxisValuesPadding ='10' showValues='0' rotateValues='1' labelDisplay='Rotate' slantLabels='1' valuePosition='auto'>";
+		stringBuffer.append(s1);
+		dailyUserloginOneUserCounts = userloginService
+				.findDailyUserloginOneUserCount(month);
+		String s2 = "<categories>";
+		stringBuffer.append(s2);
+		for (DailyUserloginOneUserCount dailyUserloginOneUserCount : dailyUserloginOneUserCounts)
+		{
+			stringBuffer.append("<category label='"
+					+ dailyUserloginOneUserCount.getLogintime() + "' />");
+		}
+		String s3 = "</categories>";
+		stringBuffer.append(s3);
+
+		s2 = "<dataset seriesName='登录1次' color='1D8BD1' >";
+		stringBuffer.append(s2);
+		for (DailyUserloginOneUserCount dailyUserloginOneUserCount : dailyUserloginOneUserCounts)
+		{
+			stringBuffer.append("<set value='"
+					+ dailyUserloginOneUserCount.getL1Usercount() + "' />");
+		}
+		s3 = "</dataset>";
+		stringBuffer.append(s3);
+
+		s2 = "<dataset seriesName='登录2次' color='F1683C' >";
+		stringBuffer.append(s2);
+		for (DailyUserloginOneUserCount dailyUserloginOneUserCount : dailyUserloginOneUserCounts)
+		{
+			stringBuffer.append("<set value='"
+					+ dailyUserloginOneUserCount.getL2Usercount() + "' />");
+		}
+		s3 = "</dataset>";
+		stringBuffer.append(s3);
+
+		s2 = "<dataset seriesName='登录3次' color='2AD62A' >";
+		stringBuffer.append(s2);
+		for (DailyUserloginOneUserCount dailyUserloginOneUserCount : dailyUserloginOneUserCounts)
+		{
+			stringBuffer.append("<set value='"
+					+ dailyUserloginOneUserCount.getL3Usercount() + "' />");
+		}
+		s3 = "</dataset>";
+		stringBuffer.append(s3);
+
+		s2 = "<dataset seriesName='登录4次以上' color='DBDC25' >";
+		stringBuffer.append(s2);
+		for (DailyUserloginOneUserCount dailyUserloginOneUserCount : dailyUserloginOneUserCounts)
+		{
+			stringBuffer.append("<set value='"
+					+ dailyUserloginOneUserCount.getL4moreUsercount() + "' />");
+		}
+		s3 = "</dataset>";
+		stringBuffer.append(s3);
+
+		String s6 = "</chart>";
+		stringBuffer.append(s6);
+		dataString = stringBuffer.toString();
+		return SUCCESS;
+	}
+
+	/**
+	 * 单个用户日登陆次数统计导出excel
+	 * 
+	 * @return
+	 */
+	public String user_dailyUserloginOneUserCount_export()
+	{
+		dailyUserloginOneUserCounts = userloginService
+				.findDailyUserloginOneUserCount(month);
+		ExportExcel<DailyUserloginOneUserCount> exporter = new ExportExcel<DailyUserloginOneUserCount>();
+		OutputStream out = null;
+		try
+		{
+			response.setContentType("octets/stream");
+			response.addHeader("Content-Disposition", "attachment;filename="
+					+ DateFormat.currentDateFormat("yyyyMMdd") + ".xls");
+			out = response.getOutputStream();
+			exporter.exportExcel("单个用户日登陆次数统计", new String[]
+			{ "日期", "登录一次", "登录二次", "登录三次", "登录四次以上" },
+					dailyUserloginOneUserCounts, out, "yyyy-MM-dd");
+			out.close();
+			return null;
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+			return ERROR;
+		}
+
+	}
+
+	/**
+	 * 每日登录用户统计
+	 * 
+	 * @return
+	 */
+	public String user_dailyUserloginUserCount()
+	{
+		StringBuffer stringBuffer = new StringBuffer();
+
+		String s1 = "<chart caption='每日登录用户统计' subCaption='("
+				+ month
+				+ ")' baseFont='宋体' baseFontSize='12' xAxisName='日期' yAxisName='登录用户数' bgColor='91AF46,FFFFFF'  divLineColor='91AF46' divLineAlpha='30' alternateHGridAlpha='5' canvasBorderColor='666666' baseFontColor='666666' lineColor='91AF46' numVDivlines='7' showAlternateVGridColor='1' anchorSides='3' anchorRadius='5' labelDisplay='Rotate' slantLabels='1' showValues='0'>";
+		stringBuffer.append(s1);
+		dailyUserloginUserCounts = userloginService
+				.findDailyUserloginUserCount(month);
+		for (DailyUserloginUserCount dailyUserloginUserCount : dailyUserloginUserCounts)
+		{
+			stringBuffer.append("<set label='"
+					+ dailyUserloginUserCount.getLogintime() + "' value='"
+					+ dailyUserloginUserCount.getUsercount() + "' />");
+		}
+		String s2 = "<styles>";
+		String s3 = "<definition><style name='Anim1' type='animation' param='_alpha' start='0' duration='1' /></definition>";
+		String s4 = "<application><apply toObject='TRENDLINES' styles='Anim1' /></application>";
+		String s5 = "</styles>";
+		String s6 = "</chart>";
+		stringBuffer.append(s2);
+		stringBuffer.append(s3);
+		stringBuffer.append(s4);
+		stringBuffer.append(s5);
+		stringBuffer.append(s6);
+		dataString = stringBuffer.toString();
+		return SUCCESS;
+	}
+
+	/**
+	 * 每日登录用户统计导出excel
+	 * 
+	 * @return
+	 */
+	public String user_dailyUserloginUserCount_export()
+	{
+		dailyUserloginUserCounts = userloginService
+				.findDailyUserloginUserCount(month);
+		ExportExcel<DailyUserloginUserCount> exporter = new ExportExcel<DailyUserloginUserCount>();
+		OutputStream out = null;
+		try
+		{
+			response.setContentType("octets/stream");
+			response.addHeader("Content-Disposition", "attachment;filename="
+					+ DateFormat.currentDateFormat("yyyyMMdd") + ".xls");
+			out = response.getOutputStream();
+			exporter.exportExcel("每日登录用户统计", new String[]
+			{ "日期", "登录用户数" }, dailyUserloginUserCounts, out, "yyyy-MM-dd");
+			out.close();
+			return null;
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+			return ERROR;
+		}
+
+	}
+
+	/**
+	 * 每日充值用户统计
+	 * 
+	 * @return
+	 */
+	public String user_dailyChargeUserCount()
+	{
+
+		StringBuffer stringBuffer = new StringBuffer();
+		String s1 = "<chart caption='每日充值用户统计' subCaption='("
+				+ month
+				+ ")' baseFont='宋体' baseFontSize='12' xAxisName='日期' yAxisName='充值用户数' bgColor='91AF46,FFFFFF'  divLineColor='91AF46' divLineAlpha='30' alternateHGridAlpha='5' canvasBorderColor='666666' baseFontColor='666666' lineColor='91AF46' numVDivlines='7' showAlternateVGridColor='1' anchorSides='3' anchorRadius='5' showValues='1' labelDisplay='Rotate' slantLabels='1'>";
+		stringBuffer.append(s1);
+		dailyChargeUserCounts = orderService.findDailyChargeUserCount(month);
+		for (DailyChargeUserCount dailyChargeUserCount : dailyChargeUserCounts)
+		{
+			stringBuffer.append("<set label='"
+					+ dailyChargeUserCount.getChargetime() + "' value='"
+					+ dailyChargeUserCount.getUsercount() + "' />");
+		}
+		String s2 = "<styles>";
+		String s3 = "<definition><style name='Anim1' type='animation' param='_alpha' start='0' duration='1' /></definition>";
+		String s4 = "<application><apply toObject='TRENDLINES' styles='Anim1' /></application>";
+		String s5 = "</styles>";
+		String s6 = "</chart>";
+		stringBuffer.append(s2);
+		stringBuffer.append(s3);
+		stringBuffer.append(s4);
+		stringBuffer.append(s5);
+		stringBuffer.append(s6);
+
+		dataString = stringBuffer.toString();
+		return SUCCESS;
+	}
+
+	/**
+	 * 每日充值用户统计导出excel
+	 * 
+	 * @return
+	 */
+	public String user_dailyChargeUserCount_export()
+	{
+		dailyChargeUserCounts = orderService.findDailyChargeUserCount(month);
+		ExportExcel<DailyChargeUserCount> exporter = new ExportExcel<DailyChargeUserCount>();
+		OutputStream out = null;
+		try
+		{
+			response.setContentType("octets/stream");
+			response.addHeader("Content-Disposition", "attachment;filename="
+					+ DateFormat.currentDateFormat("yyyyMMdd") + ".xls");
+			out = response.getOutputStream();
+			exporter.exportExcel("每日充值用户统计", new String[]
+			{ "日期", "充值用户数" }, dailyChargeUserCounts, out, "yyyy-MM-dd");
+			out.close();
+			return null;
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+			return ERROR;
+		}
+
+	}
+
+	
+	/**
+	 * 每日充值用户统计
+	 * 
+	 * @return
+	 */
+	public String user_dailyChargeMoneyCount()
+	{
+		
+		StringBuffer stringBuffer = new StringBuffer();
+		String s1 = "<chart caption='每日充值总额统计' subCaption='("
+			+ month
+			+ ")' baseFont='宋体' baseFontSize='12' xAxisName='日期' yAxisName='充值总额' bgColor='91AF46,FFFFFF'  divLineColor='91AF46' divLineAlpha='30' alternateHGridAlpha='5' canvasBorderColor='666666' baseFontColor='666666' lineColor='91AF46' numVDivlines='7' showAlternateVGridColor='1' anchorSides='3' anchorRadius='5' showValues='1' labelDisplay='Rotate' slantLabels='1'>";
+		stringBuffer.append(s1);
+		dailyChargeMoneyCounts = orderService.findDailyChargeMoneyCount(month);
+		for (DailyChargeMoneyCount dailyChargeMoneyCount : dailyChargeMoneyCounts)
+		{
+			stringBuffer.append("<set label='"
+					+ dailyChargeMoneyCount.getChargetime() + "' value='"
+					+ dailyChargeMoneyCount.getMoneycount() + "' />");
+		}
+		String s2 = "<styles>";
+		String s3 = "<definition><style name='Anim1' type='animation' param='_alpha' start='0' duration='1' /></definition>";
+		String s4 = "<application><apply toObject='TRENDLINES' styles='Anim1' /></application>";
+		String s5 = "</styles>";
+		String s6 = "</chart>";
+		stringBuffer.append(s2);
+		stringBuffer.append(s3);
+		stringBuffer.append(s4);
+		stringBuffer.append(s5);
+		stringBuffer.append(s6);
+		
+		dataString = stringBuffer.toString();
+		return SUCCESS;
+	}
+	
+	/**
+	 * 每日充值用户统计导出excel
+	 * 
+	 * @return
+	 */
+	public String user_dailyChargeMoneyCount_export()
+	{
+		dailyChargeMoneyCounts = orderService.findDailyChargeMoneyCount(month);
+		ExportExcel<DailyChargeMoneyCount> exporter = new ExportExcel<DailyChargeMoneyCount>();
+		OutputStream out = null;
+		try
+		{
+			response.setContentType("octets/stream");
+			response.addHeader("Content-Disposition", "attachment;filename="
+					+ DateFormat.currentDateFormat("yyyyMMdd") + ".xls");
+			out = response.getOutputStream();
+			exporter.exportExcel("每日充值总额统计", new String[]
+			{ "日期", "充值总额" }, dailyChargeMoneyCounts, out, "yyyy-MM-dd");
+			out.close();
+			return null;
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+			return ERROR;
+		}
+
+	}
+	/**
+	 * 用户支付方式统计1
+	 * 
+	 * @return
+	 */
+	public String user_paywayCount()
+	{
+		Map<String, String> paywayColors = new HashMap<String, String>();
+		paywayColors.put("支付宝网银充值", "429EAD");
+		paywayColors.put("财付通网银充值", "4249AD");
+		paywayColors.put("支付宝快捷支付", "AD42A2");
+		paywayColors.put("其它", "D4AC31");
+
+		Map<String, String> paywayColors2 = new HashMap<String, String>();
+		paywayColors2.put("中国工商银行", "429EAD");
+		paywayColors2.put("中国建设银行", "4249AD");
+		paywayColors2.put("中国农业银行", "AD42A2");
+		paywayColors2.put("中国交通银行", "D4AC31");
+		paywayColors2.put("中信银行", "00247C");
+		paywayColors2.put("兴业银行", "008900");
+		paywayColors2.put("深圳发展银行", "E95D0F");
+		paywayColors2.put("上海浦东发展银行", "BF0000");
+		paywayColors2.put("支付卡", "F2AC0C");
+		paywayColors2.put("中国银行", "1160B8");
+
+		StringBuffer stringBuffer = new StringBuffer();
+		userPaywayCounts = orderService.findPaywayCount();
+		String s1 = "<chart caption='用户支付方式统计-1' baseFont='宋体' baseFontSize='12' showPercentageInLabel='1' showValues='1' showLabels='0' showLegend='1' legendPosition='RIGHT' showPercentValues='1' bgcolor='ECF5FF' bgalpha='70' bordercolor='C6D2DF' showpercentvalues='1' bgratio='0' startingangle='200' animation='1'>";
+		stringBuffer.append(s1);
+		for (UserPaywayCount userPaywayCount : userPaywayCounts)
+		{
+			stringBuffer.append("<set value='" + userPaywayCount.getPaycount()
+					+ "' label='" + userPaywayCount.getWayname() + "' color='"
+					+ paywayColors.get(userPaywayCount.getWayname()) + "'/>");
+		}
+		String s2 = "</chart>";
+		stringBuffer.append(s2);
+		dataString = stringBuffer.toString();
+		rebuild(userPaywayCounts);
+		stringBuffer = new StringBuffer();
+		userPaybankCounts = orderService.findPaybankCount();
+		s1 = "<chart caption='用户支付方式统计-2' baseFont='宋体' baseFontSize='12' showPercentageInLabel='1' showLabels='0' showValues='1' showLegend='1'  legendPosition='RIGHT' chartrightmargin='40' bgcolor='ECF5FF' bgalpha='70' bordercolor='C6D2DF' showpercentvalues='1' bgratio='0' startingangle='200' animation='1'>";
+		stringBuffer.append(s1);
+		for (UserPaybankCount userPaybankCount : userPaybankCounts)
+		{
+			stringBuffer
+					.append("<set value='" + userPaybankCount.getPaycount()
+							+ "' label='" + userPaybankCount.getBankname()
+							+ "' color='"
+							+ paywayColors2.get(userPaybankCount.getBankname())
+							+ "'/>");
+		}
+		s2 = "</chart>";
+		stringBuffer.append(s2);
+		dataString2 = stringBuffer.toString();
+		rebuildUserPaybankCounts(userPaybankCounts);
+		return SUCCESS;
+	}
+
+	private void rebuildUserPaybankCounts(
+			List<UserPaybankCount> userPaybankCounts)
+	{
+		if (userPaybankCounts == null || userPaybankCounts.size() == 0)
+			return;
+		int total = 0;
+		for (UserPaybankCount userPaybankCount : userPaybankCounts)
+		{
+			total += userPaybankCount.getPaycount();
+		}
+		for (UserPaybankCount userPaybankCount : userPaybankCounts)
+		{
+			userPaybankCount.setPercent(MathsUtils.div(
+					userPaybankCount.getPaycount() * 100, total)
+					+ "%");
+		}
+		userPaybankCounts.add(new UserPaybankCount("总计:", total, "100%"));
+	}
+
+	/**
+	 * 用户支付方式统计导出excel
+	 * 
+	 * @return
+	 */
+	public String user_paywayCount_export()
+	{
+		if (part == 1)
+		{
+			userPaywayCounts = orderService.findPaywayCount();
+			rebuild(userPaywayCounts);
+			ExportExcel<UserPaywayCount> exporter = new ExportExcel<UserPaywayCount>();
+			OutputStream out = null;
+			try
+			{
+				response.setContentType("octets/stream");
+				response.addHeader(
+						"Content-Disposition",
+						"attachment;filename="
+								+ DateFormat.currentDateFormat("yyyyMMdd")
+								+ ".xls");
+				out = response.getOutputStream();
+				exporter.exportExcel("用户支付方式统计-1", new String[]
+				{ "支付方式", "使用次数", "百分比" }, userPaywayCounts, out, "yyyy-MM-dd");
+				out.close();
+				return null;
+			} catch (IOException e)
+			{
+				e.printStackTrace();
+				return ERROR;
+			}
+		} else if (part == 2)
+		{
+			userPaybankCounts = orderService.findPaybankCount();
+			rebuildUserPaybankCounts(userPaybankCounts);
+			ExportExcel<UserPaybankCount> exporter = new ExportExcel<UserPaybankCount>();
+			OutputStream out = null;
+			try
+			{
+				response.setContentType("octets/stream");
+				response.addHeader(
+						"Content-Disposition",
+						"attachment;filename="
+								+ DateFormat.currentDateFormat("yyyyMMdd")
+								+ ".xls");
+				out = response.getOutputStream();
+				exporter.exportExcel("用户支付方式统计-2", new String[]
+				{ "支付银行", "使用次数", "百分比" }, userPaybankCounts, out, "yyyy-MM-dd");
+				out.close();
+				return null;
+			} catch (IOException e)
+			{
+				e.printStackTrace();
+				return ERROR;
+			}
+		} else
+		{
+			return null;
+		}
+
+	}
+
+	/**
+	 * 单个用户充值总额数统计
+	 * 
+	 * @return
+	 */
+	public String user_chargeTotalUserCount()
+	{
+		Map<String, String> colors = new HashMap<String, String>();
+		colors.put("0-49", "429EAD");
+		colors.put("50-99", "4249AD");
+		colors.put("100-199", "AD42A2");
+		colors.put("200-499", "D4AC31");
+		colors.put("500-999", "00247C");
+		colors.put("1000-1999", "008900");
+		colors.put("2000-4999", "E95D0F");
+		colors.put("5000以上", "BF0000");
+		// colors.put("支付卡", "F2AC0C");
+		// colors.put("中国银行", "1160B8");
+
+		StringBuffer stringBuffer = new StringBuffer();
+		chargeTotalUserCounts = orderService.findChargeTotalUserCount();
+		String s1 = "<chart caption='单个用户充值总额数统计' baseFont='宋体' baseFontSize='12' showPercentageInLabel='1' showValues='1' showLabels='0' showLegend='1' legendPosition='RIGHT' showPercentValues='1' bgcolor='ECF5FF' bgalpha='70' bordercolor='C6D2DF' showpercentvalues='1' bgratio='0' startingangle='200' animation='1'>";
+		stringBuffer.append(s1);
+		for (ChargeTotalUserCount chargeTotalUserCount : chargeTotalUserCounts)
+		{
+			stringBuffer
+					.append("<set value='"
+							+ chargeTotalUserCount.getUsercount() + "' label='"
+							+ chargeTotalUserCount.getChargeTotal()
+							+ "' color='"
+							+ colors.get(chargeTotalUserCount.getChargeTotal())
+							+ "'/>");
+		}
+		String s2 = "</chart>";
+		stringBuffer.append(s2);
+		dataString = stringBuffer.toString();
+		rebuildChargeTotalUserCounts(chargeTotalUserCounts);
+		return SUCCESS;
+	}
+
+	private void rebuildChargeTotalUserCounts(
+			List<ChargeTotalUserCount> chargeTotalUserCounts)
+	{
+		int total = 0;
+		for (ChargeTotalUserCount chargeTotalUserCount : chargeTotalUserCounts)
+		{
+			total += chargeTotalUserCount.getUsercount();
+		}
+		for (ChargeTotalUserCount chargeTotalUserCount : chargeTotalUserCounts)
+		{
+			chargeTotalUserCount.setPercent(MathsUtils.div(
+					chargeTotalUserCount.getUsercount() * 100, total)
+					+ "%");
+		}
+		chargeTotalUserCounts
+				.add(new ChargeTotalUserCount("总计:", total, "100%"));
+	}
+
+	/**
+	 * 单个用户充值总额数统计导出excel
+	 * 
+	 * @return
+	 */
+	public String user_chargeTotalUserCount_export()
+	{
+		chargeTotalUserCounts = orderService.findChargeTotalUserCount();
+		rebuildChargeTotalUserCounts(chargeTotalUserCounts);
+		ExportExcel<ChargeTotalUserCount> exporter = new ExportExcel<ChargeTotalUserCount>();
+		OutputStream out = null;
+		try
+		{
+			response.setContentType("octets/stream");
+			response.addHeader("Content-Disposition", "attachment;filename="
+					+ DateFormat.currentDateFormat("yyyyMMdd") + ".xls");
+			out = response.getOutputStream();
+			exporter.exportExcel("单个用户充值总额数统计", new String[]
+			{ "充值总额", "用户数", "百分比" }, chargeTotalUserCounts, out, "yyyy-MM-dd");
+			out.close();
+			return null;
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+			return ERROR;
+		}
+
+	}
+
+	/**
+	 * 重构支付方式统计列表（百分比 + 汇总）
+	 * 
+	 * @param userPaywayCounts
+	 */
+	private void rebuild(List<UserPaywayCount> userPaywayCounts)
+	{
+		if (userPaywayCounts == null || userPaywayCounts.size() == 0)
+			return;
+		int total = 0;
+		for (UserPaywayCount userPaywayCount : userPaywayCounts)
+		{
+			total += userPaywayCount.getPaycount();
+		}
+		for (UserPaywayCount userPaywayCount : userPaywayCounts)
+		{
+			userPaywayCount.setPercent(MathsUtils.div(
+					userPaywayCount.getPaycount() * 100, total)
+					+ "%");
+		}
+		userPaywayCounts.add(new UserPaywayCount("总计:", total, "100%"));
+	}
+
+	/**
+	 * 用户地区统计
+	 * 
+	 * @return
+	 */
+	public String user_areaCount()
+	{
+		StringBuffer stringBuffer = new StringBuffer();
+		userAreaCounts = userService.findAreaCount();
+		String s1 = "<chart yAxisName='用户数' caption='用户地区统计' baseFont='宋体' baseFontSize='12' useRoundEdges='1' bgColor='FFFFFF,FFFFFF' showBorder='0'>";
+		stringBuffer.append(s1);
+		for (UserAreaCount userAreaCount : userAreaCounts)
+		{
+			stringBuffer.append("<set value='" + userAreaCount.getUsercount()
+					+ "' label='" + userAreaCount.getProName() + "'/>");
+
+		}
+		String s2 = "</chart>";
+		stringBuffer.append(s2);
+		dataString = stringBuffer.toString();
+		return SUCCESS;
+	}
+
+	/**
+	 * 用户地区统计导出excel
+	 * 
+	 * @return
+	 */
+	public String user_areaCount_export()
+	{
+		userAreaCounts = userService.findAreaCount();
+		// rebuildUserChargeRanklist(userChargeRanklist);
+		ExportExcel<UserAreaCount> exporter = new ExportExcel<UserAreaCount>();
+		OutputStream out = null;
+		try
+		{
+			response.setContentType("octets/stream");
+			response.addHeader("Content-Disposition", "attachment;filename="
+					+ DateFormat.currentDateFormat("yyyyMMdd") + ".xls");
+			out = response.getOutputStream();
+			exporter.exportExcel("用户地区统计", new String[]
+			{ "地区", "用户数" }, userAreaCounts, out, "yyyy-MM-dd");
+			out.close();
+			return null;
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+
+	/**
+	 * 用户年龄段统计
+	 * 
+	 * @return
+	 */
+	public String user_agegroupCount()
+	{
+		StringBuffer stringBuffer = new StringBuffer();
+		userAgegroupCounts = userService.findAgegroupCount();
+		String s1 = "<chart yAxisName='用户数' caption='用户年龄段统计' baseFont='宋体' baseFontSize='12' useRoundEdges='1' bgColor='FFFFFF,FFFFFF' showBorder='0'>";
+		stringBuffer.append(s1);
+		for (UserAgegroupCount userAgegroupCount : userAgegroupCounts)
+		{
+			stringBuffer.append("<set value='"
+					+ userAgegroupCount.getUsercount() + "' label='"
+					+ userAgegroupCount.getAgegroup() + "'/>");
+
+		}
+		String s2 = "</chart>";
+		stringBuffer.append(s2);
+		dataString = stringBuffer.toString();
+		return SUCCESS;
+	}
+
+	/**
+	 * 用户年龄段统计导出excel
+	 * 
+	 * @return
+	 */
+	public String user_agegroupCount_export()
+	{
+		userAgegroupCounts = userService.findAgegroupCount();
+		// rebuildUserChargeRanklist(userChargeRanklist);
+		ExportExcel<UserAgegroupCount> exporter = new ExportExcel<UserAgegroupCount>();
+		OutputStream out = null;
+		try
+		{
+			response.setContentType("octets/stream");
+			response.addHeader("Content-Disposition", "attachment;filename="
+					+ DateFormat.currentDateFormat("yyyyMMdd") + ".xls");
+			out = response.getOutputStream();
+			exporter.exportExcel("用户年龄段统计", new String[]
+			{ "年龄段", "用户数" }, userAgegroupCounts, out, "yyyy-MM-dd");
+			out.close();
+			return null;
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+
+	/**
+	 * 用户职业统计
+	 * 
+	 * @return
+	 */
+	public String user_careerCount()
+	{
+		StringBuffer stringBuffer = new StringBuffer();
+		userCareerCounts = userService.findCareerCount();
+		String s1 = "<chart yAxisName='用户数' caption='用户职业统计' baseFont='宋体' baseFontSize='12' useRoundEdges='1' bgColor='FFFFFF,FFFFFF' showBorder='0'>";
+		stringBuffer.append(s1);
+		for (UserCareerCount userCareerCount : userCareerCounts)
+		{
+			stringBuffer.append("<set value='" + userCareerCount.getUsercount()
+					+ "' label='" + userCareerCount.getCareer() + "'/>");
+
+		}
+		String s2 = "</chart>";
+		stringBuffer.append(s2);
+		dataString = stringBuffer.toString();
+		return SUCCESS;
+	}
+
+	/**
+	 * 用户职业统计导出excel
+	 * 
+	 * @return
+	 */
+	public String user_careerCount_export()
+	{
+		userCareerCounts = userService.findCareerCount();
+		ExportExcel<UserCareerCount> exporter = new ExportExcel<UserCareerCount>();
+		OutputStream out = null;
+		try
+		{
+			response.setContentType("octets/stream");
+			response.addHeader("Content-Disposition", "attachment;filename="
+					+ DateFormat.currentDateFormat("yyyyMMdd") + ".xls");
+			out = response.getOutputStream();
+			exporter.exportExcel("用户职业统计", new String[]
+			{ "职业", "用户数" }, userCareerCounts, out, "yyyy-MM-dd");
+			out.close();
+			return null;
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+
+	/**
+	 * 用户性别统计
+	 * 
+	 * @return
+	 */
+	public String user_sexCount()
+	{
+		Map<String, String> colors = new HashMap<String, String>();
+		colors.put("男", "429EAD");
+		colors.put("女", "4249AD");
+		colors.put("其它", "AD42A2");
+		StringBuffer stringBuffer = new StringBuffer();
+		userSexCounts = userService.findSexCount();
+		String s1 = "<chart caption='用户性别统计' baseFont='宋体' baseFontSize='12' showPercentageInLabel='1' showValues='1' showLabels='0' showLegend='1' legendPosition='RIGHT' showPercentValues='1' bgcolor='ECF5FF' bgalpha='70' bordercolor='C6D2DF' showpercentvalues='1' bgratio='0' startingangle='200' animation='1'>";
+		stringBuffer.append(s1);
+		for (UserSexCount userSexCount : userSexCounts)
+		{
+			stringBuffer.append("<set value='" + userSexCount.getUsercount()
+					+ "' label='" + userSexCount.getSex() + "' color='"
+					+ colors.get(userSexCount.getSex()) + "'/>");
+		}
+		String s2 = "</chart>";
+		stringBuffer.append(s2);
+		dataString = stringBuffer.toString();
+		rebuildUserSexCounts(userSexCounts);
+		return SUCCESS;
+	}
+
+	private void rebuildUserSexCounts(List<UserSexCount> userSexCounts)
+	{
+		int total = 0;
+		for (UserSexCount userSexCount : userSexCounts)
+		{
+			total += userSexCount.getUsercount();
+		}
+		for (UserSexCount userSexCount : userSexCounts)
+		{
+			userSexCount.setPercent(MathsUtils.div(
+					userSexCount.getUsercount() * 100, total) + "%");
+		}
+		userSexCounts.add(new UserSexCount("总计:", total, "100%"));
+	}
+
+	/**
+	 * 用户性别统计导出excel
+	 * 
+	 * @return
+	 */
+	public String user_sexCount_export()
+	{
+		userSexCounts = userService.findSexCount();
+		rebuildUserSexCounts(userSexCounts);
+		ExportExcel<UserSexCount> exporter = new ExportExcel<UserSexCount>();
+		OutputStream out = null;
+		try
+		{
+			response.setContentType("octets/stream");
+			response.addHeader("Content-Disposition", "attachment;filename="
+					+ DateFormat.currentDateFormat("yyyyMMdd") + ".xls");
+			out = response.getOutputStream();
+			exporter.exportExcel("用户性别统计", new String[]
+			{ "性别", "用户数", "百分比" }, userSexCounts, out, "yyyy-MM-dd");
+			out.close();
+			return null;
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+
+	public List<DailyNewUserCount> getDailyNewUserCounts()
+	{
+		return dailyNewUserCounts;
+	}
+
+	public void setDailyNewUserCounts(List<DailyNewUserCount> dailyNewUserCounts)
+	{
+		this.dailyNewUserCounts = dailyNewUserCounts;
+	}
+
+	public List<DailyUserloginCount> getDailyUserloginCounts()
+	{
+		return dailyUserloginCounts;
+	}
+
+	public void setDailyUserloginCounts(
+			List<DailyUserloginCount> dailyUserloginCounts)
+	{
+		this.dailyUserloginCounts = dailyUserloginCounts;
+	}
+
+	public List<DailyUserloginUserCount> getDailyUserloginUserCounts()
+	{
+		return dailyUserloginUserCounts;
+	}
+
+	public void setDailyUserloginUserCounts(
+			List<DailyUserloginUserCount> dailyUserloginUserCounts)
+	{
+		this.dailyUserloginUserCounts = dailyUserloginUserCounts;
+	}
+
+	public String getDataString()
+	{
+		return dataString;
+	}
+
+	public void setDataString(String dataString)
+	{
+		this.dataString = dataString;
+	}
+
+	public List<UserPaywayCount> getUserPaywayCounts()
+	{
+		return userPaywayCounts;
+	}
+
+	public void setUserPaywayCounts(List<UserPaywayCount> userPaywayCounts)
+	{
+		this.userPaywayCounts = userPaywayCounts;
+	}
+
+	public int getPart()
+	{
+		return part;
+	}
+
+	public void setPart(int part)
+	{
+		this.part = part;
+	}
+
+	public String getDataString2()
+	{
+		return dataString2;
+	}
+
+	public void setDataString2(String dataString2)
+	{
+		this.dataString2 = dataString2;
+	}
+
+	public List<DailyChargeUserCount> getDailyChargeUserCounts()
+	{
+		return dailyChargeUserCounts;
+	}
+
+	public void setDailyChargeUserCounts(
+			List<DailyChargeUserCount> dailyChargeUserCounts)
+	{
+		this.dailyChargeUserCounts = dailyChargeUserCounts;
+	}
+
+	public String getMonth()
+	{
+		return month;
+	}
+
+	public void setMonth(String month)
+	{
+		this.month = month;
+	}
+
+	public List<DailyUserloginOneUserCount> getDailyUserloginOneUserCounts()
+	{
+		return dailyUserloginOneUserCounts;
+	}
+
+	public void setDailyUserloginOneUserCounts(
+			List<DailyUserloginOneUserCount> dailyUserloginOneUserCounts)
+	{
+		this.dailyUserloginOneUserCounts = dailyUserloginOneUserCounts;
+	}
+
+	public List<ChargeTotalUserCount> getChargeTotalUserCounts()
+	{
+		return chargeTotalUserCounts;
+	}
+
+	public void setChargeTotalUserCounts(
+			List<ChargeTotalUserCount> chargeTotalUserCounts)
+	{
+		this.chargeTotalUserCounts = chargeTotalUserCounts;
+	}
+
+	public List<UserAreaCount> getUserAreaCounts()
+	{
+		return userAreaCounts;
+	}
+
+	public void setUserAreaCounts(List<UserAreaCount> userAreaCounts)
+	{
+		this.userAreaCounts = userAreaCounts;
+	}
+
+	public List<UserAgegroupCount> getUserAgegroupCounts()
+	{
+		return userAgegroupCounts;
+	}
+
+	public void setUserAgegroupCounts(List<UserAgegroupCount> userAgegroupCounts)
+	{
+		this.userAgegroupCounts = userAgegroupCounts;
+	}
+
+	public List<UserCareerCount> getUserCareerCounts()
+	{
+		return userCareerCounts;
+	}
+
+	public void setUserCareerCounts(List<UserCareerCount> userCareerCounts)
+	{
+		this.userCareerCounts = userCareerCounts;
+	}
+
+	public List<UserPaybankCount> getUserPaybankCounts()
+	{
+		return userPaybankCounts;
+	}
+
+	public void setUserPaybankCounts(List<UserPaybankCount> userPaybankCounts)
+	{
+		this.userPaybankCounts = userPaybankCounts;
+	}
+
+	public List<DailyRegisterTotalCount> getDailyRegisterTotalCounts()
+	{
+		return dailyRegisterTotalCounts;
+	}
+
+	public void setDailyRegisterTotalCounts(
+			List<DailyRegisterTotalCount> dailyRegisterTotalCounts)
+	{
+		this.dailyRegisterTotalCounts = dailyRegisterTotalCounts;
+	}
+
+	public List<UserSexCount> getUserSexCounts()
+	{
+		return userSexCounts;
+	}
+
+	public void setUserSexCounts(List<UserSexCount> userSexCounts)
+	{
+		this.userSexCounts = userSexCounts;
+	}
+
+	public List<DailyChargeMoneyCount> getDailyChargeMoneyCounts()
+	{
+		return dailyChargeMoneyCounts;
+	}
+
+	public void setDailyChargeMoneyCounts(
+			List<DailyChargeMoneyCount> dailyChargeMoneyCounts)
+	{
+		this.dailyChargeMoneyCounts = dailyChargeMoneyCounts;
+	}
+
+}

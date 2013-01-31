@@ -1,0 +1,53 @@
+package cc.ywxm.dao.game;
+
+import java.util.List;
+
+import cc.ywxm.model.platform.RechargeRank;
+
+/**
+ * 数据库原子操作
+ * 
+ * @author HuangDecai
+ * @since 2012-12-26 15:57:58
+ * 
+ */
+public interface RechargeLogDao
+{
+	/**
+	 * 某日充值次数
+	 * 
+	 * @param date
+	 * @return
+	 */
+	int count(String date);
+
+	/**
+	 * 某日充值人数
+	 * 
+	 * @param date
+	 * @return
+	 */
+	int count1(String date);
+
+	/**
+	 * 某日充值金额
+	 * 
+	 * @param date
+	 * @return
+	 */
+	double count2(String date);
+
+	/**
+	 * 充值排名
+	 * 
+	 * @return
+	 */
+	List<RechargeRank> rank();
+	/**
+	 * 月充值排名
+	 * @param year
+	 * @param month
+	 * @return
+	 */
+	public List<RechargeRank> rank(int year,int month);
+}

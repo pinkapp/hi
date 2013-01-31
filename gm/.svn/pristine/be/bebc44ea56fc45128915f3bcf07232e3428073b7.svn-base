@@ -1,0 +1,20 @@
+package cc.ywxm.listener;
+
+import javax.servlet.http.HttpSessionEvent;
+import javax.servlet.http.HttpSessionListener;
+
+import cc.ywxm.constant.Const;
+import cc.ywxm.share.ShareData;
+
+public class SessionListener implements HttpSessionListener {
+
+	public void sessionCreated(HttpSessionEvent event) {
+		event.getSession().setAttribute(Const.SESSION_DBSRV,
+				ShareData.getDefaultServer());
+	}
+
+	public void sessionDestroyed(HttpSessionEvent event) {
+
+	}
+
+}

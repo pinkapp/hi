@@ -1,0 +1,40 @@
+package cc.ywxm.vo;
+
+public class RoleVo
+{
+
+	// Fields
+
+	private Short role_id;
+	private String rolename;
+
+	public RoleVo()
+	{
+	}
+
+	public RoleVo(String rolename)
+	{
+		this.rolename = rolename;
+	}
+
+	public String getRolename()
+	{
+		return this.rolename;
+	}
+
+	public void setRolename(String rolename)
+	{
+		this.rolename = rolename;
+	}
+
+	public Short getRole_id()
+	{
+		return role_id;
+	}
+
+	public void setRole_id(Short role_id)
+	{
+		this.role_id = role_id;
+	}
+
+}

@@ -1,0 +1,53 @@
+package cc.ywxm.dao.impl.game;
+
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
+
+import cc.ywxm.dao.game.BattleRecordDao;
+import cc.ywxm.model.game.BattleRecord;
+import cc.ywxm.utils.RSMapper;
+
+/**
+ * 战报数据访问对象接口实现
+ * 
+ * @author HuangDecai
+ * @since 2013-1-11 10:17:25
+ * 
+ */
+@Repository
+public class BattleRecordDaoImpl implements BattleRecordDao
+{
+	@Resource
+	private JdbcTemplate gameJdbcTemplate;
+
+	public void delete(BattleRecord battleRecord)
+	{
+
+	}
+
+	public BattleRecord get(Integer id)
+	{
+		String sql = "SELECT * FROM battle_record WHERE id = ?";
+		return RSMapper.query(gameJdbcTemplate, sql, BattleRecord.class, new Object[]{id});
+	}
+
+	public List<BattleRecord> list(Integer id)
+	{
+		return null;
+	}
+
+	public void save(BattleRecord battleRecord)
+	{
+
+	}
+
+	public void update(BattleRecord battleRecord)
+	{
+
+	}
+
+}

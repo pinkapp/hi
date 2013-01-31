@@ -1,0 +1,110 @@
+package cc.ywxm.service.impl.game;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import cc.ywxm.dao.game.BaseInfoDao;
+import cc.ywxm.dao.game.BusinessBuildingDao;
+import cc.ywxm.dao.game.FunctionBuildingDao;
+import cc.ywxm.model.game.BusinessBuilding;
+import cc.ywxm.model.game.FunctionBuilding;
+import cc.ywxm.service.game.BuildInfoService;
+
+/**
+ * 
+ * @author HuangDeCai
+ * @since 2012-11-30 14:07:43
+ */
+@Transactional
+@Service
+public class BuildInfoServiceImpl implements BuildInfoService
+{
+	@Resource
+	private BusinessBuildingDao businessBuildingDao;
+	@Resource
+	private FunctionBuildingDao functionBuildingDao;
+	@Resource
+	private BaseInfoDao baseInfoDao;
+
+	public List<BusinessBuilding> gets(String nickname)
+	{
+		if (nickname == null || "".equals(nickname))
+		{
+			return new ArrayList<BusinessBuilding>();
+		}
+		nickname = nickname.trim();
+		try
+		{
+			Integer player = baseInfoDao.findPlayerByNickname(nickname);
+			return businessBuildingDao.list(player);
+		} catch (EmptyResultDataAccessException e)
+		{
+			// System.out.println(e.getMessage());
+			return new ArrayList<BusinessBuilding>();
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+			return new ArrayList<BusinessBuilding>();
+		}
+	}
+
+	public List<BusinessBuilding> gets(Integer player)
+	{
+		if (player == null)
+		{
+			return new ArrayList<BusinessBuilding>();
+		}
+		try
+		{
+			return businessBuildingDao.list(player);
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+			return new ArrayList<BusinessBuilding>();
+		}
+	}
+
+	public List<FunctionBuilding> gets2(Integer player)
+	{
+		if (player == null)
+		{
+			return new ArrayList<FunctionBuilding>();
+		}
+		try
+		{
+			return functionBuildingDao.list(player);
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+			return new ArrayList<FunctionBuilding>();
+		}
+	}
+
+	public List<FunctionBuilding> gets2(String nickname)
+	{
+		if (nickname == null || "".equals(nickname))
+		{
+			return new ArrayList<FunctionBuilding>();
+		}
+		try
+		{
+			Integer player = baseInfoDao.findPlayerByNickname(nickname);
+			return functionBuildingDao.list(player);
+		} catch (EmptyResultDataAccessException e)
+		{
+			// System.out.println(e.getMessage());
+			return new ArrayList<FunctionBuilding>();
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+			return new ArrayList<FunctionBuilding>();
+		}
+	}
+
+}

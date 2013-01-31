@@ -1,0 +1,50 @@
+package cc.ywxm.dao.impl;
+
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
+
+import cc.ywxm.dao.GameServerDao;
+import cc.ywxm.model.GameServer;
+import cc.ywxm.utils.RSMapper;
+
+@Repository
+public class GameServerDaoImpl implements GameServerDao
+{
+	// @Resource
+	// private HibernateTemplate hibernateTemplate;
+	@Resource
+	private JdbcTemplate jdbcTemplate;
+
+	public void save(GameServer server)
+	{
+		// hibernateTemplate.save(server);
+	}
+
+	public void delete(GameServer server)
+	{
+		// hibernateTemplate.delete(server);
+	}
+
+	public void update(GameServer server)
+	{
+		// hibernateTemplate.update(server);
+	}
+
+	public GameServer findById(Integer serverId)
+	{
+		// return (GameServer) hibernateTemplate.get(GameServer.class,
+		// gameOpenId);
+		return null;
+	}
+
+	public List<GameServer> findNewest()
+	{
+		String sql = "SELECT * FROM game_server";
+		return RSMapper.queryList(jdbcTemplate, sql, GameServer.class);
+	}
+
+}

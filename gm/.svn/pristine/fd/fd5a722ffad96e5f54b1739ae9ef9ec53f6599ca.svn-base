@@ -1,0 +1,127 @@
+package cc.ywxm.client;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.EOFException;
+import java.io.IOException;
+import java.io.UTFDataFormatException;
+
+import org.zeromq.ZMQ;
+
+import cc.ywxm.io.CPPInputStream;
+import cc.ywxm.io.CPPOutputStream;
+import cc.ywxm.io.HeadByteArray;
+
+/**
+ * ZeroMQ java远程过程调用RFC客户端 内部通讯协议
+ * 
+ * @author 黄德财
+ * @email hd.c@qq.com
+ * @since 2012-12-12 13:42:24
+ */
+public class ZMQClient
+{
+	private String serverURI = "tcp://192.168.0.248:16006";
+
+	public ZMQClient()
+	{
+		super();
+	}
+
+	public ZMQClient(String serverURI)
+	{
+		super();
+		this.serverURI = serverURI;
+	}
+
+	public String call(Integer aid, Short type, Short flag, String jsonString)
+	{
+		String result = null;
+		ZMQ.Context context = ZMQ.context(1);
+		ZMQ.Socket socket = context.socket(ZMQ.XREQ);
+		socket.connect(serverURI);
+		HeadByteArray headByteArray = new HeadByteArray(aid, type, flag);
+		// System.out.println("消息头：" + "aid:" + aid + ",type:" + type + ",flag:"
+		// + flag);
+		// System.out.println("消息体：" + jsonString);
+		byte[] head = headByteArray.toByteArray();
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+		CPPOutputStream cppOutputStream = new CPPOutputStream(
+				byteArrayOutputStream);
+		try
+		{
+			cppOutputStream.write(head);
+			cppOutputStream.writeUTF(jsonString);
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+		// 发送
+		socket.send(byteArrayOutputStream.toByteArray(), 0);
+		// 接收
+		byte[] reply = socket.recv(0);
+
+		ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(
+				reply);
+		CPPInputStream cppInputStream = new CPPInputStream(byteArrayInputStream);
+		try
+		{
+			cppInputStream.readInt();
+			cppInputStream.readShort();
+			cppInputStream.readShort();
+			result = cppInputStream.readUTF();
+		} catch (EOFException e)
+		{
+			System.out.println("流在读取所有字节之前到达末尾");
+		} catch (UTFDataFormatException e)
+		{
+			System.out.println("字节不表示一个有效的、UTF-8 修改版编码的字符串");
+		} catch (IOException e)
+		{
+			System.out.println("发生 I/O 错误");
+		}
+		return result;
+	}
+
+	public void headByteArray(int aid, short type, short flag)
+	{
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		CPPOutputStream cppOutputStream = new CPPOutputStream(out);
+		try
+		{
+			cppOutputStream.writeInt(aid);
+			cppOutputStream.writeShort(type);
+			cppOutputStream.writeShort(flag);
+			cppOutputStream.close();
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * 远程调用测试
+	 * 
+	 * @param args
+	 */
+	public static void main(String[] args)
+	{
+		int aid = 1;
+		short type = 1;
+		short flag = 1;
+		String jsonString = "{test:\"java\"}";
+		ZMQClient zmqClient = new ZMQClient();
+		String result = zmqClient.call(aid, type, flag, jsonString);
+		System.out.println(result);
+	}
+
+	public String getServerURI()
+	{
+		return serverURI;
+	}
+
+	public void setServerURI(String serverURI)
+	{
+		this.serverURI = serverURI;
+	}
+}

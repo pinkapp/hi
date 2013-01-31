@@ -1,0 +1,53 @@
+package cc.ywxm.model.gm;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+/**
+ * UserTypeRights entity. @author MyEclipse Persistence Tools
+ */
+@Entity
+@Table(name = "user_type_rights", catalog = "website")
+public class ManagerTypeRights implements java.io.Serializable {
+
+	// Fields
+
+	private Short userType;
+	private String rights;
+
+	// Constructors
+
+	/** default constructor */
+	public ManagerTypeRights() {
+	}
+
+	/** full constructor */
+	public ManagerTypeRights(String rights) {
+		this.rights = rights;
+	}
+
+	// Property accessors
+	@Id
+	@GeneratedValue
+	@Column(name = "userType", unique = true, nullable = false)
+	public Short getUserType() {
+		return this.userType;
+	}
+
+	public void setUserType(Short userType) {
+		this.userType = userType;
+	}
+
+	@Column(name = "rights", length = 1000)
+	public String getRights() {
+		return this.rights;
+	}
+
+	public void setRights(String rights) {
+		this.rights = rights;
+	}
+
+}

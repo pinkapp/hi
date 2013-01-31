@@ -1,0 +1,248 @@
+package cc.ywxm.action.gop;
+
+import java.io.IOException;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+
+import cc.ywxm.action.PageableAction;
+import cc.ywxm.constant.Const;
+import cc.ywxm.dao.gop.BaseDataDao;
+import cc.ywxm.model.gop.Game;
+import cc.ywxm.model.gop.Order;
+import cc.ywxm.service.OrderService;
+import cc.ywxm.utils.DateFormat;
+import cc.ywxm.vo.BankVo;
+import cc.ywxm.vo.GameOpenVo;
+import cc.ywxm.vo.OrderVo;
+
+@Controller
+@Scope("prototype")
+public class OrderAction extends PageableAction
+{
+	@Resource
+	private OrderService orderService;
+	// @Resource
+	// private GameService gameService;
+	@Resource
+	private BaseDataDao baseDataDao;
+	// @Resource
+	// private GameOpenService gameOpenService;
+	private List<OrderVo> orders;
+	private List<GameOpenVo> gameOpens;
+	private List<Game> games;
+	private Game game;
+	private Order od;
+	private OrderVo order;
+	private Integer step;
+	private Integer gameId;
+	// 支付宝网银充值支持的银行
+	private List<BankVo> banks1;
+	private Integer userId;
+	// private List<User> users;
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4798950242505399164L;
+
+	/**
+	 * 充值记录查询
+	 * 
+	 * @return
+	 */
+	public String order_manage()
+	{
+		// Integer userId = (Integer) session.get(Constants.SESSION_USERID);
+		if (userId == null)
+		{
+			return SUCCESS;
+		}
+		orders = orderService.findByPage(userId, this);
+		return SUCCESS;
+
+	}
+
+	/**
+	 * 充值历史
+	 * 
+	 * @return
+	 */
+	public String history()
+	{
+		Integer userId = (Integer) session.get(Const.SESSION_USERID);
+		orders = orderService.findByPage(userId, this);
+		return "history";
+	}
+
+	// 充值
+	public String recharge()
+	{
+		// switch (step)
+		// {
+		// case 1:
+		// games = gameService.findAll();
+		// return "first";
+		// case 2:
+		// if (gameId == null)
+		// {
+		// return "first";
+		// }
+		// banks1 = baseDataDao.findBanksByWayId(1);
+		// game = gameService.findById(gameId);
+		// gameOpens = gameOpenService.find(gameId, null);
+		// return "second";
+		// case 3:
+		// Integer userId = (Integer) session.get(Constants.SESSION_USERID);
+		// od.setUserId(userId);
+		// od.setOrdertime(DateFormat.currentDateFormat());
+		// orderService.recharge(od);
+		// response.setCharacterEncoding("utf-8");
+		// response.setContentType("text/html");
+		// try
+		// {
+		// response.getWriter()
+		// .println(
+		// "<script language='javascript'>alert('充值成功');</script>");
+		// } catch (IOException e)
+		// {
+		// e.printStackTrace();
+		// }
+		// return null;
+		//
+		// default:
+		// return null;
+		// }
+		if (od == null)
+		{
+			banks1 = baseDataDao.findBanksByWayId(1);
+			return INPUT;
+		} else
+		{
+			Integer userId = (Integer) session.get(Const.SESSION_USERID);
+			od.setUserId(userId);
+			od.setOrdertime(DateFormat.currentDateFormat());
+			if (od.getOrdermoney() != null)
+			{
+				od.setOrdermoney(od.getOrdermoney() * 100);
+			}
+			orderService.recharge(od);
+			response.setCharacterEncoding("utf-8");
+			response.setContentType("text/html");
+			try
+			{
+				response.getWriter()
+						.println(
+								"<script language='javascript'>alert('充值成功');</script>");
+			} catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+			return null;
+		}
+	}
+
+	public Integer getStep()
+	{
+		return step;
+	}
+
+	public void setStep(Integer step)
+	{
+		this.step = step;
+	}
+
+	public List<Game> getGames()
+	{
+		return games;
+	}
+
+	public void setGames(List<Game> games)
+	{
+		this.games = games;
+	}
+
+	public List<GameOpenVo> getGameOpens()
+	{
+		return gameOpens;
+	}
+
+	public void setGameOpens(List<GameOpenVo> gameOpens)
+	{
+		this.gameOpens = gameOpens;
+	}
+
+	public Integer getGameId()
+	{
+		return gameId;
+	}
+
+	public void setGameId(Integer gameId)
+	{
+		this.gameId = gameId;
+	}
+
+	public Game getGame()
+	{
+		return game;
+	}
+
+	public void setGame(Game game)
+	{
+		this.game = game;
+	}
+
+	public List<BankVo> getBanks1()
+	{
+		return banks1;
+	}
+
+	public void setBanks1(List<BankVo> banks1)
+	{
+		this.banks1 = banks1;
+	}
+
+	public Order getOd()
+	{
+		return od;
+	}
+
+	public void setOd(Order od)
+	{
+		this.od = od;
+	}
+
+	public OrderVo getOrder()
+	{
+		return order;
+	}
+
+	public void setOrder(OrderVo order)
+	{
+		this.order = order;
+	}
+
+	public List<OrderVo> getOrders()
+	{
+		return orders;
+	}
+
+	public void setOrders(List<OrderVo> orders)
+	{
+		this.orders = orders;
+	}
+
+	public Integer getUserId()
+	{
+		return userId;
+	}
+
+	public void setUserId(Integer userId)
+	{
+		this.userId = userId;
+	}
+
+}

@@ -1,0 +1,86 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@ taglib prefix="s" uri="/struts-tags"%>
+<%
+String path = request.getContextPath();
+String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+%>
+
+<!DOCTYPE html>
+<html>
+<head>
+<base href="<%=basePath%>">
+
+<title>竞技场查询</title>
+
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="keywords" content="英雄领域,亿网星漫">
+<meta http-equiv="description" content="Online Charge System">
+<link id="easyuiTheme" rel="stylesheet" type="text/css"
+	href="easyUI/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="easyUI/themes/icon.css">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+<script type="text/javascript" src="easyUI/jquery-1.8.0.min.js"></script>
+<script type="text/javascript" src="easyUI/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="easyUI/locale/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript">
+		function query(){
+			var param = {};
+			var nickname = $('#nickname').val();
+			param.nickname = nickname;
+			$('#info').html('');
+			$('#tab').datagrid({
+			    title:'竞技场信息',
+			    queryParams:param,
+				singleSelect:true,
+				fitColumns:true,
+				height:400,
+				url:'gets/arenaInfo',
+				loadMsg:'正在查询...',
+				onLoadSuccess:function(data){
+					if(nickname !=null && nickname != '' && data.total == 0){
+				    	$('#info').html('无此玩家竞技场信息');
+				    }
+				},
+				onLoadError:function(){
+				    alert('数据加载错误');
+				},
+				columns:[[
+					{field:'nickname',title:'玩家昵称',width:20},
+					{field:'rank',title:'排名',width:20},
+					{field:'count',title:'今日挑战次数',width:20},
+					{field:'buyCount',title:'购买战斗次数',width:20},
+					{field:'winCount',title:'连续胜利次数',width:20},
+					{field:'loseCount',title:'连续失败次数',width:20}
+				]]
+			});
+		}
+		$(document).keydown(function(event){
+		  switch (event.keyCode) {
+		    case 13:
+		        query();
+				break;
+			default:
+				break;
+		   }
+		});
+	</script>
+</head>
+<body>
+	<div id="title">
+		<label>玩家管理&gt;&gt;竞技场查询</label>
+	</div>
+	<div id="thisform">
+		<fieldset>
+			<legend>查询条件</legend>
+			<label for="nickname">玩家昵称：</label><input id="nickname" type="text"
+				name="nickname" value="">&nbsp;&nbsp;
+			<button type="button" onclick="query();">查询</button>
+			<label>&nbsp;&nbsp;注:要查询所有玩家竞技场信息，玩家昵称请留空</label><br />&nbsp;&nbsp;<label
+				id="info" style="color: red;"></label>
+		</fieldset>
+	</div>
+	<table id="tab"></table>
+</body>
+</html>

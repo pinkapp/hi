@@ -1,0 +1,234 @@
+package cc.ywxm.action.gop;
+
+import java.io.OutputStream;
+import java.util.Date;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+
+import cc.ywxm.action.PageableAction;
+import cc.ywxm.service.OrderService;
+import cc.ywxm.utils.DateFormat;
+import cc.ywxm.utils.ExportExcel;
+import cc.ywxm.vo.UserChargeRank;
+
+/**
+ * 充值排行
+ * 
+ * @author hdc
+ * 
+ */
+@Controller
+@Scope("prototype")
+public class ChargeRankAction extends PageableAction
+{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6760313902442960793L;
+
+	@Resource
+	private OrderService orderService;
+	private List<UserChargeRank> userChargeRanklist;
+	private String month = DateFormat.format(new Date(), "yyyy-MM");
+	// 开始日期
+	private String sday = DateFormat.format(new Date(), "yyyy-MM-dd");
+	// 截止日期
+	private String eday = DateFormat.format(new Date(), "yyyy-MM-dd");
+
+	// charts 数据
+	private String dataString;
+
+	/**
+	 * 用户充值总排行
+	 * 
+	 * @return
+	 */
+	public String user_all_chargeRank()
+	{
+
+		StringBuffer stringBuffer = new StringBuffer();
+		userChargeRanklist = orderService.findChargeRanklist();
+		String s1 = "<chart caption='用户充值总排行(前20名)' baseFont='宋体' baseFontSize='12' yAxisName='充值总额' xAxisName='用户' bgColor='F1F1F1' showValues='1' canvasBorderThickness='1' canvasBorderColor='999999' plotFillAngle='330' plotBorderColor='999999' showAlternateVGridColor='1' divLineAlpha='0'>";
+		stringBuffer.append(s1);
+		for (int i = 0; i < userChargeRanklist.size(); i++)
+		{
+			if (i >= 20)
+			{
+				break;
+			}
+			stringBuffer.append("<set value='"
+					+ userChargeRanklist.get(i).getChargetotal() + "' label='"
+					+ userChargeRanklist.get(i).getUsername() + "' toolText='第"
+					+ (i + 1) + "名'/>");
+		}
+		String s2 = "</chart>";
+		stringBuffer.append(s2);
+		dataString = stringBuffer.toString();
+		rebuildUserChargeRanklist(userChargeRanklist);
+		return SUCCESS;
+	}
+
+	/**
+	 * 用户充值月排行
+	 * 
+	 * @return
+	 */
+	public String user_month_chargeRank()
+	{
+
+		StringBuffer stringBuffer = new StringBuffer();
+		userChargeRanklist = orderService.findChargeRanklist(month);
+		String s1 = "<chart caption='用户充值月排行(前20名)' baseFont='宋体' baseFontSize='12' yAxisName='充值总额' xAxisName='用户' bgColor='F1F1F1' showValues='1' canvasBorderThickness='1' canvasBorderColor='999999' plotFillAngle='330' plotBorderColor='999999' showAlternateVGridColor='1' divLineAlpha='0'>";
+		stringBuffer.append(s1);
+		for (int i = 0; i < userChargeRanklist.size(); i++)
+		{
+			if (i >= 20)
+			{
+				break;
+			}
+			stringBuffer.append("<set value='"
+					+ userChargeRanklist.get(i).getChargetotal() + "' label='"
+					+ userChargeRanklist.get(i).getUsername() + "' toolText='第"
+					+ (i + 1) + "名'/>");
+		}
+		String s2 = "</chart>";
+		stringBuffer.append(s2);
+		dataString = stringBuffer.toString();
+		rebuildUserChargeRanklist(userChargeRanklist);
+		return SUCCESS;
+	}
+
+	/**
+	 * 用户充值日排行
+	 * 
+	 * @return
+	 */
+	public String user_day_chargeRank()
+	{
+
+		StringBuffer stringBuffer = new StringBuffer();
+		userChargeRanklist = orderService.findChargeRanklist(sday, eday);
+		String s1 = "<chart caption='用户充值日排行(前20名)' baseFont='宋体' baseFontSize='12' yAxisName='充值总额' xAxisName='用户' bgColor='F1F1F1' showValues='1' canvasBorderThickness='1' canvasBorderColor='999999' plotFillAngle='330' plotBorderColor='999999' showAlternateVGridColor='1' divLineAlpha='0'>";
+		stringBuffer.append(s1);
+		for (int i = 0; i < userChargeRanklist.size(); i++)
+		{
+			if (i >= 20)
+			{
+				break;
+			}
+			stringBuffer.append("<set value='"
+					+ userChargeRanklist.get(i).getChargetotal() + "' label='"
+					+ userChargeRanklist.get(i).getUsername() + "' toolText='第"
+					+ (i + 1) + "名'/>");
+		}
+		String s2 = "</chart>";
+		stringBuffer.append(s2);
+		dataString = stringBuffer.toString();
+		rebuildUserChargeRanklist(userChargeRanklist);
+		return SUCCESS;
+	}
+
+	/**
+	 * 重构用户充值排行列表（名次 + 汇总）
+	 * 
+	 * @param userChargeRanklist
+	 */
+	private void rebuildUserChargeRanklist(
+			List<UserChargeRank> userChargeRanklist)
+	{
+		if (userChargeRanklist == null || userChargeRanklist.size() == 0)
+			return;
+		int total = 0;
+		for (int i = 0; i < userChargeRanklist.size(); i++)
+		{
+			total += userChargeRanklist.get(i).getChargetotal();
+			userChargeRanklist.get(i).setRank(i + 1 + "");
+		}
+		userChargeRanklist.add(new UserChargeRank("总计:", total, ""));
+
+	}
+
+	/**
+	 * 用户充值排行导出excel
+	 * 
+	 * @return
+	 */
+	public String user_all_chargeRank_export()
+	{
+		userChargeRanklist = orderService.findChargeRanklist();
+		rebuildUserChargeRanklist(userChargeRanklist);
+		ExportExcel<UserChargeRank> exporter = new ExportExcel<UserChargeRank>();
+		OutputStream out = null;
+		try
+		{
+			response.setContentType("octets/stream");
+			response.addHeader("Content-Disposition", "attachment;filename="
+					+ DateFormat.currentDateFormat("yyyyMMdd") + ".xls");
+			out = response.getOutputStream();
+			exporter.exportExcel("用户充值排行", new String[]
+			{ "排行", "用户名", "充值总额" }, userChargeRanklist, out, "yyyy-MM-dd");
+			out.close();
+			return null;
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+			return ERROR;
+		}
+
+	}
+
+	public List<UserChargeRank> getUserChargeRanklist()
+	{
+		return userChargeRanklist;
+	}
+
+	public void setUserChargeRanklist(List<UserChargeRank> userChargeRanklist)
+	{
+		this.userChargeRanklist = userChargeRanklist;
+	}
+
+	public String getMonth()
+	{
+		return month;
+	}
+
+	public void setMonth(String month)
+	{
+		this.month = month;
+	}
+
+	public String getDataString()
+	{
+		return dataString;
+	}
+
+	public void setDataString(String dataString)
+	{
+		this.dataString = dataString;
+	}
+
+	public String getSday()
+	{
+		return sday;
+	}
+
+	public void setSday(String sday)
+	{
+		this.sday = sday;
+	}
+
+	public String getEday()
+	{
+		return eday;
+	}
+
+	public void setEday(String eday)
+	{
+		this.eday = eday;
+	}
+
+}

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"dtds/struts-2.3.dtd">
+
+<struts>
+	<package name="struts-export" extends="struts-root" namespace="/export">
+	    <action name="rechargeLog" class="rechargeLogAction" method="export" />
+	    <action name="consumeLog" class="consumeLogAction" method="export" />
+	    <action name="retentionRate" class="retentionRateAction" method="export" />
+	    <action name="rechargeCount1" class="rechargeCount1Action" method="export" />
+	    <action name="careerCount" class="careerCountAction" method="export" />
+	    <action name="ageGroupCount" class="ageGroupCountAction" method="export" />
+	    <action name="paywayCount1" class="paywayCountAction" method="export1" />
+	    <action name="paywayCount" class="paywayCountAction" method="export" />
+	    <action name="loginCount" class="loginCountAction" method="export" />
+	    <action name="regCount" class="regCountAction" method="export" />
+	    <action name="rechargeCount" class="rechargeCountAction" method="export" />
+	    <action name="rechargeRank" class="rechargeRankAction" method="export" />
+	    <action name="rechargeRank1" class="rechargeRank1Action" method="export" />
+	    <action name="rechargeRank2" class="rechargeRank2Action" method="export" />
+	</package>
+</struts>

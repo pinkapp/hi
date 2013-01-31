@@ -1,0 +1,51 @@
+package cc.ywxm.service;
+
+import java.util.List;
+
+import cc.ywxm.action.Pageable;
+import cc.ywxm.model.Function;
+import cc.ywxm.model.Role;
+import cc.ywxm.vo.RoleVo;
+
+public interface RoleService
+{
+
+	public Role findById(Integer roleId);
+
+	public void edit(Role role);
+
+	public void add(Role role);
+
+	/**
+	 * 分页查询角色
+	 * 
+	 * @param condition
+	 *            条件
+	 * @param pageable
+	 *            分页接口
+	 * @return 角色列表
+	 */
+	public List<RoleVo> findPaged(Role condition, final Pageable pageable);
+
+	/**
+	 * 删除角色
+	 * 
+	 * @param userId
+	 * @return
+	 */
+	public void delete(Integer roleId);
+
+	public List<Role> findAll();
+
+	public List<Function> findAllFunctions();
+
+	public void edit_function(Integer roleId, String functionIds);
+
+	/**
+	 * 查询角色的功能
+	 * 
+	 * @param roleId
+	 * @return
+	 */
+	public List<Short> findFunctionsByRoleId(Short roleId);
+}

@@ -1,0 +1,54 @@
+package cc.ywxm.model;
+
+
+public class GameServer
+{
+
+	private Integer serverId;
+	private String serverName;
+	private String gameId;
+	private String openDate;
+	private String address;
+	public Integer getServerId()
+	{
+		return serverId;
+	}
+	public void setServerId(Integer serverId)
+	{
+		this.serverId = serverId;
+	}
+	public String getServerName()
+	{
+		return serverName;
+	}
+	public void setServerName(String serverName)
+	{
+		this.serverName = serverName;
+	}
+	public String getGameId()
+	{
+		return gameId;
+	}
+	public void setGameId(String gameId)
+	{
+		this.gameId = gameId;
+	}
+	public String getOpenDate()
+	{
+		return openDate;
+	}
+	public void setOpenDate(String openDate)
+	{
+		this.openDate = openDate;
+	}
+	public String getAddress()
+	{
+		return address;
+	}
+	public void setAddress(String address)
+	{
+		this.address = address;
+	}
+
+
+}

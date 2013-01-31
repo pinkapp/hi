@@ -1,0 +1,152 @@
+package cc.ywxm.action.gop;
+
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+
+import cc.ywxm.action.PageableAction;
+import cc.ywxm.model.News;
+import cc.ywxm.service.NewsService;
+import cc.ywxm.vo.NewsVo;
+
+@Controller
+@Scope("prototype")
+public class NewsAction extends PageableAction
+{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7124276462012505850L;
+	private Integer newsId;
+	private News ns;
+	private NewsVo news;
+	private List<NewsVo> newses;
+	@Resource
+	private NewsService newsService;
+
+	/**
+	 * 新闻添加
+	 * 
+	 * @return
+	 */
+	public String news_add()
+	{
+		if (ns == null)
+		{
+			return INPUT;
+		} else
+		{
+			try
+			{
+				newsService.add(ns);
+				message = "添加成功";
+			} catch (Exception e)
+			{
+				message = "添加失败";
+				e.printStackTrace();
+			}
+			return news_manage();
+		}
+	}
+
+	/**
+	 * 新闻删除
+	 * 
+	 * @return
+	 */
+	public String news_delete()
+	{
+		try
+		{
+			newsService.delete(newsId);
+			message = "删除成功";
+		} catch (Exception e)
+		{
+			message = "删除失败";
+			e.printStackTrace();
+		}
+
+		return news_manage();
+	}
+
+	/**
+	 * 新闻修改
+	 * 
+	 * @return
+	 */
+	public String news_edit()
+	{
+		if (ns == null)
+		{
+			ns = newsService.findById(newsId);
+			return INPUT;
+		} else
+		{
+			try
+			{
+				newsService.edit(ns);
+				message = "修改成功";
+			} catch (Exception e)
+			{
+				message = "修改失败";
+				e.printStackTrace();
+			}
+			return news_manage();
+		}
+
+	}
+
+	/**
+	 * 新闻管理
+	 * 
+	 * @return
+	 */
+	public String news_manage()
+	{
+		newses = newsService.findByPage(news, this);
+		return SUCCESS;
+	}
+
+	public Integer getNewsId()
+	{
+		return newsId;
+	}
+
+	public void setNewsId(Integer newsId)
+	{
+		this.newsId = newsId;
+	}
+
+	public News getNs()
+	{
+		return ns;
+	}
+
+	public void setNs(News ns)
+	{
+		this.ns = ns;
+	}
+
+	public NewsVo getNews()
+	{
+		return news;
+	}
+
+	public void setNews(NewsVo news)
+	{
+		this.news = news;
+	}
+
+	public List<NewsVo> getNewses()
+	{
+		return newses;
+	}
+
+	public void setNewses(List<NewsVo> newses)
+	{
+		this.newses = newses;
+	}
+}

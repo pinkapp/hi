@@ -1,0 +1,33 @@
+package cc.ywxm.service;
+
+import java.util.List;
+
+import cc.ywxm.model.GameOpen;
+import cc.ywxm.utils.Pageable;
+import cc.ywxm.vo.GameOpenVo;
+
+public interface GameOpenService
+{
+
+	public List<GameOpen> findAll();
+
+	public GameOpen findById(Integer gameOpenId);
+
+	public void edit(GameOpen gameOpen);
+
+	public void add(GameOpen gameOpen);
+
+	public List<GameOpenVo> findByPage(GameOpenVo condition, Pageable pageable);
+
+	/**
+	 * 查询玩家玩过的游戏服务器 参数可为空，表示不加此条件
+	 * 
+	 * @param gameId
+	 * @param userId
+	 * @return
+	 */
+	public List<GameOpenVo> find(Integer gameId, Integer userId);
+
+	public void delete(Integer gameOpenId);
+
+}

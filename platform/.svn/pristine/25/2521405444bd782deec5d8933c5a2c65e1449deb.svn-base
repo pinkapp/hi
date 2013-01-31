@@ -1,0 +1,115 @@
+package cc.ywxm.model;
+// default package
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+/**
+ * Order entity. @author MyEclipse Persistence Tools
+ */
+@Entity
+@Table(name = "orders", catalog = "ywxm")
+public class Order implements java.io.Serializable
+{
+
+	// Fields
+
+	private Long orderId;
+	private Integer ordermoney;
+	private Integer wayId;
+	private Integer bankId;
+	private String ordertime;
+	private Integer userId;
+
+	// Constructors
+
+	/** default constructor */
+	public Order()
+	{
+	}
+
+	/** full constructor */
+	public Order(Integer ordermoney,
+			Integer wayId, Integer bankId, String ordertime, Integer userId)
+	{
+		
+		this.ordermoney = ordermoney;
+		this.wayId = wayId;
+		this.bankId = bankId;
+		this.ordertime = ordertime;
+		this.userId = userId;
+	}
+
+	// Property accessors
+	@Id
+	@GeneratedValue
+	@Column(name = "order_id", unique = true, nullable = false)
+	public Long getOrderId()
+	{
+		return this.orderId;
+	}
+
+	public void setOrderId(Long orderId)
+	{
+		this.orderId = orderId;
+	}
+
+	@Column(name = "ordermoney")
+	public Integer getOrdermoney()
+	{
+		return this.ordermoney;
+	}
+
+	public void setOrdermoney(Integer ordermoney)
+	{
+		this.ordermoney = ordermoney;
+	}
+
+	@Column(name = "way_id")
+	public Integer getWayId()
+	{
+		return this.wayId;
+	}
+
+	public void setWayId(Integer wayId)
+	{
+		this.wayId = wayId;
+	}
+
+	@Column(name = "bank_id")
+	public Integer getBankId()
+	{
+		return this.bankId;
+	}
+
+	public void setBankId(Integer bankId)
+	{
+		this.bankId = bankId;
+	}
+
+	@Column(name = "ordertime", length = 50)
+	public String getOrdertime()
+	{
+		return this.ordertime;
+	}
+
+	public void setOrdertime(String ordertime)
+	{
+		this.ordertime = ordertime;
+	}
+
+	@Column(name = "user_id")
+	public Integer getUserId()
+	{
+		return this.userId;
+	}
+
+	public void setUserId(Integer userId)
+	{
+		this.userId = userId;
+	}
+
+}

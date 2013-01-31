@@ -1,0 +1,110 @@
+package cc.ywxm.dao.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.stereotype.Repository;
+
+import cc.ywxm.dao.GameOpenDao;
+import cc.ywxm.model.GameOpen;
+import cc.ywxm.utils.Pageable;
+import cc.ywxm.utils.RSMapper;
+import cc.ywxm.vo.GameOpenVo;
+
+@Repository
+public class GameOpenDaoImpl implements GameOpenDao
+{
+	@Resource
+	private HibernateTemplate hibernateTemplate;
+	@Resource
+	private JdbcTemplate jdbcTemplate;
+
+	public void save(GameOpen gameOpen)
+	{
+		hibernateTemplate.save(gameOpen);
+	}
+
+	public void delete(GameOpen gameOpen)
+	{
+		hibernateTemplate.delete(gameOpen);
+	}
+
+	public void update(GameOpen gameOpen)
+	{
+		hibernateTemplate.update(gameOpen);
+	}
+
+	public GameOpen findById(Integer gameOpenId)
+	{
+		GameOpen gameOpen;
+		try
+		{
+			gameOpen = (GameOpen)hibernateTemplate.get(GameOpen.class, gameOpenId);
+		} catch (DataAccessException e)
+		{
+			e.printStackTrace();
+			return null;
+		}
+		return gameOpen;
+	}
+
+	public List<GameOpenVo> findByPage(GameOpenVo condition, Pageable pageable)
+	{
+		String sql = "SELECT t.open_id, t1.gamename, t.game_server,t.open_time FROM game_open t LEFT JOIN game t1 ON t.game_id = t1.game_id WHERE 1 = 1";
+		if (condition != null)
+		{
+			List<Object> args = new ArrayList<Object>();
+			if (StringUtils.isNotEmpty(condition.getGamename()))
+			{
+				sql += " AND t1.gamename like ?";
+				args.add("%" + condition.getGamename() + "%");
+			}
+			sql += " ORDER BY t.open_id desc";
+			return RSMapper.queryPage(jdbcTemplate, sql, pageable,
+					GameOpenVo.class, args.toArray());
+		} else
+		{
+			sql += " ORDER BY t.open_id desc";
+			return RSMapper.queryPage(jdbcTemplate, sql, pageable,
+					GameOpenVo.class);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<GameOpen> findAll()
+	{
+		return hibernateTemplate.find("from GameOpen");
+	}
+
+	public List<GameOpenVo> find(Integer gameId, Integer userId)
+	{
+		String sql = "SELECT t.open_id, t.game_server,t.open_time FROM game_open t WHERE 1 = 1";
+		if (gameId != null || userId != null)
+		{
+			List<Object> args = new ArrayList<Object>();
+			if (gameId != null)
+			{
+				sql += " AND t.game_id = ?";
+				args.add(gameId);
+			}
+			if (userId != null)
+			{
+				// sql += " AND t2.user_id = ?";
+				// args.add(userId);
+			}
+			return RSMapper.queryList(jdbcTemplate, sql, GameOpenVo.class,
+					args.toArray());
+		} else
+		{
+			return RSMapper.queryList(jdbcTemplate, sql, GameOpenVo.class);
+		}
+
+	}
+
+}

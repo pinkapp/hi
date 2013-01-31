@@ -1,0 +1,262 @@
+package cc.ywxm.action.gop;
+
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+
+import cc.ywxm.action.PageableAction;
+import cc.ywxm.model.gop.Function;
+import cc.ywxm.model.gop.Role;
+import cc.ywxm.service.RoleService;
+import cc.ywxm.vo.RoleVo;
+
+@Controller
+@Scope("prototype")
+public class RoleAction extends PageableAction
+{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1378527866913218594L;
+	@Resource
+	private RoleService roleService;
+	private List<RoleVo> roles;
+	private List<Role> rs;
+	private Role role;
+	private Integer roleId;
+	private String functionIds;
+	private List<Function> functions;
+	// 选中的功能
+	private List<Short> checkedFunctions;
+	// 选中的功能（字符串形式）
+	private String checkedFuncs;
+
+	/**
+	 * 角色管理界面（包括查询）
+	 * 
+	 * @return
+	 */
+	public String role_manage()
+	{
+		rs = roleService.findAll();
+		return SUCCESS;
+	}
+
+	/**
+	 * 角色添加
+	 * 
+	 * @return
+	 */
+	public String role_add()
+	{
+		if (role == null)
+		{
+			return INPUT;
+		}
+		try
+		{
+			roleService.add(role);
+			message = "添加成功";
+		} catch (Exception e)
+		{
+			message = "添加失败";
+			e.printStackTrace();
+		}
+
+		role = null;
+		return role_manage();
+	}
+
+	/**
+	 * 角色删除
+	 * 
+	 * @return
+	 */
+	public String role_delete()
+	{
+		try
+		{
+			message = "删除成功";
+			roleService.delete(roleId);
+			roles = roleService.findPaged(null, this);
+			return role_manage();
+		} catch (Exception e)
+		{
+			message = "删除失败，角色可能被使用";
+			e.printStackTrace();
+			roles = roleService.findPaged(null, this);
+			return role_manage();
+		}
+
+	}
+
+	/**
+	 * 角色修改
+	 * 
+	 * @return
+	 */
+	public String role_edit()
+	{
+		if (role == null)
+		{
+			role = roleService.findById(roleId);
+			return INPUT;
+		}
+		try
+		{
+			roleService.edit(role);
+			message = "修改成功";
+		} catch (Exception e)
+		{
+			message = "修改失败";
+			e.printStackTrace();
+		}
+		role = null;
+		return role_manage();
+	}
+
+	/**
+	 * 角色功能界面
+	 * 
+	 * @return
+	 */
+	public String role_function_manage()
+	{
+		rs = roleService.findAll();
+		return SUCCESS;
+	}
+
+	/**
+	 * 修改功能
+	 * 
+	 * @return
+	 */
+	public String role_edit_function()
+	{
+		functions = roleService.findAllFunctions();
+		if (functionIds == null)
+		{
+			checkedFunctions = roleService.findFunctionsByRoleId(roleId
+					.shortValue());// 查询选中的功能
+			checkedFuncs = checkedFunctions.toString().replace("[", "")
+					.replace("]", "");
+			return INPUT;
+		} else
+		{
+			try
+			{
+				roleService.edit_function(roleId, functionIds);
+				message = "修改成功";
+			} catch (Exception e)
+			{
+				message = "修改失败";
+				e.printStackTrace();
+			}
+			checkedFunctions = roleService.findFunctionsByRoleId(roleId
+					.shortValue());// 查询选中的功能
+			checkedFuncs = checkedFunctions.toString().replace("[", "")
+					.replace("]", "");
+			return SUCCESS;
+		}
+
+	}
+
+	/**
+	 * 查看功能
+	 * 
+	 * @return
+	 */
+	public String role_view_function()
+	{
+		functions = roleService.findAllFunctions();
+		checkedFunctions = roleService.findFunctionsByRoleId(roleId
+				.shortValue());// 查询选中的功能
+		checkedFuncs = checkedFunctions.toString().replace("[", "").replace(
+				"]", "");
+		return SUCCESS;
+
+	}
+
+	public List<RoleVo> getRoles()
+	{
+		return roles;
+	}
+
+	public void setRoles(List<RoleVo> roles)
+	{
+		this.roles = roles;
+	}
+
+	public List<Role> getRs()
+	{
+		return rs;
+	}
+
+	public void setRs(List<Role> rs)
+	{
+		this.rs = rs;
+	}
+
+	public Role getRole()
+	{
+		return role;
+	}
+
+	public void setRole(Role role)
+	{
+		this.role = role;
+	}
+
+	public Integer getRoleId()
+	{
+		return roleId;
+	}
+
+	public void setRoleId(Integer roleId)
+	{
+		this.roleId = roleId;
+	}
+
+	public String getFunctionIds()
+	{
+		return functionIds;
+	}
+
+	public void setFunctionIds(String functionIds)
+	{
+		this.functionIds = functionIds;
+	}
+
+	public List<Function> getFunctions()
+	{
+		return functions;
+	}
+
+	public void setFunctions(List<Function> functions)
+	{
+		this.functions = functions;
+	}
+
+	public List<Short> getCheckedFunctions()
+	{
+		return checkedFunctions;
+	}
+
+	public void setCheckedFunctions(List<Short> checkedFunctions)
+	{
+		this.checkedFunctions = checkedFunctions;
+	}
+
+	public String getCheckedFuncs()
+	{
+		return checkedFuncs;
+	}
+
+	public void setCheckedFuncs(String checkedFuncs)
+	{
+		this.checkedFuncs = checkedFuncs;
+	}
+}

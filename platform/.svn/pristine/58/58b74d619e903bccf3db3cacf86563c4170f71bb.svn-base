@@ -1,0 +1,1113 @@
+package cc.ywxm.action.gop;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.Cookie;
+
+import org.apache.struts2.json.JSONException;
+import org.apache.struts2.json.JSONUtil;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+
+import cc.ywxm.action.PageableAction;
+import cc.ywxm.constant.Const;
+import cc.ywxm.dao.gop.BaseDataDao;
+import cc.ywxm.model.gop.Career;
+import cc.ywxm.model.gop.Province;
+import cc.ywxm.model.gop.Role;
+import cc.ywxm.model.gop.User;
+import cc.ywxm.service.RoleService;
+import cc.ywxm.service.UserService;
+import cc.ywxm.utils.CookieUtils;
+import cc.ywxm.utils.PasswordUtils;
+import cc.ywxm.utils.RandomUtils;
+import cc.ywxm.utils.WebUtils;
+import cc.ywxm.vo.UserVo;
+import cc.ywxm.vo.UserVo1;
+import cc.ywxm.vo.UserVo2;
+
+@Controller
+@Scope("prototype")
+public class UserAction extends PageableAction
+{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6114755567350736350L;
+	@Resource
+	private UserService userService;
+	@Resource
+	private RoleService roleService;
+	// @Resource
+	// private UserloginService userloginService;
+	// @Resource
+	// private GameServerService gameServerService;
+	@Resource
+	private BaseDataDao baseDataDao;
+
+	private Integer userId;
+	private String username;
+	private String password;
+	private String sex;
+	private String birthday;
+	private String career;
+	private String phone;
+	private String email;
+	private String realname;
+	private String cardId;
+	private String ip;
+	private String lastTime;
+	private String portraitUrl;
+	private String province;
+	private String city;
+	private String source;
+
+	private List<Province> provinces;
+	private List<Career> careers;
+	private User user;
+	private UserVo2 user2;
+	private List<String> usernames;
+	private Map<Integer, String> sexs = new HashMap<Integer, String>();
+	private String prePage; // 登录前页面
+	private boolean exist = false;
+	private String rand = "";
+	private boolean autoLogin = false;// 是否自动登陆
+	private CookieUtils cookieUtils = new CookieUtils();
+	private String message2;
+	private String oldpass;
+	private String newpass;
+	private String term;
+	private Integer roleId;
+	private UserVo userVo;
+	private UserVo1 userVo1;
+	private List<UserVo> users;
+	private List<UserVo1> user1s;
+	private String careerName;
+	private Boolean b;
+	private String phoneVerifyCode = "";
+	private List<Role> rs;
+	private String spasswd;
+	private int yetSecondaryPassword;
+	private int yetPhone;
+	private int yetCardId;
+
+	private String syncString = "";// 加密字符串
+	private String ucsyn = "";// 论坛同步字符串
+
+	/**
+	 * 账号登录
+	 * 
+	 * @return
+	 */
+	public String login()
+	{
+		if (session.get(Const.AUTH_CODE) == null)
+		{
+			return INPUT;
+		}
+		if (!session.get(Const.AUTH_CODE).equals(rand))
+		{
+			message = "验证码错误,登录失败";
+			return INPUT;
+		}
+		// int code = userService.login(username, password);
+		String loginIp = WebUtils.getIpAddr(request);
+		int code = userService.login(username, password, loginIp);
+		switch (code)
+		{
+		case 1:
+			message = "登录成功";
+			break;
+		case 2:
+			message = "用户名为空，登录失败";
+			break;
+		case 3:
+			message = "用户名不存在，登录失败";
+			break;
+		case 4:
+			message = "密码，登录失败";
+			break;
+		case 5:
+			message = "登录失败";
+			break;
+
+		default:
+			message = "未知错误，登录失败";
+			break;
+		}
+		if (code != 1)
+		{
+			return INPUT;
+		}
+		userId = userService.findByUsername(username).getUserId();
+		// 把参数放到session中
+		session.put(Const.SESSION_USERID, userId);
+		session.put(Const.SESSION_AUTOLOGIN, autoLogin);
+
+		// 如果自动登陆
+		if (autoLogin)
+		{
+			Cookie cookie = new Cookie(Const.COOKIE_NAME_LOGINUSER, userId + "");
+			cookie.setMaxAge(Const.COOKIE_MAXAGE);
+			response.addCookie(cookie);
+		}
+
+		// 论坛同步
+		ucsyn = userService.uc_user_synlogin(username, password);
+		System.out.println("discuz：" + ucsyn);
+		// 游戏客户端同步
+		syncString = userService.server_user_synlogin(username, password);
+
+		// System.out.println(syncString);
+		return SUCCESS;
+	}
+
+	/**
+	 * 账号退出
+	 * 
+	 * @return
+	 */
+	public String logout()
+	{
+
+		if (session.containsKey(Const.SESSION_AUTOLOGIN))
+		{
+			autoLogin = (Boolean) session.get(Const.SESSION_AUTOLOGIN);
+		}
+		if (autoLogin)
+		{
+			Cookie cookie = new Cookie(Const.COOKIE_NAME_LOGINUSER, "");
+			cookie.setMaxAge(0);
+			response.addCookie(cookie);
+			session.remove(Const.SESSION_AUTOLOGIN);
+		}
+		session.remove(Const.SESSION_USERID);// 清除会话
+		// 论坛同步
+		ucsyn = userService.uc_user_synlogout();
+		// 游戏客户端同步
+		syncString = userService.server_user_synlogout();
+
+		return SUCCESS;
+	}
+
+	/**
+	 * 账号管理界面（包括查询）
+	 * 
+	 * @return
+	 */
+	public String user_manage()
+	{
+		userId = (Integer) session.get(Const.SESSION_USERID);
+		users = userService.findPaged(userVo, this);
+		return SUCCESS;
+	}
+
+	/**
+	 * 账号查看编辑
+	 * 
+	 * @return
+	 */
+	public String user_edit()
+	{
+		if (user == null)
+		{
+			sexs.put(1, "男");
+			sexs.put(0, "女");
+			provinces = baseDataDao.findAllProvinces();
+			careers = baseDataDao.findAllCareers();
+			user = userService.get(userId);
+			return INPUT;
+		} else
+		{
+			userService.edit(user);
+			// 重置密码
+			if (password != null && !"".equals(password))
+			{
+				userService.resetPassword(user.getUserId(), password);
+			}
+		}
+		return user_manage();
+	}
+
+	/**
+	 * 账号封号
+	 * 
+	 * @return
+	 */
+	public String user_close()
+	{
+		if (user2 == null)
+		{
+			user2 = userService.findUserVo2ById(userId);
+			return INPUT;
+		}
+		userService.close(user2);
+		// userService.updateStatusCode(userId, 0);
+		return user_manage();
+	}
+
+	/**
+	 * 账号解封
+	 * 
+	 * @return
+	 */
+	public String user_recover()
+	{
+		if (user2 == null)
+		{
+			user2 = userService.findUserVo2ById(userId);
+			return INPUT;
+		} else
+		{
+			userService.recover(user2.getUser_id());
+		}
+
+		return user_manage();
+	}
+
+	/**
+	 * 账号信息
+	 * 
+	 * @return
+	 */
+	public String userinfo()
+	{
+		Integer userId = (Integer) session.get(Const.SESSION_USERID);
+		user = userService.get(userId);
+		return SUCCESS;
+	}
+
+	/**
+	 * 删除头像
+	 * 
+	 * @return
+	 */
+	public String portrait_delete()
+	{
+		user = userService.get(userId);
+		user.setPortraitUrl("");
+		userService.edit(user);
+		return SUCCESS;
+	}
+
+	/**
+	 * 修改密码
+	 * 
+	 * @return
+	 */
+	public String editpass()
+	{
+		int userId = (Integer) session.get(Const.SESSION_USERID);
+		user = userService.get(userId);
+		if (oldpass == null)
+		{
+			return SUCCESS;
+		}
+		try
+		{
+			int n = userService.login(user.getUsername(), oldpass);
+			if (n != 1)
+			{
+				message = "原密码错误";
+			} else
+			{
+				userService.resetPassword(userId, newpass);
+				message = "修改成功";
+			}
+			return SUCCESS;
+		} catch (Exception e)
+		{
+			message = "未知错误";
+			e.printStackTrace();
+			return SUCCESS;
+		}
+
+	}
+
+	/**
+	 * 账号角色界面（包括查询）
+	 * 
+	 * @return
+	 */
+	public String user_role_manage()
+	{
+		rs = roleService.findAll();
+		rs.add(new Role("默认账号"));
+		user1s = userService.findPaged(userVo1, this);
+		return SUCCESS;
+	}
+
+	/**
+	 * 修改角色
+	 * 
+	 * @return
+	 */
+	public String user_grant()
+	{
+		if (roleId == null)
+		{
+			rs = roleService.findAll();
+			roleId = userService.findRoleIdByUserId(userId).intValue();
+			return INPUT;
+		} else
+		{
+			try
+			{
+				userService.grant(userId, roleId);
+				message = "修改角色成功";
+			} catch (Exception e)
+			{
+				message = "修改角色失败";
+				e.printStackTrace();
+			}
+			rs = roleService.findAll();
+			rs.add(new Role("默认账号"));
+			user1s = userService.findPaged(userVo1, this);
+			return SUCCESS;
+		}
+
+	}
+
+	/**
+	 * 二级密码
+	 * 
+	 * @return
+	 */
+	public String spasswd()
+	{
+		if (spasswd == null)
+		{
+			int userId = (Integer) session.get(Const.SESSION_USERID);
+			yetSecondaryPassword = userService.yetSecondaryPassword(userId);
+			return INPUT;
+		} else
+		{
+
+			int userId = (Integer) session.get(Const.SESSION_USERID);
+			userService.setSecondaryPassword(userId, spasswd);
+			yetSecondaryPassword = 1;
+			return SUCCESS;
+		}
+
+	}
+
+	/**
+	 * 修改资料
+	 * 
+	 * @return
+	 */
+	public String edit()
+	{
+		if (user == null)
+		{
+			sexs.put(1, "男");
+			sexs.put(0, "女");
+			provinces = baseDataDao.findAllProvinces();
+			careers = baseDataDao.findAllCareers();
+			user = userService.get((Integer) session.get(Const.SESSION_USERID));
+			return INPUT;
+		} else
+		{
+			user.setUserId((Integer) session.get(Const.SESSION_USERID));
+			userService.edit(user);
+			return SUCCESS;
+		}
+
+	}
+
+	/**
+	 * 修改头像
+	 * 
+	 * @return
+	 */
+	public String edit_portrait()
+	{
+		user = userService.get((Integer) session.get(Const.SESSION_USERID));
+		return INPUT;
+	}
+
+	/**
+	 * 身份证绑定（防沉迷认证）
+	 * 
+	 * @return
+	 */
+	public String cardidauth()
+	{
+		userId = (Integer) session.get(Const.SESSION_USERID);
+		yetCardId = userService.yetCardId(userId);
+		if (yetCardId == 1)
+		{
+			user = userService.get(userId);
+			message = "您的身份证号码已绑定";
+			return SUCCESS;
+		} else if (cardId != null && realname != null)
+		{
+			user = userService.get(userId);
+			user.setRealname(realname);
+			user.setCardId(cardId);
+			userService.edit(user);
+			message = "身份证号码绑定成功";
+			yetCardId = 1;
+
+		}
+		return SUCCESS;
+
+	}
+
+	/**
+	 * 安全信息
+	 * 
+	 * @return
+	 */
+	public String security()
+	{
+		user = userService.get((Integer) session.get(Const.SESSION_USERID));
+		if (user.getPhone() == null || "".equals(user.getPhone()))
+		{
+			message = "你尚未绑定手机！";
+		}
+		if (user.getCardId() == null || "".equals(user.getCardId()))
+		{
+			message2 = "你尚未绑定身份证！";
+		}
+		return SUCCESS;
+
+	}
+
+	/**
+	 * 手机绑定
+	 * 
+	 * @return
+	 */
+	public String mobile_verify()
+	{
+		if (phone == null)
+		{
+			int userId = (Integer) session.get(Const.SESSION_USERID);
+			phone = userService.findPhone(userId);
+			// yetPhone = userService.yetPhone(userId);
+			return SUCCESS;
+		}
+		Object mvc = session.get(Const.MOBILE_VERIFY_CODE);
+		if (mvc == null)
+		{
+			message = "您还没获取短信验证码呢";
+		} else
+		{
+			if (phoneVerifyCode.equals(mvc))
+			{
+				session.remove(Const.MOBILE_VERIFY_CODE);
+				user = userService.get((Integer) session
+						.get(Const.SESSION_USERID));
+				boolean b = userService.checkPhone(phone);
+				if (b)
+				{
+					message = "绑定失败，手机号码已被其他账户使用";
+					phone = null;
+				} else
+				{
+					user.setPhone(phone);
+					userService.edit(user);
+					message = "手机绑定成功";
+				}
+			} else
+			{
+				message = "验证码错误";
+			}
+
+		}
+		return SUCCESS;
+
+	}
+
+	/**
+	 * 手机绑定修改
+	 * 
+	 * @return
+	 */
+	public String mobile_update()
+	{
+		return SUCCESS;
+	}
+
+	/**
+	 * 账号注册
+	 * 
+	 * @return
+	 */
+	public String reg()
+	{
+		String regAddress = WebUtils.getIpAddr(request);
+		int code = 0;
+		code = userService.add(username, password, realname, cardId, email,
+				regAddress);
+		switch (code)
+		{
+		case 1:
+			message = "注册成功";
+			break;
+		case 2:
+			message = "用户名为空，注册失败";
+			break;
+		case 3:
+			message = "密码为空，注册失败";
+			break;
+		case 4:
+			message = "用户名重名，注册失败";
+			break;
+		case 5:
+			message = "电子邮件为空，注册失败";
+			break;
+		default:
+			message = "未知错误，注册失败";
+			break;
+		}
+		if (code == 1)
+		{
+			return SUCCESS;
+		} else
+		{
+			return INPUT;
+		}
+
+	}
+
+	/**
+	 * 检查账号名是否存在
+	 * 
+	 * @return
+	 */
+	public String checkUsername()
+	{
+		exist = userService.checkUsername(username);
+		return SUCCESS;
+	}
+
+	/**
+	 * 搜索用户名
+	 * 
+	 * @return
+	 */
+	public String searchUsername()
+	{
+		if (term == null)
+			return null;
+		term = term.trim().toLowerCase();
+		usernames = userService.findUsersByUsername(term);
+		String jsonString = "";
+		try
+		{
+			jsonString = JSONUtil.serialize(usernames);
+			System.out.println("ssss" + jsonString);
+		} catch (JSONException e1)
+		{
+			e1.printStackTrace();
+		}
+		response.setCharacterEncoding("utf-8");
+		try
+		{
+			PrintWriter out = response.getWriter();
+			out.append(jsonString);
+			out.close();
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+		return null;
+
+	}
+
+	/**
+	 * 检查电子邮件是否存在
+	 * 
+	 * @return
+	 */
+	public String checkEmail()
+	{
+		exist = userService.checkEmail(email);
+		return SUCCESS;
+
+	}
+
+	/**
+	 * 手机验证发送手机验证码
+	 * 
+	 * @return
+	 */
+	public String sendMobileVerifyCode()
+	{
+		String vc = RandomUtils.randString(6);
+		String[] strs = new String[2];
+		strs[1] = vc;
+		userService.sendVerifyCodeByPhone(phone, strs);
+		System.out.println("已通过手机" + phone + "发送验证码：" + vc);
+		session.put(Const.MOBILE_VERIFY_CODE, vc);
+		return null;
+	}
+
+	public User getUser()
+	{
+		return user;
+	}
+
+	public void setUser(User user)
+	{
+		this.user = user;
+	}
+
+	public Map<Integer, String> getSexs()
+	{
+		return sexs;
+	}
+
+	public void setSexs(Map<Integer, String> sexs)
+	{
+		this.sexs = sexs;
+	}
+
+	public List<Province> getProvinces()
+	{
+		return provinces;
+	}
+
+	public void setProvinces(List<Province> provinces)
+	{
+		this.provinces = provinces;
+	}
+
+	public List<Career> getCareers()
+	{
+		return careers;
+	}
+
+	public void setCareers(List<Career> careers)
+	{
+		this.careers = careers;
+	}
+
+	public String getUsername()
+	{
+		return username;
+	}
+
+	public void setUsername(String username)
+	{
+		this.username = username;
+	}
+
+	public String getPassword()
+	{
+		return password;
+	}
+
+	public void setPassword(String password)
+	{
+		this.password = password;
+	}
+
+	public String getPrePage()
+	{
+		return prePage;
+	}
+
+	public void setPrePage(String prePage)
+	{
+		this.prePage = prePage;
+	}
+
+	public boolean isExist()
+	{
+		return exist;
+	}
+
+	public void setExist(boolean exist)
+	{
+		this.exist = exist;
+	}
+
+	public String getRand()
+	{
+		return rand;
+	}
+
+	public void setRand(String rand)
+	{
+		this.rand = rand;
+	}
+
+	public String getMessage2()
+	{
+		return message2;
+	}
+
+	public void setMessage2(String message2)
+	{
+		this.message2 = message2;
+	}
+
+	public String getOldpass()
+	{
+		return oldpass;
+	}
+
+	public void setOldpass(String oldpass)
+	{
+		this.oldpass = oldpass;
+	}
+
+	public String getNewpass()
+	{
+		return newpass;
+	}
+
+	public void setNewpass(String newpass)
+	{
+		this.newpass = newpass;
+	}
+
+	public String getEmail()
+	{
+		return email;
+	}
+
+	public void setEmail(String email)
+	{
+		this.email = email;
+	}
+
+	public String getTerm()
+	{
+		return term;
+	}
+
+	public void setTerm(String term)
+	{
+		this.term = term;
+	}
+
+	public List<String> getUsernames()
+	{
+		return usernames;
+	}
+
+	public void setUsernames(List<String> usernames)
+	{
+		this.usernames = usernames;
+	}
+
+	public Integer getRoleId()
+	{
+		return roleId;
+	}
+
+	public void setRoleId(Integer roleId)
+	{
+		this.roleId = roleId;
+	}
+
+	public Integer getUserId()
+	{
+		return userId;
+	}
+
+	public void setUserId(Integer userId)
+	{
+		this.userId = userId;
+	}
+
+	public UserVo getUserVo()
+	{
+		return userVo;
+	}
+
+	public void setUserVo(UserVo userVo)
+	{
+		this.userVo = userVo;
+	}
+
+	public UserVo1 getUserVo1()
+	{
+		return userVo1;
+	}
+
+	public void setUserVo1(UserVo1 userVo1)
+	{
+		this.userVo1 = userVo1;
+	}
+
+	public List<UserVo> getUsers()
+	{
+		return users;
+	}
+
+	public void setUsers(List<UserVo> users)
+	{
+		this.users = users;
+	}
+
+	public List<UserVo1> getUser1s()
+	{
+		return user1s;
+	}
+
+	public void setUser1s(List<UserVo1> user1s)
+	{
+		this.user1s = user1s;
+	}
+
+	public String getCareerName()
+	{
+		return careerName;
+	}
+
+	public void setCareerName(String careerName)
+	{
+		this.careerName = careerName;
+	}
+
+	public Boolean getB()
+	{
+		return b;
+	}
+
+	public void setB(Boolean b)
+	{
+		this.b = b;
+	}
+
+	public List<Role> getRs()
+	{
+		return rs;
+	}
+
+	public void setRs(List<Role> rs)
+	{
+		this.rs = rs;
+	}
+
+	public String getIp()
+	{
+		return ip;
+	}
+
+	public void setIp(String ip)
+	{
+		this.ip = ip;
+	}
+
+	public String getSpasswd()
+	{
+		return spasswd;
+	}
+
+	public void setSpasswd(String spasswd)
+	{
+		this.spasswd = spasswd;
+	}
+
+	public int getYetSecondaryPassword()
+	{
+		return yetSecondaryPassword;
+	}
+
+	public void setYetSecondaryPassword(int yetSecondaryPassword)
+	{
+		this.yetSecondaryPassword = yetSecondaryPassword;
+	}
+
+	public String getPhone()
+	{
+		return phone;
+	}
+
+	public void setPhone(String phone)
+	{
+		this.phone = phone;
+	}
+
+	public String getPhoneVerifyCode()
+	{
+		return phoneVerifyCode;
+	}
+
+	public void setPhoneVerifyCode(String phoneVerifyCode)
+	{
+		this.phoneVerifyCode = phoneVerifyCode;
+	}
+
+	public int getYetPhone()
+	{
+		return yetPhone;
+	}
+
+	public void setYetPhone(int yetPhone)
+	{
+		this.yetPhone = yetPhone;
+	}
+
+	public UserVo2 getUser2()
+	{
+		return user2;
+	}
+
+	public void setUser2(UserVo2 user2)
+	{
+		this.user2 = user2;
+	}
+
+	public String getCardId()
+	{
+		return cardId;
+	}
+
+	public void setCardId(String cardId)
+	{
+		this.cardId = cardId;
+	}
+
+	public String getRealname()
+	{
+		return realname;
+	}
+
+	public void setRealname(String realname)
+	{
+		this.realname = realname;
+	}
+
+	public int getYetCardId()
+	{
+		return yetCardId;
+	}
+
+	public void setYetCardId(int yetCardId)
+	{
+		this.yetCardId = yetCardId;
+	}
+
+	public boolean isAutoLogin()
+	{
+		return autoLogin;
+	}
+
+	public void setAutoLogin(boolean autoLogin)
+	{
+		this.autoLogin = autoLogin;
+	}
+
+	public String getSyncString()
+	{
+		return syncString;
+	}
+
+	public void setSyncString(String syncString)
+	{
+		this.syncString = syncString;
+	}
+
+	public String getSex()
+	{
+		return sex;
+	}
+
+	public void setSex(String sex)
+	{
+		this.sex = sex;
+	}
+
+	public String getBirthday()
+	{
+		return birthday;
+	}
+
+	public void setBirthday(String birthday)
+	{
+		this.birthday = birthday;
+	}
+
+	public String getCareer()
+	{
+		return career;
+	}
+
+	public void setCareer(String career)
+	{
+		this.career = career;
+	}
+
+	public String getLastTime()
+	{
+		return lastTime;
+	}
+
+	public void setLastTime(String lastTime)
+	{
+		this.lastTime = lastTime;
+	}
+
+	public String getPortraitUrl()
+	{
+		return portraitUrl;
+	}
+
+	public void setPortraitUrl(String portraitUrl)
+	{
+		this.portraitUrl = portraitUrl;
+	}
+
+	public String getProvince()
+	{
+		return province;
+	}
+
+	public void setProvince(String province)
+	{
+		this.province = province;
+	}
+
+	public String getCity()
+	{
+		return city;
+	}
+
+	public void setCity(String city)
+	{
+		this.city = city;
+	}
+
+	public String getSource()
+	{
+		return source;
+	}
+
+	public void setSource(String source)
+	{
+		this.source = source;
+	}
+
+	public CookieUtils getCookieUtils()
+	{
+		return cookieUtils;
+	}
+
+	public void setCookieUtils(CookieUtils cookieUtils)
+	{
+		this.cookieUtils = cookieUtils;
+	}
+
+	public String getUcsyn()
+	{
+		return ucsyn;
+	}
+
+	public void setUcsyn(String ucsyn)
+	{
+		this.ucsyn = ucsyn;
+	}
+
+}

@@ -1,0 +1,87 @@
+package cc.ywxm.model.gop;
+// default package
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+/**
+ * Userlogin entity. @author MyEclipse Persistence Tools
+ */
+@Entity
+@Table(name = "userlogin", catalog = "ywxm")
+public class Userlogin implements java.io.Serializable
+{
+
+	// Fields
+
+	private Long loginId;
+	private Integer userId;
+	private String logintime;
+	private String loginip;
+
+	// Constructors
+
+	/** default constructor */
+	public Userlogin()
+	{
+	}
+
+	/** full constructor */
+	public Userlogin(Integer userId, String logintime, String loginip)
+	{
+		this.userId = userId;
+		this.logintime = logintime;
+		this.loginip = loginip;
+	}
+
+	// Property accessors
+	@Id
+	@GeneratedValue
+	@Column(name = "login_id", unique = true, nullable = false)
+	public Long getLoginId()
+	{
+		return this.loginId;
+	}
+
+	public void setLoginId(Long loginId)
+	{
+		this.loginId = loginId;
+	}
+
+	@Column(name = "user_id")
+	public Integer getUserId()
+	{
+		return this.userId;
+	}
+
+	public void setUserId(Integer userId)
+	{
+		this.userId = userId;
+	}
+
+	@Column(name = "logintime", length = 50)
+	public String getLogintime()
+	{
+		return this.logintime;
+	}
+
+	public void setLogintime(String logintime)
+	{
+		this.logintime = logintime;
+	}
+
+	@Column(name = "loginip", length = 50)
+	public String getLoginip()
+	{
+		return this.loginip;
+	}
+
+	public void setLoginip(String loginip)
+	{
+		this.loginip = loginip;
+	}
+
+}

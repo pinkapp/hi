@@ -1,0 +1,137 @@
+package cc.ywxm.vo;
+
+public class SummaryVo
+{
+	// 日期
+	private String time;
+	// 日注册用户数
+	private Integer registerUsersPerday;
+	// 总注册用户数
+	private Integer registerUsers;
+	// 日登录用户数
+	private Integer loginUsersPerDay;
+	// 日充值货币金额
+	private Integer rechargeMoneyPerday;
+	// 日充值用户数
+	private Integer rechargeUsersPerday;
+	// 日ARPU
+	private Double ARPUPerday;
+	// 日兑换游戏币金额
+	private Integer exchangeGameMoneyPerday;
+	// 剩余通用货币金额
+	private Integer surplusMoney;
+
+	public SummaryVo()
+	{
+		super();
+	}
+
+	public SummaryVo(String time, Integer registerUsersPerday,
+			Integer registerUsers, Integer loginUsersPerDay,
+			Integer rechargeMoneyPerday, Integer rechargeUsersPerday,
+			Double aRPUPerday, Integer exchangeGameMoneyPerday,
+			Integer surplusMoney)
+	{
+		super();
+		this.time = time;
+		this.registerUsersPerday = registerUsersPerday;
+		this.registerUsers = registerUsers;
+		this.loginUsersPerDay = loginUsersPerDay;
+		this.rechargeMoneyPerday = rechargeMoneyPerday;
+		this.rechargeUsersPerday = rechargeUsersPerday;
+		ARPUPerday = aRPUPerday;
+		this.exchangeGameMoneyPerday = exchangeGameMoneyPerday;
+		this.surplusMoney = surplusMoney;
+	}
+
+	public String getTime()
+	{
+		return time;
+	}
+
+	public void setTime(String time)
+	{
+		this.time = time;
+	}
+
+	public Integer getRegisterUsersPerday()
+	{
+		return registerUsersPerday;
+	}
+
+	public void setRegisterUsersPerday(Integer registerUsersPerday)
+	{
+		this.registerUsersPerday = registerUsersPerday;
+	}
+
+	public Integer getRegisterUsers()
+	{
+		return registerUsers;
+	}
+
+	public void setRegisterUsers(Integer registerUsers)
+	{
+		this.registerUsers = registerUsers;
+	}
+
+	public Integer getLoginUsersPerDay()
+	{
+		return loginUsersPerDay;
+	}
+
+	public void setLoginUsersPerDay(Integer loginUsersPerDay)
+	{
+		this.loginUsersPerDay = loginUsersPerDay;
+	}
+
+	public Integer getRechargeMoneyPerday()
+	{
+		return rechargeMoneyPerday;
+	}
+
+	public void setRechargeMoneyPerday(Integer rechargeMoneyPerday)
+	{
+		this.rechargeMoneyPerday = rechargeMoneyPerday;
+	}
+
+	public Integer getRechargeUsersPerday()
+	{
+		return rechargeUsersPerday;
+	}
+
+	public void setRechargeUsersPerday(Integer rechargeUsersPerday)
+	{
+		this.rechargeUsersPerday = rechargeUsersPerday;
+	}
+
+	public Double getARPUPerday()
+	{
+		return ARPUPerday;
+	}
+
+	public void setARPUPerday(Double aRPUPerday)
+	{
+		ARPUPerday = aRPUPerday;
+	}
+
+	public Integer getExchangeGameMoneyPerday()
+	{
+		return exchangeGameMoneyPerday;
+	}
+
+	public void setExchangeGameMoneyPerday(Integer exchangeGameMoneyPerday)
+	{
+		this.exchangeGameMoneyPerday = exchangeGameMoneyPerday;
+	}
+
+	public Integer getSurplusMoney()
+	{
+		return surplusMoney;
+	}
+
+	public void setSurplusMoney(Integer surplusMoney)
+	{
+		this.surplusMoney = surplusMoney;
+	}
+
+}

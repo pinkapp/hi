@@ -1,0 +1,103 @@
+package cc.ywxm.dao.gm;
+
+import java.util.List;
+
+import cc.ywxm.model.game.RechargeLog;
+import cc.ywxm.model.gm.OperateLog;
+
+/**
+ * 操作日志数据访问接口
+ * 
+ * @author HuangDecai
+ * @since 2013-1-22 13:50:33
+ * 
+ */
+public interface OperateLogDao
+{
+	void save(String info, String operator, String ipAddress);
+
+	void save(String info, String operator, String ipAddress, String logTime);
+
+	/**
+	 * 统计用户操作日志
+	 * 
+	 * @param username
+	 *            用户名
+	 * @return 总数
+	 */
+	int count(String username);
+
+	/**
+	 * 统计玩家某个时间段充值日志
+	 * 
+	 * @param username
+	 *            用户名
+	 * @param startTime
+	 * @param endTime
+	 * @return 总数
+	 */
+	int count(String username, String startTime, String endTime);
+
+	/**
+	 * 查询用户操作日志(分页加排序)
+	 * 
+	 * @param rows
+	 *            每页几条
+	 * @param page
+	 *            第几页
+	 * @param sort
+	 *            排序字段
+	 * @param order
+	 *            正序/反序
+	 * @param username
+	 *            用户名
+	 * @return 日志列表
+	 */
+	List<OperateLog> list(Integer rows, Integer page, String sort,
+			String order, String username);
+
+	/**
+	 * 查询玩家某个时间段充值日志(分页加排序)
+	 * 
+	 * @param rows
+	 *            每页几条
+	 * @param page
+	 *            第几页
+	 * @param sort
+	 *            排序字段
+	 * @param order
+	 *            正序/反序
+	 * @param username
+	 *            用户名
+	 * @param startTime
+	 *            开始时间
+	 * @param endTime
+	 *            结束时间
+	 * @return 日志列表
+	 */
+	List<OperateLog> list(Integer rows, Integer page, String sort,
+			String order, String username, String startTime, String endTime);
+
+	/**
+	 * 查询用户操作日志
+	 * 
+	 * @param username
+	 *            用户名
+	 * @return 日志列表
+	 */
+	List<OperateLog> list(String username);
+
+	/**
+	 * 查询后台用户某个时间段操作日志
+	 * 
+	 * @param username
+	 *            用户名
+	 * @param startTime
+	 *            开始时间
+	 * @param endTime
+	 *            结束时间
+	 * @return 日志列表
+	 */
+	List<OperateLog> list(String username, String startTime, String endTime);
+
+}

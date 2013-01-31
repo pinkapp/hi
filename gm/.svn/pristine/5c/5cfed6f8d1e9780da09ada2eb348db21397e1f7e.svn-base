@@ -1,0 +1,195 @@
+package cc.ywxm.action.game;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.apache.struts2.json.JSONException;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+
+import cc.ywxm.action.BaseAction;
+import cc.ywxm.constant.Const;
+import cc.ywxm.datasource.CustomerContextHolder;
+import cc.ywxm.model.game.Closed;
+import cc.ywxm.model.gm.Server;
+import cc.ywxm.service.game.CloseService;
+import cc.ywxm.utils.JSONtool;
+
+/**
+ * 封账号
+ * 
+ * @author hdc
+ * 
+ */
+@SuppressWarnings("serial")
+@Controller
+@Scope("prototype")
+public class CloseAction extends BaseAction
+{
+	private int type = 0;
+	private Integer player;
+	private String nickname;
+	private String creason;
+	private String enddate;
+
+	@Resource
+	private CloseService closeService;
+
+	/**
+	 * ajax 封账号
+	 * 
+	 * @return
+	 * @throws IOException
+	 * @throws JSONException
+	 */
+	public String close() throws IOException
+	{
+		Server dbsrv = (Server) session.get(Const.SESSION_DBSRV);
+		CustomerContextHolder.setCustomerType(dbsrv.getDataSource());
+		int code = 0;
+		switch (type)
+		{
+		case 1:
+			code = closeService.close(player, creason);
+			switch (code)
+			{
+			case 1:
+				message = "操作成功";
+				break;
+			case 2:
+				message = "未输入玩家ID，操作失败";
+				break;
+			default:
+				message = "未知错误，操作失败";
+				break;
+			}
+			break;
+		case 2:
+			code = closeService.close(nickname, creason);
+			switch (code)
+			{
+			case 1:
+				message = "操作成功";
+				break;
+			case 2:
+				message = "未输入玩家昵称，操作失败";
+				break;
+			default:
+				message = "未知错误，操作失败";
+				break;
+			}
+			break;
+		case 3:
+			code = closeService.close(player, creason, enddate);
+			switch (code)
+			{
+			case 1:
+				message = "操作成功";
+				break;
+			case 2:
+				message = "未输入玩家ID，操作失败";
+				break;
+			case 3:
+				message = "未输入截止日期，操作失败";
+				break;
+			default:
+				message = "未知错误，操作失败";
+				break;
+			}
+			break;
+		case 4:
+			code = closeService.close(nickname, creason, enddate);
+			switch (code)
+			{
+			case 1:
+				message = "操作成功";
+				break;
+			case 2:
+				message = "未输入玩家昵称，操作失败";
+				break;
+			case 3:
+				message = "未输入截止日期，操作失败";
+				break;
+			default:
+				message = "未知错误，操作失败";
+				break;
+			}
+			break;
+		default:
+			return NONE;
+		}
+		response.setContentType("text/html;charset=utf-8");
+		response.setHeader("Cache-Control", "no-cache");
+		PrintWriter out = response.getWriter();
+		out.append(message);
+		out.close();
+
+		return NONE;
+	}
+
+	/**
+	 * 记录查询
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
+	public String gets() throws IOException
+	{
+		Server dbsrv = (Server) session.get(Const.SESSION_DBSRV);
+		CustomerContextHolder.setCustomerType(dbsrv.getDataSource());
+		String jsonString = "";
+		List<Closed> list = null;
+		switch (type)
+		{
+		case 1:
+			list = closeService.gets(player);
+			break;
+		case 2:
+			list = closeService.gets(nickname);
+			break;
+		default:
+			return NONE;
+		}
+		jsonString = JSONtool.serialize(list);
+		response.setContentType("text/xml;charset=utf-8");
+		response.setHeader("Cache-Control", "no-cache");
+		PrintWriter out = response.getWriter();
+		out.append(jsonString);
+		out.close();
+		return NONE;
+	}
+
+	public int getType()
+	{
+		return type;
+	}
+
+	public void setType(int type)
+	{
+		this.type = type;
+	}
+
+	public String getCreason()
+	{
+		return creason;
+	}
+
+	public void setCreason(String creason)
+	{
+		this.creason = creason;
+	}
+
+	public String getEnddate()
+	{
+		return enddate;
+	}
+
+	public void setEnddate(String enddate)
+	{
+		this.enddate = enddate;
+	}
+
+}

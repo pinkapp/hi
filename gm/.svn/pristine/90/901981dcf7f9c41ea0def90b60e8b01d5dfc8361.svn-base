@@ -1,0 +1,36 @@
+package cc.ywxm.service.platform;
+
+import java.util.List;
+
+import cc.ywxm.model.game.RetentionRate;
+
+/**
+ * @version v0.1
+ * @author HuangDeCai
+ * @since 2012-12-4 14:13:41
+ * 
+ */
+public interface RetentionRateService
+{
+	/**
+	 * 
+	 * @param startDate
+	 * @param endDate
+	 * @return
+	 */
+	public List<RetentionRate> gets(String startDate, String endDate);
+
+	/**
+	 * 
+	 * @param date
+	 * @return
+	 */
+	public RetentionRate get(String date);
+
+	/**
+	 * 
+	 * @return
+	 */
+	String XMLData(String startDate, String endDate);
+
+}

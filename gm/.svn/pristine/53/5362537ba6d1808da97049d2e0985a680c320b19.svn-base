@@ -1,0 +1,43 @@
+body { background:#fff; font-family:'宋体',Arial, Helvetica, sans-serif; font-size:100%; line-height:1.5em; color:#121111;}
+a:link {color: #000000}
+a:visited {color: #000000}
+a:active {color: #000000}
+a:hover {text-decoration: underline;color: #000000}
+a {text-decoration: none;cursor: hand;}
+li {list-style-type: none;}
+td,th {font-size: 12px;}
+/* datatable */
+.datatable {border: 1px solid #D6DDE6;border-collapse: collapse;width: 100%;}
+.datatable td {border: 1px solid #D6DDE6;padding: 5px;}
+.datatable th {border: 1px solid #828282;background-color: #BCBCBC;text-align: left;padding: 5px;}
+.datatable tr.altrow {background-color: #DFE7F2;color: #000000;}
+/* formtable */
+.formtable {width: 400px;}
+.formtable td {font-size: 12px;}
+.formtable th {font-size: 12px; text-align: left; width: 120px;}
+.formtable tr.altrow {color: #000000;}
+.formtable input[type=submit] { background:url(../images/submit-bg.gif) left top repeat-x; width:66px; height:20px; color:#fff; cursor:pointer; border:none;}
+.formtable textarea {width: 200px;height:50px; overflow: auto;}
+
+/* formtable */
+.formtable2 {width: 300px;}
+.formtable2 td {font-size: 12px;}
+.formtable2 th {font-size: 12px; text-align: left; width: 120px;}
+.formtable2 tr.altrow {color: #000000;}
+.formtable2 input[type=submit] { background:url(../images/submit-bg.gif) left top repeat-x; width:66px; height:20px; color:#fff; cursor:pointer; border:none;}
+.formtable2 textarea {width: 200px;height:50px; overflow: auto;}
+
+/* content */
+.content {padding-left: 200px;padding-right: 200px;}
+/* highLightInfo */
+.highLightInfo {color: red; font-size: 12px;}
+.queryform input[type=submit] { background:url(../images/submit-bg.gif) left top repeat-x; width:66px; height:20px; color:#fff; cursor:pointer; border:none;}
+.errorMessage {color: red; font-size: 12px;}
+
+#thisform{font-size: 12px;margin: 0;padding: 0;}
+#thisform fieldset{padding: 10px;margin: 10px;width: 960px;color: #333;border: #06c dashed 1px;}
+#thisform legend{color: #06c;font-weight: 800;background: #fff;border: #b6b6b6 solid 1px;padding: 3px 6px;}
+#thisform .field label {display: inline-block;width: 66px;padding-right: 10px;text-align: right;}
+form {font-size: 12px;}
+
+#title{background-color: #D6DDE6;border: 1px solid #dadada;border-radius: 3px;-o-border-radius: 3px;-ms-border-radius: 3px;-moz-border-radius: 3px;-webkit-border-radius: 3px;margin-bottom: 10px;margin-left: auto;margin-right: auto;padding-top: 5px;padding-left: 5px;}

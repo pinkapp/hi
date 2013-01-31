@@ -1,0 +1,29 @@
+package cc.ywxm.service.game;
+
+import java.util.List;
+
+import cc.ywxm.model.game.Hero;
+
+/**
+ * @version v0.1
+ * @author HuangDeCai
+ * @since 2012-11-30 9:18:10
+ * 
+ */
+public interface HeroInfoService
+{
+	/**
+	 * 
+	 * @param nickname
+	 * @return
+	 */
+	public List<Hero> gets(String nickname);
+
+	/**
+	 * 
+	 * @param player
+	 * @return
+	 */
+	public List<Hero> gets(Integer player);
+
+}

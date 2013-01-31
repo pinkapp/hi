@@ -1,0 +1,23 @@
+package cc.ywxm.service;
+
+import java.util.List;
+
+import cc.ywxm.vo.SummaryVo;
+
+/**
+ * 数据汇总业务层接口
+ * 
+ * @author hdc
+ * 
+ */
+public interface SummaryService
+{
+	/**
+	 * 指定月份查询每天汇总数据
+	 * 
+	 * @param month
+	 *            月份字符串，格式为"yyyy-MM"
+	 * @return 指定月份每天汇总数据列表
+	 */
+	public List<SummaryVo> count(String month);
+}

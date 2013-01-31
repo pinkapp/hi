@@ -1,0 +1,14 @@
+package cc.ywxm.service.gm;
+
+
+public interface OperateLogService
+{
+	
+	/**
+	 * 
+	 * @param userId
+	 * @return
+	 */
+	int add(String info, String operator, String ipAddress);
+
+}

@@ -1,0 +1,38 @@
+package cc.ywxm.vo;
+
+public class NewsVo
+{
+	private Integer news_id;
+	private String newstitle;
+	private String newsurl;
+
+	public Integer getNews_id()
+	{
+		return news_id;
+	}
+
+	public void setNews_id(Integer news_id)
+	{
+		this.news_id = news_id;
+	}
+
+	public String getNewstitle()
+	{
+		return newstitle;
+	}
+
+	public void setNewstitle(String newstitle)
+	{
+		this.newstitle = newstitle;
+	}
+
+	public String getNewsurl()
+	{
+		return newsurl;
+	}
+
+	public void setNewsurl(String newsurl)
+	{
+		this.newsurl = newsurl;
+	}
+}

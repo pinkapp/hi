@@ -1,0 +1,102 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@taglib prefix="s" uri="/struts-tags" %>
+<%
+String path = request.getContextPath();
+String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+%>
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <base href="<%=basePath%>">
+    
+    <title>封IP</title>
+    
+	<meta http-equiv="pragma" content="no-cache">
+	<meta http-equiv="cache-control" content="no-cache">
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta http-equiv="keywords" content="英雄领域,亿网星漫">
+    <meta http-equiv="description" content="Online Charge System">
+	<link id="easyuiTheme" rel="stylesheet" type="text/css" href="easyUI/themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="easyUI/themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+	<script type="text/javascript" src="easyUI/jquery-1.8.0.min.js"></script>
+	<script type="text/javascript" src="easyUI/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="easyUI/locale/easyui-lang-zh_CN.js"></script>
+	<script type="text/javascript">
+		$(function(){
+			$('form').form({
+				success:function(data){
+					$.messager.alert('信息', data, 'info');
+				}
+			});
+		});
+		function query(type){
+			var param = {};
+			var player = $('#player').val();
+			var nickname = $('#nickname').val();
+			param.player = player;
+			param.nickname = nickname;
+			$('#info').html('');
+			$('#tab').datagrid({
+			    title:'封IP记录',
+			    queryParams:param,
+				singleSelect:true,
+				idField:'player',
+				pagination:true,
+				fitColumns:true,
+				height:400,
+				url:'ajax/closeIP_gets',
+				loadMsg:'正在查询...',
+				onLoadSuccess:function(data){
+				    if(data.total == 0){
+				    	$('#info').html('无记录');
+				    }else{
+				    	$('#info').html('共找到' + data.total + '条记录');
+				    }
+				},
+				onLoadError:function(){
+				    alert('数据加载错误');
+				},
+				columns:[[
+					{field:'player',title:'玩家ID',width:15,sortable:true},
+					{field:'nickname',title:'玩家昵称',width:25},
+					{field:'sex',title:'原因',width:10},
+					{field:'level',title:'截止时间',width:20}
+				]]
+			});
+		}
+	</script>
+  </head>
+  
+  <body>
+  <div id="title"><label>基本管理&gt;&gt;封IP</label></div>
+  <div id="thisform">
+	  <fieldset>
+	  <legend>永久</legend>
+	  <form action="ajax/close?type=1" method="post">
+	    <label for="player">&nbsp;&nbsp;玩家ID：</label><input id="player" name="player" data-options="min:1,precision:0" class="easyui-numberbox"/>&nbsp;&nbsp;<label for="creason">原因：</label><input id="creason" name="creason"/>&nbsp;&nbsp;<input type="submit" value="封IP"/>
+	  </form>
+	  <form action="ajax/close?type=2" method="post">
+	    <label for="nickname">玩家昵称：</label><input id="nickname" name="nickname"/>&nbsp;&nbsp;<label for="creason">原因：</label><input id="creason" name="creason"/>&nbsp;&nbsp;<input type="submit" value="封IP"/>
+	  </form>
+	  </fieldset>
+	  <fieldset>
+	  <legend>指定时间</legend>
+	  <form action="ajax/close?type=3" method="post">
+	    <label for="enddate">截止日期：</label><input id="enddate" name="enddate" class="easyui-datebox"/>&nbsp;&nbsp;<label for="player">&nbsp;&nbsp;玩家ID：</label><input id="player" name="player" data-options="min:1,precision:0" class="easyui-numberbox"/>&nbsp;&nbsp;<label for="creason">原因：</label><input id="creason" name="creason"/>&nbsp;&nbsp;<input type="submit" value="封IP"/>
+	  </form>
+	  <form action="ajax/close?type=4" method="post">
+	    <label for="enddate">截止日期：</label><input id="enddate" name="enddate" class="easyui-datebox"/>&nbsp;&nbsp;<label for="nickname">玩家昵称：</label><input id="nickname" name="nickname"/>&nbsp;&nbsp;<label for="creason">原因：</label><input id="creason" name="creason"/>&nbsp;&nbsp;<input type="submit" value="封IP"/>
+	  </form>
+	  </fieldset>
+	  <fieldset>
+	  <legend>记录查询</legend>
+	    <label for="player">&nbsp;&nbsp;按玩家ID：</label><input id="player" name="player" data-options="min:1,precision:0" class="easyui-numberbox"/>&nbsp;&nbsp;<button type="button" onclick="query(1);">查询</button><br/>
+	    <label for="nickname">按玩家昵称：</label><input id="nickname" name="nickname"/>&nbsp;&nbsp;<button type="button" onclick="query(2);">查询</button><br/>
+	    &nbsp;&nbsp;<label id="info" style="color: red;"></label>
+	    <table id="tab"></table>
+	  </fieldset>
+  </div>
+  </body>
+</html>

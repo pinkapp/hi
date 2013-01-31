@@ -1,0 +1,108 @@
+package cc.ywxm.action.game;
+
+import java.io.IOException;
+
+import javax.annotation.Resource;
+
+import org.apache.struts2.json.JSONException;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+
+import cc.ywxm.action.BaseAction;
+import cc.ywxm.service.game.CloseService;
+
+/**
+ * 封IP
+ * 
+ * @author HuangDeCai
+ * @since 2012-12-13 15:14:46
+ * 
+ */
+@SuppressWarnings("serial")
+@Controller
+@Scope("prototype")
+public class CloseIPAction extends BaseAction
+{
+	private int type = 0;
+	private Integer player;
+	private String nickname;
+	private String creason;
+	private String enddate;
+
+	@Resource
+	private CloseService closeService;
+
+	/**
+	 * ajax 封IP
+	 * 
+	 * @return
+	 * @throws IOException
+	 * @throws JSONException
+	 */
+	public String close() throws IOException
+	{
+		return NONE;
+	}
+
+	/**
+	 * 记录查询
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
+	public String gets() throws IOException
+	{
+		return NONE;
+	}
+
+	public int getType()
+	{
+		return type;
+	}
+
+	public void setType(int type)
+	{
+		this.type = type;
+	}
+
+	public String getCreason()
+	{
+		return creason;
+	}
+
+	public void setCreason(String creason)
+	{
+		this.creason = creason;
+	}
+
+	public String getEnddate()
+	{
+		return enddate;
+	}
+
+	public void setEnddate(String enddate)
+	{
+		this.enddate = enddate;
+	}
+
+	public Integer getPlayer()
+	{
+		return player;
+	}
+
+	public void setPlayer(Integer player)
+	{
+		this.player = player;
+	}
+
+	public String getNickname()
+	{
+		return nickname;
+	}
+
+	public void setNickname(String nickname)
+	{
+		this.nickname = nickname;
+	}
+
+}

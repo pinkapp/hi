@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"dtds/struts-2.3.dtd">
+
+<struts>
+	<constant name="struts.ui.theme" value="simple" />
+	<!--设置开发模式 -->
+	<constant name="struts.devMode" value="false" />
+	<!-- 国际化 -->
+	<constant name="struts.custom.i18n.resources" value="messageResource" />
+	<!--设置编码形式 -->
+	<constant name="struts.i18n.encoding" value="utf-8" />
+	<constant name="struts.objectFactory" value="spring" />
+	<include file="struts-root.xml" />
+	<include file="struts-mods.xml" />
+	<include file="struts-export.xml" />
+	<include file="struts-template.xml" />
+	<include file="struts-chart.xml" />
+	<include file="struts-get.xml" />
+	<include file="struts-gets.xml" />
+	<include file="struts-do.xml" />
+</struts>

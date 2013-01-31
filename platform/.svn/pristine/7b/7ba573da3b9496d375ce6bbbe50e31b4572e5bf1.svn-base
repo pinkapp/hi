@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+	<package name="default" extends="struts-default" namespace="/">
+		<interceptors>
+			<interceptor name="safeInterceptor" class="safeInterceptor" />
+			<interceptor-stack name="myStack">
+				<interceptor-ref name="safeInterceptor" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
+		</interceptors>
+		<default-interceptor-ref name="myStack" />
+		<global-results>
+			<result name="login" type="redirect">
+				/login.jsp
+			</result>
+			<result name="logout" type="redirectAction">
+				<param name="actionName"></param>
+				<param name="namespace">/</param>
+			</result>
+		</global-results>
+		<action name="" class="indexAction" method="index">
+			<result name="success">/WEB-INF/view/index.jsp</result>
+		</action>
+		<action name="login" class="userAction" method="login">
+			<result>
+				/sync.jsp
+            </result>
+			<result name="input">/login.jsp</result>
+		</action>
+		<action name="logout" class="userAction" method="logout">
+			<result>
+				/sync.jsp
+            </result>
+		</action>
+		<action name="reg" class="userAction" method="reg">
+			<result name="input">
+				/reg.jsp
+            </result>
+			<result>
+				/regsuc.jsp
+            </result>
+		</action>
+		<action name="ftpasswd" class="userAction" method="ftpasswd">
+			<result>
+				/ftpasswd.jsp
+            </result>
+		</action>
+		<action name="user" class="indexAction" method="user">
+			<result name="success">/WEB-INF/view/user.jsp</result>
+		</action>
+		<action name="order" class="indexAction" method="order">
+			<result name="success">/WEB-INF/view/order/order_index.jsp</result>
+		</action>
+		<action name="game" class="indexAction" method="game">
+			<result name="success">/WEB-INF/view/game.jsp</result>
+		</action>
+		<action name="service" class="indexAction" method="service">
+			<result name="success">/WEB-INF/view/service.jsp</result>
+		</action>
+		<action name="giftcard" class="indexAction" method="giftcard">
+			<result name="success">/WEB-INF/view/giftcard/giftcard_index.jsp</result>
+		</action>
+		
+		<action name="admin_main" class="indexAction" method="admin_main">
+			<result>
+				/WEB-INF/view/admin_index.jsp
+            </result>
+		</action>
+		<action name="topframe" class="indexAction" method="topframe">
+			<result>
+				/frame/topframe.jsp
+            </result>
+		</action>
+		<!-- 验证码 -->
+		<action name="rand" class="randomPictureAction">
+			<result type="stream">
+				<param name="contentType">image/jpeg</param>
+				<param name="inputName">inputStream</param>
+			</result>
+		</action>
+		<action name="resource_change" class="resourceAction" method="resource_change"/>
+		<action name="download_template" class="downloadAction" method="download_template"/>
+	</package>
+</struts>

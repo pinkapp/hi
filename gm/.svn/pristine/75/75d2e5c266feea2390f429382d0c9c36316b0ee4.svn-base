@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"dtds/struts-2.3.dtd">
+
+<struts>
+	<package name="struts-chart" extends="struts-root" namespace="/chart">
+	    <action name="rechargeCount1" class="rechargeCount1Action" method="chart"/>
+	    <action name="careerCount" class="careerCountAction" method="chart"/>
+	    <action name="ageGroupCount" class="ageGroupCountAction" method="chart"/>
+	    <action name="paywayCount1" class="paywayCountAction" method="chart1"/>
+	    <action name="paywayCount" class="paywayCountAction" method="chart"/>
+	    <action name="loginCount" class="loginCountAction" method="chart"/>
+	    <action name="regCount" class="regCountAction" method="chart"/>
+	    <action name="rechargeCount" class="rechargeCountAction" method="chart"/>
+	    <action name="rechargeRank" class="rechargeRankAction" method="chart"/>
+	    <action name="rechargeRank1" class="rechargeRank1Action" method="chart"/>
+	</package>
+</struts>

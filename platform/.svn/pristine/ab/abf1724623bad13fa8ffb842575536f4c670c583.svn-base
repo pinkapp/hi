@@ -1,0 +1,92 @@
+package cc.ywxm.model.gop;
+
+// default package
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+/**
+ * GameOpen entity. @author MyEclipse Persistence Tools
+ */
+@Entity
+@Table(name = "game_open", catalog = "ywxm")
+public class GameOpen implements java.io.Serializable
+{
+
+	// Fields
+
+	private Integer openId;
+	private Game game;
+	private String gameServer;
+	private String openTime;
+
+	// Constructors
+
+	/** default constructor */
+	public GameOpen()
+	{
+	}
+
+	/** full constructor */
+	public GameOpen(Game game, String gameServer, String openTime)
+	{
+		this.game = game;
+		this.gameServer = gameServer;
+		this.openTime = openTime;
+	}
+
+	// Property accessors
+	@Id
+	@GeneratedValue
+	@Column(name = "open_id", unique = true, nullable = false)
+	public Integer getOpenId()
+	{
+		return this.openId;
+	}
+
+	public void setOpenId(Integer openId)
+	{
+		this.openId = openId;
+	}
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "game_id")
+	public Game getGame()
+	{
+		return this.game;
+	}
+
+	public void setGame(Game game)
+	{
+		this.game = game;
+	}
+
+	@Column(name = "game_server", length = 50)
+	public String getGameServer()
+	{
+		return this.gameServer;
+	}
+
+	public void setGameServer(String gameServer)
+	{
+		this.gameServer = gameServer;
+	}
+
+	@Column(name = "open_time", length = 50)
+	public String getOpenTime()
+	{
+		return this.openTime;
+	}
+
+	public void setOpenTime(String openTime)
+	{
+		this.openTime = openTime;
+	}
+
+}

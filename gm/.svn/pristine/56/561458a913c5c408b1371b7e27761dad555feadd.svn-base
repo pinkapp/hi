@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"dtds/struts-2.3.dtd">
+
+<struts>
+	<package name="struts-gets" extends="struts-root" namespace="/gets">
+	    <action name="operateLog" class="operateLogAction" method="gets" />
+	    <action name="consumeLog" class="consumeLogAction" method="gets" />
+	    <action name="rechargeLog" class="rechargeLogAction" method="gets" />
+	    <action name="managerType_right" class="managerTypeAction" method="right_gets" />
+		<action name="featLog" class="featLogAction" method="gets" />
+		<action name="energyLog" class="energyLogAction" method="gets" />
+		<action name="mobilityLog" class="mobilityLogAction" method="gets" />
+		<action name="giftbagLog" class="giftbagLogAction" method="gets" />
+		<action name="rechargeCount1" class="rechargeCount1Action" method="gets" />
+		<action name="careerCount" class="careerCountAction" method="gets" />
+		<action name="ageGroupCount" class="ageGroupCountAction" method="gets" />
+		<action name="rechargeRank2" class="rechargeRank2Action" method="gets" />
+		<action name="rechargeRank1" class="rechargeRank1Action" method="gets" />
+		<action name="rechargeRank" class="rechargeRankAction" method="gets" />
+		<action name="rechargeCount" class="rechargeCountAction" method="gets" />
+		<action name="loginCount" class="loginCountAction" method="gets" />
+		<action name="paywayCount1" class="paywayCountAction" method="gets1" />
+		<action name="paywayCount" class="paywayCountAction" method="gets" />
+		<action name="regCount" class="regCountAction" method="gets" />
+		<action name="propInfo" class="propInfoAction" method="gets" />
+		<action name="baseInfo" class="baseInfoAction" method="gets" />
+		<action name="heroInfo" class="heroInfoAction" method="gets" />
+		<action name="guildInfo" class="guildInfoAction" method="gets" />
+		<action name="buildInfo" class="buildInfoAction" method="gets" />
+		<action name="mailInfo" class="mailInfoAction" method="gets" />
+		<action name="arenaInfo" class="arenaInfoAction" method="gets" />
+		<action name="sameIP" class="sameIPAction" method="gets" />
+		<action name="loginLog" class="loginLogAction" method="gets" />
+		<action name="retentionRate" class="retentionRateAction" method="gets" />
+		<action name="buildInfo2" class="buildInfoAction" method="gets2" />
+		<action name="managerType" class="managerTypeAction" method="gets" />
+		<action name="right_" class="rightAction" method="gets_" />
+		<action name="right" class="rightAction" method="gets" />
+		<action name="closeIP" class="closeIPAction" method="gets" />
+		<action name="close" class="closeAction" method="gets" />
+		<action name="manager" class="managerAction" method="gets" />
+	</package>
+</struts>

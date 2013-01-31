@@ -1,0 +1,24 @@
+package cc.ywxm.service;
+
+import java.util.List;
+
+import cc.ywxm.model.FriendlyLink;
+import cc.ywxm.utils.Pageable;
+import cc.ywxm.vo.FriendlyLinkVo;
+
+public interface FriendlyLinkService
+{
+
+	public List<FriendlyLink> findAll();
+
+	public FriendlyLink findById(Short friendlyLinkId);
+
+	public void edit(FriendlyLink friendlyLink);
+
+	public void add(FriendlyLink friendlyLink);
+
+	public List<FriendlyLinkVo> findByPage(FriendlyLinkVo condition, Pageable pageable);
+
+	public void delete(Short friendlyLinkId);
+
+}

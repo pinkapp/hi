@@ -1,0 +1,73 @@
+package cc.ywxm.listener;
+
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import org.dom4j.Document;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
+import org.springframework.stereotype.Component;
+
+import cc.ywxm.model.gm.Server;
+import cc.ywxm.share.ShareData;
+
+@Component
+public class AppListener implements ApplicationListener
+{
+	Logger logger = LoggerFactory.getLogger(this.getClass());
+
+	@SuppressWarnings("unchecked")
+	public void onApplicationEvent(ApplicationEvent event)
+	{
+		// System.out.println("spring加载完成");
+		List<Server> servers = new ArrayList<Server>();
+		try
+		{
+			String root = System.getProperty("gm.root");
+			InputStream inStream = new FileInputStream(root
+					+ "WEB-INF/server.xml");
+			Document doc = new SAXReader().read(inStream);
+			Element rootElt = doc.getRootElement();
+			Iterator<Element> serverElts = rootElt.elementIterator();
+			while (serverElts.hasNext())
+			{
+				Element serverElt = (Element) serverElts.next();
+				Server server = new Server();
+				server.setId(serverElt.attributeValue("id"));
+				server.setAddress(serverElt.attributeValue("address"));
+				server.setName(serverElt.attributeValue("name"));
+				server.setDataSource(serverElt.attributeValue("dataSource"));
+				if (serverElt.attribute("default") != null)
+				{
+					ShareData.setDefaultServer(server);
+					server.setDefault_(true);
+				}
+				servers.add(server);
+			}
+
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		if (servers.size() > 0 && ShareData.getDefaultServer() == null)
+		{
+			ShareData.setDefaultServer(servers.get(0));
+		}
+		for (Server server : servers)
+		{
+			if (logger.isInfoEnabled())
+			{
+				logger.info(server.toString());
+			}
+		}
+		ShareData.setServers(servers);
+	}
+
+}

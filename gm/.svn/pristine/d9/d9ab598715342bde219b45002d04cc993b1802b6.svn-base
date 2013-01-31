@@ -1,0 +1,30 @@
+package cc.ywxm.service.game;
+
+import java.util.List;
+
+import cc.ywxm.model.game.LoginInfo;
+
+/**
+ * @version v0.1
+ * @author HuangDeCai
+ * @since 2012-12-6 11:26:07
+ * 
+ */
+public interface LoginInfoService
+{
+	/**
+	 * 
+	 * @param startDate
+	 * @param endDate
+	 * @return
+	 */
+	public List<LoginInfo> gets(String startDate, String endDate);
+
+	/**
+	 * 
+	 * @param date
+	 * @return
+	 */
+	public LoginInfo get(String date);
+
+}

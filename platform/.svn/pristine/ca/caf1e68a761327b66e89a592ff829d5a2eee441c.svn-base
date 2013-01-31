@@ -1,0 +1,26 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@ taglib prefix="s" uri="/struts-tags"%>
+<%
+String path = request.getContextPath();
+String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+%>
+<!DOCTYPE html>
+<html>
+	<head>
+		<base href="<%=basePath%>">
+		<title>游戏服务器管理</title>
+		<meta http-equiv="pragma" content="no-cache">
+		<meta http-equiv="cache-control" content="no-cache">
+		<meta http-equiv="expires" content="0">
+		<meta http-equiv="keywords" content="ywxm,游戏平台">
+		<meta http-equiv="description" content="游戏平台">
+	</head>
+	<body style="margin-left: auto;margin-right: auto;">
+		<table border="1">
+			<tr><td>开服日期</td><td>游戏名称</td><td>服务器</td></tr>
+			<s:iterator value="gameServers">
+				<tr><td>${otime }</td><td>${game }</td><td>${serverName}</td></tr>
+			</s:iterator>
+		</table>
+	</body>
+</html>

@@ -1,0 +1,16 @@
+package cc.ywxm.dao.gm;
+
+/**
+ * 操作日志数据访问接口
+ * 
+ * @author HuangDecai
+ * @since 2013-1-22 13:50:33
+ * 
+ */
+public interface OperateLogDao
+{
+	void save(String info, String operator, String ipAddress);
+
+	void save(String info, String operator, String ipAddress, String logTime);
+
+}

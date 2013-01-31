@@ -1,0 +1,75 @@
+package cc.ywxm.service.impl;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import cc.ywxm.dao.OrderDao;
+import cc.ywxm.dao.UserDao;
+import cc.ywxm.dao.UserloginDao;
+import cc.ywxm.service.SummaryService;
+import cc.ywxm.utils.DateFormat;
+import cc.ywxm.utils.DateUtils;
+import cc.ywxm.utils.MathsUtils;
+import cc.ywxm.vo.SummaryVo;
+
+@Service
+@Transactional
+public class SummaryServiceImpl implements SummaryService
+{
+	@Resource
+	private UserDao userDao;
+	@Resource
+	private UserloginDao userloginDao;
+	@Resource
+	private OrderDao orderDao;
+
+	public List<SummaryVo> count(String month)
+	{
+		Date date = DateFormat.parse(month, "yyyy-MM");
+		Date firstDay = DateUtils.getfirstDayOfMonth(date);
+		Date lastDay = DateUtils.getLastDayOfMonth(date);
+		List<SummaryVo> svs = new ArrayList<SummaryVo>();
+		for (Date d = firstDay; d.compareTo(lastDay) <= 0; d.setTime(d
+				.getTime()
+				+ 1000 * 60 * 60 * 24l))
+		{
+			String dstring = DateFormat.format(d, DateFormat.DATE_PATTERN_2);
+			String currentDstring = DateFormat.format(new Date(),
+					DateFormat.DATE_PATTERN_2);
+			if (dstring.compareTo(currentDstring) > 0)
+			{
+				break;
+			}
+			SummaryVo sv = new SummaryVo();
+			sv.setTime(dstring);
+			sv.setRegisterUsersPerday(userDao.findRegisterUsersPerday(dstring));
+			sv.setRegisterUsers(userDao.findRegisterUsers(dstring));
+			sv.setLoginUsersPerDay(userloginDao.findLoginUsersPerDay(dstring));
+			int rmpd = orderDao.findRechargeMoneyPerday(dstring);
+			sv.setRechargeMoneyPerday(rmpd);
+			int rupd = orderDao.findRechargeUsersPerday(dstring);
+			sv.setRechargeUsersPerday(rupd);
+			if (rupd == 0)
+			{
+				sv.setARPUPerday(0.00);
+			} else
+			{
+				sv.setARPUPerday(MathsUtils.div(rmpd, rupd, 2));
+			}
+			sv.setExchangeGameMoneyPerday(orderDao
+					.findExchangeGameMoneyPerday(dstring));
+			sv.setSurplusMoney(orderDao.findRechargeMoney(dstring)
+					- orderDao.findExchangMoney(dstring));
+			svs.add(sv);
+		}
+
+		return svs;
+	}
+
+}

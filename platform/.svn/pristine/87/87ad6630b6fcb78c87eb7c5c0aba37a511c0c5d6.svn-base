@@ -1,0 +1,67 @@
+package cc.ywxm.dao.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.stereotype.Repository;
+
+import cc.ywxm.dao.BaseDataDao;
+import cc.ywxm.model.Career;
+import cc.ywxm.model.Province;
+import cc.ywxm.utils.RSMapper;
+import cc.ywxm.vo.BankVo;
+
+@Repository
+public class BaseDataDaoImpl implements BaseDataDao
+{
+	@Resource
+	private HibernateTemplate hibernateTemplate;
+	@Resource
+	private JdbcTemplate jdbcTemplate;
+
+	@SuppressWarnings("unchecked")
+	public List<Province> findAllProvinces()
+	{
+		List<Province> provinces;
+		try
+		{
+			provinces = hibernateTemplate.find("from Province");
+		} catch (DataAccessException e)
+		{
+			e.printStackTrace();
+			return null;
+		}
+		return provinces;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Career> findAllCareers()
+	{
+		List<Career> careers;
+		try
+		{
+			careers = hibernateTemplate.find("from Career");
+		} catch (DataAccessException e)
+		{
+			e.printStackTrace();
+			return null;
+		}
+		return careers;
+	}
+
+	public List<BankVo> findBanksByWayId(Integer wayId)
+	{
+		String sql = "SELECT t.bank_id, t.bankname, t.banklogo, t.pay_id FROM bank t LEFT JOIN payway_bank t1 ON t.bank_id = t1.bank_id WHERE t1.way_id = ?";
+		List<Object> args = new ArrayList<Object>();
+		args.add(wayId);
+		return RSMapper.queryList(jdbcTemplate, sql, BankVo.class, args
+				.toArray());
+
+	}
+
+}

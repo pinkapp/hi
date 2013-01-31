@@ -1,0 +1,133 @@
+package cc.ywxm.service.impl.platform;
+
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import cc.ywxm.dao.game.LoginDao;
+import cc.ywxm.dao.game.RegisterDao;
+import cc.ywxm.model.game.RetentionRate;
+import cc.ywxm.model.platform.CareerCount;
+import cc.ywxm.service.platform.RetentionRateService;
+import cc.ywxm.utils.MathsUtils;
+
+/**
+ * 
+ * @author HuangDeCai
+ * @since 2012-12-4 14:49:57
+ */
+@Transactional
+@Service
+public class RetentionRateServiceImpl implements RetentionRateService
+{
+	@Resource
+	private LoginDao loginDao;
+	@Resource
+	private RegisterDao registerDao;
+
+	public RetentionRate get(String date)
+	{
+		return null;
+	}
+
+	public List<RetentionRate> gets(String startDate, String endDate)
+	{
+		List<RetentionRate> result = new ArrayList<RetentionRate>();
+		if (startDate == null || endDate == null)
+		{
+			return result;
+		} else
+		{
+			startDate = startDate.trim();
+			endDate = endDate.trim();
+		}
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		Date sdate = null;
+		Date edate = null;
+		try
+		{
+			sdate = sdf.parse(startDate);
+			edate = sdf.parse(endDate);
+		} catch (ParseException e)
+		{
+			e.printStackTrace();
+			return null;
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+			return null;
+		}
+
+		try
+		{
+			if (sdate.compareTo(edate) <= 0)
+			{
+				while (sdate.compareTo(edate) <= 0)
+				{
+					String date = null;
+					// 注册玩家数
+					int count = 0;
+					// 次日留存率
+					String rate1 = null;
+					// 3日留存率
+					String rate3 = null;
+					// 7日留存率
+					String rate7 = null;
+
+					date = sdf.format(sdate);
+					count = registerDao.count(date);
+					int count1 = loginDao.count(date, 1);
+					int count3 = loginDao.count(date, 3);
+					int count7 = loginDao.count(date, 7);
+					double d = 0.00;
+					if (count != 0)
+					{
+						d = MathsUtils.div(count1, count, 4);
+						rate1 = new DecimalFormat("#.##%").format(d);
+						d = MathsUtils.div(count3, count, 4);
+						rate3 = new DecimalFormat("#.##%").format(d);
+						d = MathsUtils.div(count7, count, 4);
+						rate7 = new DecimalFormat("#.##%").format(d);
+					}
+					RetentionRate rate = new RetentionRate(date, count, rate1,
+							rate3, rate7);
+					result.add(rate);
+					sdate.setTime(sdate.getTime() + 1000 * 60 * 60 * 24l);
+				}
+			}
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	public String XMLData(String startDate, String endDate)
+	{
+		String result = "";
+		List<RetentionRate> list = this.gets(startDate, endDate);
+		StringBuffer stringBuffer = new StringBuffer();
+		// String s1 =
+		// "<chart yAxisName='玩家人数' caption='玩家职业统计' baseFont='宋体' baseFontSize='12' useRoundEdges='1' bgColor='FFFFFF,FFFFFF' showBorder='0'>";
+		// stringBuffer.append(s1);
+		// for (RetentionRate retentionRate : list)
+		// {
+		// stringBuffer.append("<set value='" + careerCount.getTotal()
+		// + "' label='" + careerCount.getCareer() + "'/>");
+		//
+		// }
+		// String s2 = "</chart>";
+		// stringBuffer.append(s2);
+		result = stringBuffer.toString();
+		return result;
+	}
+
+}

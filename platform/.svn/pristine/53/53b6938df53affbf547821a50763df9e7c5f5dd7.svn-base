@@ -1,0 +1,50 @@
+package cc.ywxm.vo;
+
+public class GameOpenVo
+{
+	private Integer open_id;
+	private String gamename;
+	private String game_server;
+	private String open_time;
+
+	public Integer getOpen_id()
+	{
+		return open_id;
+	}
+
+	public void setOpen_id(Integer open_id)
+	{
+		this.open_id = open_id;
+	}
+
+	public String getGamename()
+	{
+		return gamename;
+	}
+
+	public void setGamename(String gamename)
+	{
+		this.gamename = gamename;
+	}
+
+	public String getGame_server()
+	{
+		return game_server;
+	}
+
+	public void setGame_server(String game_server)
+	{
+		this.game_server = game_server;
+	}
+
+	public String getOpen_time()
+	{
+		return open_time;
+	}
+
+	public void setOpen_time(String open_time)
+	{
+		this.open_time = open_time;
+	}
+
+}

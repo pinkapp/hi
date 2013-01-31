@@ -1,0 +1,35 @@
+package cc.ywxm.service.game;
+
+import java.io.File;
+
+/**
+ * 
+ * @author HuangDeCai
+ * @since 2012-12-14 11:26:07
+ * 
+ */
+public interface KickService
+{
+	/**
+	 * 
+	 * @param who
+	 * @param whoContentType
+	 * @return
+	 */
+	int kick(File who, String whoContentType);
+
+	/**
+	 * 
+	 * @param player
+	 * @return
+	 */
+	int kick(Integer player);
+
+	/**
+	 * 
+	 * @param nickname
+	 * @return
+	 */
+	int kick(String nickname);
+
+}

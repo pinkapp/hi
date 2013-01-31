@@ -1,0 +1,87 @@
+package cc.ywxm.model;
+
+// default package
+
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+/**
+ * Province entity. @author MyEclipse Persistence Tools
+ */
+@Entity
+@Table(name = "province", catalog = "ywxm")
+public class Province implements java.io.Serializable
+{
+
+	// Fields
+
+	private Integer proId;
+	private String proName;
+	private Set<City> cities = new HashSet<City>(0);
+
+	// Constructors
+
+	/** default constructor */
+	public Province()
+	{
+	}
+
+	/** minimal constructor */
+	public Province(String proName)
+	{
+		this.proName = proName;
+	}
+
+	/** full constructor */
+	public Province(String proName, Set<City> cities)
+	{
+		this.proName = proName;
+		this.cities = cities;
+	}
+
+	// Property accessors
+	@Id
+	@GeneratedValue
+	@Column(name = "proID", unique = true, nullable = false)
+	public Integer getProId()
+	{
+		return this.proId;
+	}
+
+	public void setProId(Integer proId)
+	{
+		this.proId = proId;
+	}
+
+	@Column(name = "proName", nullable = false, length = 50)
+	public String getProName()
+	{
+		return this.proName;
+	}
+
+	public void setProName(String proName)
+	{
+		this.proName = proName;
+	}
+
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "province")
+	public Set<City> getCities()
+	{
+		return this.cities;
+	}
+
+	public void setCities(Set<City> cities)
+	{
+		this.cities = cities;
+	}
+
+}

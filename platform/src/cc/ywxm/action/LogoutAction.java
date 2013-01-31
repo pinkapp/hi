@@ -1,0 +1,43 @@
+package cc.ywxm.action;
+
+import javax.annotation.Resource;
+import javax.servlet.http.Cookie;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+
+import cc.ywxm.action.base.PageableAction;
+import cc.ywxm.constant.Const;
+import cc.ywxm.service.OperateLogService;
+import cc.ywxm.utils.WebUtils;
+
+@SuppressWarnings("serial")
+@Controller
+@Scope("prototype")
+public class LogoutAction extends PageableAction
+{
+	@Resource
+	private OperateLogService operateLogService;
+
+	/**
+	 * 账号退出
+	 * 
+	 * @return
+	 */
+	public String logout()
+	{
+		String username = (String) session.get(Const.SESSION_USERNAME);
+		operateLogService.add("玩家登出", username, WebUtils.getIpAddr(request));
+		Cookie cookie = new Cookie(Const.COOKIE_NAME_LOGINUSER, null);
+		cookie.setPath("/");
+		cookie.setMaxAge(0);
+		response.addCookie(cookie);
+		session.remove(Const.SESSION_USERID);// 清除会话
+		// 论坛同步
+		// ucsyn = userService.uc_user_synlogout();
+		// 游戏客户端同步
+		// syncString = userService.server_user_synlogout();
+		return SUCCESS;
+	}
+
+}

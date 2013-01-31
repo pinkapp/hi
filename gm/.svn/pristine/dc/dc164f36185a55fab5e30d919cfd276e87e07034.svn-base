@@ -1,0 +1,65 @@
+package cc.ywxm.service.game;
+
+import java.util.Map;
+
+import cc.ywxm.model.game.BaseInfo;
+
+public interface BaseInfoService {
+
+	/**
+	 * 删除玩家基本信息
+	 * 
+	 * @param 玩家ID
+	 * 
+	 */
+	void remove(Integer player);
+
+	/**
+	 * 编辑玩家基本信息
+	 * 
+	 * @param player
+	 *            玩家ID
+	 * @param nickname
+	 */
+	void edit(Integer player, String nickname);
+
+	/**
+	 * 创建玩家账号
+	 * 
+	 * @param nickname
+	 * @param sex
+	 * @return
+	 */
+	int add(String nickname, Integer sex);
+
+	/**
+	 * 查询玩家基本信息
+	 * 
+	 * @param player
+	 *            玩家ID
+	 * @return
+	 */
+	BaseInfo get(Integer player);
+
+	/**
+	 * 
+	 * @param rows
+	 * @param page
+	 * @param nickname
+	 * @return
+	 */
+	Map<String, Object> gets(Integer rows, Integer page, String nickname);
+
+	/**
+	 * 
+	 * @param rows
+	 * @param page
+	 * @param sort
+	 * @param order
+	 * @param nickname
+	 * @return
+	 */
+	Map<String, Object> gets(Integer rows, Integer page, String sort,
+			String order, String nickname);
+
+}

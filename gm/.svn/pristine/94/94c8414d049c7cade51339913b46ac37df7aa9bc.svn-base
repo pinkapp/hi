@@ -1,0 +1,105 @@
+package cc.ywxm.action.game;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Date;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+
+import cc.ywxm.action.BaseAction;
+import cc.ywxm.constant.Const;
+import cc.ywxm.datasource.CustomerContextHolder;
+import cc.ywxm.model.game.LoginInfo;
+import cc.ywxm.model.gm.Server;
+import cc.ywxm.service.game.LoginInfoService;
+import cc.ywxm.utils.DateFormat;
+import cc.ywxm.utils.JSONtool;
+
+/**
+ * 玩家登录信息
+ * 
+ * @author hdc
+ * 
+ */
+@SuppressWarnings("serial")
+@Controller
+@Scope("prototype")
+public class LoginInfoAction extends BaseAction
+{
+	private String qdate1;
+	private String qdate2;
+	private String maxDate;
+
+	@Resource
+	private LoginInfoService loginInfoService;
+
+	@Override
+	public String execute() throws Exception
+	{
+		Date d = new Date();
+		d.setTime(d.getTime() - 1000 * 60 * 60 * 24);
+		maxDate = DateFormat.format(d, DateFormat.DATE_PATTERN_2);
+		return super.execute();
+	}
+
+	/**
+	 * ajax gets
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
+	public String gets() throws IOException
+	{
+		Server dbsrv = (Server) session.get(Const.SESSION_DBSRV);
+		CustomerContextHolder.setCustomerType(dbsrv.getDataSource());
+		String jsonString = "";
+		List<LoginInfo> list = null;
+		// System.out.println(qdate1);
+		// System.out.println(qdate2);
+		list = loginInfoService.gets(qdate1, qdate2);
+		jsonString = JSONtool.serialize(list);
+		// System.out.println(jsonString);
+		response.setContentType("text/xml;charset=utf-8");
+		response.setHeader("Cache-Control", "no-cache");
+		PrintWriter out = response.getWriter();
+		out.append(jsonString);
+		out.close();
+
+		return NONE;
+	}
+
+	public String getQdate1()
+	{
+		return qdate1;
+	}
+
+	public void setQdate1(String qdate1)
+	{
+		this.qdate1 = qdate1;
+	}
+
+	public String getQdate2()
+	{
+		return qdate2;
+	}
+
+	public void setQdate2(String qdate2)
+	{
+		this.qdate2 = qdate2;
+	}
+
+	public String getMaxDate()
+	{
+		return maxDate;
+	}
+
+	public void setMaxDate(String maxDate)
+	{
+		this.maxDate = maxDate;
+	}
+
+}

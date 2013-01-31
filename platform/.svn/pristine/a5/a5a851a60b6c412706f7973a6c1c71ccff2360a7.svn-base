@@ -1,0 +1,216 @@
+package cc.ywxm.action;
+
+import java.awt.Rectangle;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
+import javax.annotation.Resource;
+
+import org.apache.struts2.ServletActionContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+
+import cc.ywxm.constant.Const;
+import cc.ywxm.model.User;
+import cc.ywxm.service.UserService;
+import cc.ywxm.utils.BaseAction;
+import cc.ywxm.utils.FileUtils;
+import cc.ywxm.utils.ImageHepler;
+
+@Controller
+@Scope("prototype")
+public class PortraitAction extends BaseAction
+{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5476227512158877101L;
+	private Integer x1;
+	private Integer y1;
+	private Integer x2;
+	private Integer y2;
+	private Integer h;
+	private Integer w;
+
+	private File image;
+	private String imageFileName;
+	private String imageContentType;
+	private Integer imageHeight = 300;// 图像实际剪切时高
+	private Integer imageWidth = 300;// 图像实际剪切时宽
+	private User user;
+
+	@Resource
+	private UserService userService;
+	private List<String> allowContentTypes = new ArrayList<String>();
+
+	/**
+	 * 选择上传
+	 * 
+	 * @return
+	 * @throws FileNotFoundException
+	 */
+	public String selectUpload() throws FileNotFoundException
+	{
+		allowContentTypes.add("image/pjpeg");
+		allowContentTypes.add("image/gif");
+		allowContentTypes.add("image/bmp");
+		allowContentTypes.add("image/x-png");
+		if (!allowContentTypes.contains(imageContentType))
+		{
+			imageFileName = null;
+			message = "文件类型不正确或者没选择文件";
+			user = userService.findById((Integer) session
+					.get(Const.SESSION_USERID));
+			return SUCCESS;
+		}
+		String uploadPath = ServletActionContext.getServletContext()
+				.getRealPath("/upload");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+		String dateString = sdf.format(new Date());
+		imageFileName = dateString + imageFileName;
+		String srcImageFile = uploadPath + "/tmp/" + imageFileName;
+		FileUtils.coppyFile(image, srcImageFile);
+		return SUCCESS;
+	}
+
+	/**
+	 * 图片剪辑保存
+	 * 
+	 * @return
+	 */
+	public String cut()
+	{
+		String uploadPath = ServletActionContext.getServletContext()
+				.getRealPath("/upload");
+		String srcImageFile = uploadPath + "/tmp/" + imageFileName;
+		String formatName = srcImageFile.substring(srcImageFile
+				.lastIndexOf('.'));
+		String fn = UUID.randomUUID() + formatName;
+		String descDir = uploadPath + "/portrait/" + fn;
+		Rectangle rect = new Rectangle(x1, y1, w, h);
+		try
+		{
+			ImageHepler.cut(srcImageFile, descDir, imageWidth, imageHeight,
+					rect);
+			User user = userService.findById((Integer) session
+					.get(Const.SESSION_USERID));
+			user.setUserId((Integer) session.get(Const.SESSION_USERID));
+			user.setPortraitUrl(fn);
+			userService.edit(user);
+			return SUCCESS;
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+			return ERROR;
+		}
+
+	}
+
+	public Integer getX1()
+	{
+		return x1;
+	}
+
+	public void setX1(Integer x1)
+	{
+		this.x1 = x1;
+	}
+
+	public Integer getY1()
+	{
+		return y1;
+	}
+
+	public void setY1(Integer y1)
+	{
+		this.y1 = y1;
+	}
+
+	public Integer getX2()
+	{
+		return x2;
+	}
+
+	public void setX2(Integer x2)
+	{
+		this.x2 = x2;
+	}
+
+	public Integer getY2()
+	{
+		return y2;
+	}
+
+	public void setY2(Integer y2)
+	{
+		this.y2 = y2;
+	}
+
+	public Integer getH()
+	{
+		return h;
+	}
+
+	public void setH(Integer h)
+	{
+		this.h = h;
+	}
+
+	public Integer getW()
+	{
+		return w;
+	}
+
+	public void setW(Integer w)
+	{
+		this.w = w;
+	}
+
+	public File getImage()
+	{
+		return image;
+	}
+
+	public void setImage(File image)
+	{
+		this.image = image;
+	}
+
+	public String getImageFileName()
+	{
+		return imageFileName;
+	}
+
+	public void setImageFileName(String imageFileName)
+	{
+		this.imageFileName = imageFileName;
+	}
+
+	public String getImageContentType()
+	{
+		return imageContentType;
+	}
+
+	public void setImageContentType(String imageContentType)
+	{
+		this.imageContentType = imageContentType;
+	}
+
+	public User getUser()
+	{
+		return user;
+	}
+
+	public void setUser(User user)
+	{
+		this.user = user;
+	}
+
+}

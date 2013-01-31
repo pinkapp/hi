@@ -1,0 +1,35 @@
+package cc.ywxm.vo;
+
+public class DailyChargeUserCount
+{
+	private String chargetime;
+	private Integer usercount;
+
+	public DailyChargeUserCount(String chargetime, Integer usercount)
+	{
+		super();
+		this.chargetime = chargetime;
+		this.usercount = usercount;
+	}
+
+	public String getChargetime()
+	{
+		return chargetime;
+	}
+
+	public void setChargetime(String chargetime)
+	{
+		this.chargetime = chargetime;
+	}
+
+	public Integer getUsercount()
+	{
+		return usercount;
+	}
+
+	public void setUsercount(Integer usercount)
+	{
+		this.usercount = usercount;
+	}
+
+}

@@ -1,0 +1,24 @@
+package cc.ywxm.service;
+
+import java.util.List;
+
+import cc.ywxm.action.Pageable;
+import cc.ywxm.model.gop.News;
+import cc.ywxm.vo.NewsVo;
+
+public interface NewsService
+{
+
+	public List<News> findAll();
+
+	public News findById(Integer newsId);
+
+	public void edit(News news);
+
+	public void add(News news);
+
+	public List<NewsVo> findByPage(NewsVo condition, Pageable pageable);
+
+	public void delete(Integer newsId);
+
+}

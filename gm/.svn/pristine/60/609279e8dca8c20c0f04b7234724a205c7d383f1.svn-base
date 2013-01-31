@@ -1,0 +1,73 @@
+package cc.ywxm.service.game;
+
+import java.util.Map;
+
+public interface BaseInfoService
+{
+
+	public static final int CODE_PLAYER_NULL = 1000;
+	public static final int CODE_NICKNAME_NULL = 4000;
+	public static final int CODE_PLAYER_NOT_EXIST = 1001;
+	public static final int CODE_ZMQ_TIMEOUT = 2000;
+	public static final int CODE_JSON_ERROR = 3000;
+	public static final int CODE_SUCCESS = 1;
+	public static final int CODE_FAIL = 0;
+
+
+	/**
+	 * 修改玩家基本信息
+	 * 
+	 * @param nickname
+	 *            玩家昵称
+	 * @param gold
+	 *            金币
+	 * @param silver
+	 *            银币
+	 * @param exp
+	 *            经验
+	 * @param energy
+	 *            活力
+	 * @param feat
+	 *            功绩
+	 * @param prestige
+	 *            威望
+	 * @param mobility
+	 *            行动力
+	 * @param level
+	 *            等级
+	 */
+	int edit(String nickname, Integer gold, Double silver, Integer exp,
+			Integer energy, Integer feat, Integer prestige, Integer mobility,
+			Integer level, Integer progress);
+
+	/**
+	 * 创建玩家账号
+	 * 
+	 * @param nickname
+	 * @param sex
+	 * @return
+	 */
+	int add(String nickname, Integer sex);
+
+	/**
+	 * 
+	 * @param rows
+	 * @param page
+	 * @param nickname
+	 * @return
+	 */
+	Map<String, Object> gets(Integer rows, Integer page, String nickname);
+
+	/**
+	 * 
+	 * @param rows
+	 * @param page
+	 * @param sort
+	 * @param order
+	 * @param nickname
+	 * @return
+	 */
+	Map<String, Object> gets(Integer rows, Integer page, String sort,
+			String order, String nickname);
+
+}

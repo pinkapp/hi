@@ -1,0 +1,273 @@
+package cc.ywxm.dao;
+
+import java.util.Date;
+import java.util.List;
+
+import cc.ywxm.model.User;
+
+public interface UserDao
+{
+	/**
+	 * 指定用户名+密码查询用户，返回匹配的用户
+	 * 
+	 * @param username
+	 *            用户名
+	 * @param password
+	 *            密码（密文）
+	 * @return 用户列表
+	 */
+	public List<User> find(String username, String password);
+
+	public List<User> findByExample(User example);
+
+	public User findById(Integer uid);
+
+	public void update(User u);
+
+	public void save(User user);
+
+	public List<User> find(User condition);
+
+	public User findByUsername(String username);
+
+	public void batchDelete(Integer[] user_ids);
+
+	// public List<String> getRolenamesByUserId(Integer userId);
+	/**
+	 * 封号
+	 */
+	public void delele(User user);
+
+	// public List<String> getFunctionURLsByUserId(Integer userId);
+	/**
+	 * 指定sql和根据用户ID查询字符串列表
+	 */
+	public List<String> findList(String sql, Integer userId);
+
+	public void grant(Integer userId, Integer roleId);
+
+	public Short findRoleIdByUserId(Integer userId);
+
+	public User findByEmail(String email);
+
+	/**
+	 * 解封
+	 * 
+	 * @param user
+	 * @return
+	 */
+	public void recover(int user_id);
+
+
+	/**
+	 * 用户年龄段统计
+	 * 
+	 * @return
+	 */
+	public int findAgegroupCount(int startAge, int endAge);
+
+	/**
+	 * 用户未填写出生年月用户统计
+	 * 
+	 * @return
+	 */
+	public int findOtherAgegroupCount();
+
+
+	/**
+	 * 模糊查询用户名
+	 * 
+	 * @param str
+	 * @return
+	 */
+
+	public List<String> findUsersByUsername(String str);
+
+	/**
+	 * 查询所有用户名
+	 * 
+	 * @return
+	 */
+	public List<String> findAllUsername();
+
+
+	/**
+	 * 截止某天，注册总人数
+	 */
+	public int findRegisterTotalCount(Date date);
+
+	/**
+	 * 性别统计
+	 * 
+	 * @param sexflag
+	 *            性别标记
+	 * @return 指定性别总人数
+	 */
+	public int findSexCount(Integer sexflag);
+
+	/**
+	 * 其他性别统计
+	 * 
+	 * @return 其它性别总人数
+	 */
+	public int findOtherSexCount();
+
+	/**
+	 * 查询每天的注册人数
+	 * 
+	 * @param 字符串日期
+	 * @return 注册人数
+	 */
+	public Integer findRegisterUsersPerday(String dstring);
+
+	/**
+	 * 查询每天注册的总人数
+	 * 
+	 * @param 字符串日期
+	 * @return 总人数
+	 */
+	public Integer findRegisterUsers(String dstring);
+
+	/**
+	 * 更新二级密码
+	 * 
+	 * @param userId
+	 *            UID
+	 * @param spasswd
+	 *            二级密码
+	 */
+	public void updateSecondaryPassword(Integer userId, String spasswd);
+
+	/**
+	 * 查询用户二级密码
+	 * 
+	 * @param userId
+	 *            UID
+	 * @return 二级密码
+	 */
+	public String findSecondaryPassword(int userId);
+
+	/**
+	 * 查询用户邮箱
+	 * 
+	 * @param username
+	 *            用户名
+	 * @return 邮箱
+	 */
+	public String findEmail(String username);
+
+	/**
+	 * 查询用户的手机号码
+	 * 
+	 * @param userId
+	 *            用户名
+	 * @return 手机号码
+	 */
+	public String findPhone(String username);
+
+	/**
+	 * 重置用户密码
+	 * 
+	 * @param username
+	 *            用户名
+	 * @param password
+	 *            密码（密文）
+	 */
+	public void resetPassword(String username, String password);
+
+	/**
+	 * 查询手机号码
+	 * 
+	 * @param userId
+	 *            UID
+	 * @return 手机号码
+	 */
+	public String findPhone(int userId);
+
+	/**
+	 * 重置用户密码
+	 * 
+	 * @param userId
+	 *            UID
+	 * @param password
+	 *            密码（密文）
+	 */
+	public void resetPassword(int userId, String password);
+
+	/**
+	 * 指定UID+密码查询用户，返回匹配的用户
+	 * 
+	 * @param userId
+	 *            UID
+	 * @param password
+	 *            密码（密文）
+	 * @return 用户列表
+	 */
+	public List<User> find(int userId, String password);
+
+	/**
+	 * 查询用户的状态码
+	 * 
+	 * @param username
+	 *            用户名
+	 * @return 状态码
+	 */
+	public Integer findStatusCode(String username);
+
+	/**
+	 * 查询用户的状态码
+	 * 
+	 * @param userId
+	 *            UID
+	 * @return 状态码
+	 */
+	public Integer findStatusCode(int userId);
+
+	/**
+	 * 更新用户状态码
+	 * 
+	 * @param userId
+	 *            UID
+	 * @param statusCode
+	 *            状态码
+	 */
+	public void updateStatusCode(int userId, int statusCode);
+
+	/**
+	 * 封账号
+	 * 
+	 * @param user_id
+	 * @param closeType
+	 * @param closeReason
+	 * @param closeEndtime
+	 */
+	public void close(Integer user_id, Short closeType, String closeReason,
+			String closeEndtime);
+
+	/**
+	 * 指定手机号码查询用户
+	 * 
+	 * @param phone
+	 *            手机号码
+	 * @return 用户
+	 */
+	public User findByPhone(String phone);
+
+	/**
+	 * 查询身份证号码
+	 * 
+	 * @param userId
+	 *            UID
+	 * @return 身份证号码
+	 */
+	public String findCardId(int userId);
+
+	/**
+	 * 
+	 * @param username
+	 * @param password
+	 * @return
+	 */
+	public int count(String username, String password);
+
+}

@@ -1,0 +1,38 @@
+package cc.ywxm.dao.gop;
+
+import java.util.List;
+
+import cc.ywxm.action.Pageable;
+import cc.ywxm.model.gop.GameOpen;
+import cc.ywxm.vo.GameOpenVo;
+
+/**
+ * 游戏开服数据访问层
+ * 
+ * @author hdc
+ * 
+ * 
+ */
+public interface GameOpenDao
+{
+	public void save(GameOpen gameOpen);
+
+	public void delete(GameOpen gameOpen);
+
+	public void update(GameOpen gameOpen);
+
+	public GameOpen findById(Integer gameOpenId);
+
+	public List<GameOpen> findAll();
+
+	public List<GameOpenVo> findByPage(GameOpenVo condition, Pageable pageable);
+	
+	/**
+	 * 查询玩家玩过的游戏服务器
+	 * 
+	 * @param gameId
+	 * @param userId
+	 * @return
+	 */
+	public List<GameOpenVo> find(Integer gameId, Integer userId);
+}

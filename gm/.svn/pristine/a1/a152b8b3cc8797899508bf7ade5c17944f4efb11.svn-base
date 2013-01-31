@@ -1,0 +1,148 @@
+package cc.ywxm.service.impl.game;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import cc.ywxm.service.game.KickService;
+
+@Transactional
+@Service
+public class KickServiceImpl implements KickService
+{
+
+	public int excelKick(File excelFile)
+	{
+		File file = excelFile;
+		try
+		{
+			FileInputStream inStream = new FileInputStream(file);
+			// 声明一个工作薄
+			HSSFWorkbook workbook = new HSSFWorkbook(inStream);
+			// 生成一个表格
+			HSSFSheet sheet = workbook.getSheetAt(0);
+			int firstRowNum = sheet.getFirstRowNum();
+			int lastRowNum = sheet.getLastRowNum();
+			List<Integer> dataList = new ArrayList<Integer>();
+			for (int i = firstRowNum; i <= lastRowNum; i++)
+			{
+				HSSFRow row = sheet.getRow(i);
+				Double d = row.getCell(0).getNumericCellValue();
+				Integer player = d.intValue();
+				if (dataList.contains(player))
+				{
+					continue;
+				}
+				dataList.add(player);
+			}
+			for (Integer data : dataList)
+			{
+				System.out.println(data);
+			}
+			return 1;// 操作成功
+		} catch (FileNotFoundException e)
+		{
+			e.printStackTrace();
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+		} catch (IllegalStateException e)
+		{
+			return 2;// 存在无效玩家ID
+		} catch (NullPointerException e)
+		{
+			return 3;// 无效数据文件格式
+		}
+		return 0;
+	}
+
+	public int textKick(File textFile)
+	{
+		File file = textFile;
+		try
+		{
+			FileInputStream inStream = new FileInputStream(file);
+			InputStreamReader reader = new InputStreamReader(inStream);
+			BufferedReader bufferedReader = new BufferedReader(reader);
+			StringBuffer sb = new StringBuffer();
+			String line = "";
+			while ((line = bufferedReader.readLine()) != null)
+			{
+				line = line.replace(" ", "");
+				sb.append(line);
+			}
+			String dataString = sb.toString();
+			String[] strs = dataString.split(",");
+			List<Integer> dataList = new ArrayList<Integer>();
+			for (String string : strs)
+			{
+				if (string == null || "".equals(string))
+				{
+					continue;
+				}
+				Integer player = Integer.parseInt(string);
+				if (dataList.contains(player))
+				{
+					continue;
+				}
+				dataList.add(player);
+			}
+			for (Integer data : dataList)
+			{
+				System.out.println(data);
+			}
+			return 1;// 操作成功
+		} catch (FileNotFoundException e)
+		{
+			e.printStackTrace();
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+		} catch (NumberFormatException e)
+		{
+			// e.printStackTrace();
+			return 2;// 存在无效玩家ID
+		}
+		return 0;
+	}
+
+	public int kick(File who, String whoContentType)
+	{
+
+		if ("text/plain".equals(whoContentType))
+		{
+			return textKick(who);
+		} else if ("application/vnd.ms-excel".equals(whoContentType))
+		{
+			return excelKick(who);
+		} else if (whoContentType == null || "".equals(whoContentType))
+		{
+			return -1;
+		} else
+		{
+			return -2;
+		}
+	}
+
+	public int kick(Integer player)
+	{
+		return 0;
+	}
+
+	public int kick(String nickname)
+	{
+		return 0;
+	}
+
+}

@@ -1,0 +1,56 @@
+package cc.ywxm.service.impl.platform;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import cc.ywxm.constant.Const;
+import cc.ywxm.model.platform.RegCount;
+import cc.ywxm.service.platform.RegCountService;
+
+@Transactional
+@Service
+public class RegCountServiceImpl implements RegCountService
+{
+
+	public List<RegCount> gets(String startDate, String endDate)
+	{
+		List<RegCount> result = new ArrayList<RegCount>();
+
+		SimpleDateFormat sdf = new SimpleDateFormat(Const.DATE_DATE_PATTERN);
+		Date start = null;
+		Date end = null;
+		try
+		{
+			start = sdf.parse(startDate);
+			end = sdf.parse(endDate);
+		} catch (ParseException e)
+		{
+			e.printStackTrace();
+			return result;
+		}
+		Date date1 = new Date();
+		date1.setTime(start.getTime());
+		while (date1.compareTo(end) <= 0)
+		{
+			String date = "";
+			int count = 0;
+			date = sdf.format(date1);
+			count = (int) (Math.random() * 10000);
+			date1.setTime(date1.getTime() + 1000 * 60 * 60 * 24l);
+			RegCount regCount = new RegCount();
+			regCount.setDate(date);
+			regCount.setTotal(count);
+			result.add(regCount);
+		}
+
+		return result;
+	}
+
+}

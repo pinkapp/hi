@@ -1,0 +1,64 @@
+package cc.ywxm.service.impl;
+
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import cc.ywxm.action.Pageable;
+import cc.ywxm.dao.gop.NewsDao;
+import cc.ywxm.model.gop.News;
+import cc.ywxm.service.NewsService;
+import cc.ywxm.utils.WebUtils;
+import cc.ywxm.vo.NewsVo;
+
+@Service
+@Transactional
+public class NewsServiceImpl implements NewsService
+{
+	@Resource
+	private NewsDao newsDao;
+
+	public List<News> findAll()
+	{
+		return newsDao.findAll();
+	}
+
+	public News findById(Integer newsId)
+	{
+		return newsDao.findById(newsId);
+	}
+
+	public void edit(News news)
+	{
+		News n = newsDao.findById(news.getNewsId());
+		try
+		{
+			WebUtils.setNotNull(news, n);
+			newsDao.update(n);
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+	}
+
+	public void add(News news)
+	{
+		newsDao.save(news);
+	}
+
+	public List<NewsVo> findByPage(NewsVo condition, Pageable pageable)
+	{
+		return newsDao.findByPage(condition, pageable);
+	}
+
+	public void delete(Integer newsId)
+	{
+		News news = newsDao.findById(newsId);
+		newsDao.delete(news);
+	}
+
+}

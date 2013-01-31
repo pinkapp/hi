@@ -1,0 +1,435 @@
+package cc.ywxm.service;
+
+import java.util.List;
+
+import cc.ywxm.action.Pageable;
+import cc.ywxm.model.gop.User;
+import cc.ywxm.vo.DailyNewUserCount;
+import cc.ywxm.vo.DailyRegisterTotalCount;
+import cc.ywxm.vo.UserAgegroupCount;
+import cc.ywxm.vo.UserAreaCount;
+import cc.ywxm.vo.UserCareerCount;
+import cc.ywxm.vo.UserSexCount;
+import cc.ywxm.vo.UserVo;
+import cc.ywxm.vo.UserVo1;
+import cc.ywxm.vo.UserVo2;
+
+/**
+ * 用户业务层接口
+ * 
+ * @author huangdc
+ * 
+ */
+public interface UserService
+{
+	/**
+	 * 
+	 * @param username
+	 * @param password
+	 * @return
+	 */
+	public int login(String username, String password);
+
+	/**
+	 * 查询指定用户名的用户状态码
+	 * 
+	 * @param username
+	 * @param password
+	 * @return
+	 */
+	public Integer statusCode(String username);
+
+	/**
+	 * 查询指定UID的用户状态码
+	 * 
+	 * @param userId
+	 * @param password
+	 * @return
+	 */
+	public Integer statusCode(int userId);
+
+	/**
+	 * 检查用户身份
+	 * 
+	 * @param userId
+	 *            UID
+	 * @param password
+	 *            密码（明文）
+	 * @return 登录成功后的用户
+	 */
+	public User login(int userId, String password);
+
+	/**
+	 * 
+	 * @param uid
+	 *            UID
+	 * 
+	 * @return 指定UID的用户
+	 */
+	public User get(Integer userId);
+
+	/**
+	 * 修改用户基本属性，不能修改密码
+	 * 
+	 * @param user
+	 *            用户
+	 */
+	public void edit(User user);
+
+	/**
+	 * 添加用户
+	 * 
+	 * @param user
+	 *            用户
+	 */
+	public void add(User user);
+
+	/**
+	 * 
+	 * @param username
+	 * @param password
+	 * @param realname
+	 * @param cardId
+	 * @param email
+	 * @param regAddress
+	 * @return
+	 */
+	public int add(String username, String password, String realname,
+			String cardId, String email, String regAddress);
+
+	/**
+	 * 通过用户名查询用户
+	 * 
+	 * @param username
+	 *            用户名
+	 * @return 用户
+	 */
+	public User findByUsername(String username);
+
+	/**
+	 * 检查用户名是否存在
+	 * 
+	 * @param username
+	 *            用户名
+	 * @return 是否存在
+	 */
+	public boolean checkUsername(String username);
+
+	/**
+	 * 分页查询用户
+	 * 
+	 * @param userVo
+	 *            查询条件
+	 * @param pageable
+	 *            分页接口
+	 * @return 用户列表
+	 */
+	public List<UserVo> findPaged(UserVo userVo, final Pageable pageable);
+
+	/**
+	 * @param userIds
+	 *            UIDs
+	 */
+	public void batchDelete(String userIds);
+
+	/**
+	 * 通过用户ID查询角色
+	 * 
+	 * @param userId
+	 *            UID
+	 * @return 角色列表
+	 */
+	public List<String> getRolenamesByUserId(Integer userId);
+
+	/**
+	 * 封闭账号
+	 * 
+	 * @param userId
+	 */
+	public void delete(Integer userId);
+
+	/**
+	 * 解封账号
+	 * 
+	 * @param userId
+	 *            UID
+	 */
+	public void recover(int userId);
+
+	/**
+	 * 封账号
+	 * 
+	 * @param user2
+	 */
+	public void close(UserVo2 user2);
+
+	/**
+	 * 根据用户ID查询有权限的URL
+	 * 
+	 * @param userId
+	 *            UID
+	 * @return URLs
+	 */
+	public List<String> getFunctionURLsByUserId(Integer userId);
+
+	/**
+	 * 添加和修改用户角色
+	 * 
+	 * @param userId
+	 * @param roleId
+	 * @return
+	 */
+	public void grant(Integer userId, Integer roleId);
+
+	/**
+	 * 通过UID查询角色ID
+	 * 
+	 * @param userId
+	 *            UID
+	 * @return 角色ID
+	 */
+	public Short findRoleIdByUserId(Integer userId);
+
+	/**
+	 * 检查邮箱是否存在
+	 * 
+	 * @param email
+	 *            邮箱
+	 * @return 是否存在
+	 */
+	public boolean checkEmail(String email);
+
+	/**
+	 * 指定月份查询每天新注册用户
+	 * 
+	 * @param month
+	 *            月份字符串，格式"yyyy-MM"
+	 * @return 指定月份新注册用户列表
+	 */
+	public List<DailyNewUserCount> findDailyNewUserCount(String month);
+
+	/**
+	 * 地区统计查询，分别统计出各地区的用户数量
+	 * 
+	 * @return 各地区的用户数量列表
+	 */
+	public List<UserAreaCount> findAreaCount();
+
+	/**
+	 * 年龄段统计查询，分别统计出各年龄段的用户数量
+	 * 
+	 * @return 各年龄段的用户数量列表
+	 */
+	public List<UserAgegroupCount> findAgegroupCount();
+
+	/**
+	 * 职业统计查询，分别统计出各职业的用户数量
+	 * 
+	 * @return 各职业的用户数量列表，包括其它，其它指的是未设置地区的用户
+	 */
+	public List<UserCareerCount> findCareerCount();
+
+	/**
+	 * 模糊查询用户名
+	 * 
+	 * @param str
+	 *            匹配的字符串
+	 * @return 用户名列表
+	 */
+	public List<String> findUsersByUsername(String str);
+
+	/**
+	 * 分页查询用户,此用于用户角色设置
+	 * 
+	 * @param condition
+	 *            查询条件
+	 * @param pageable
+	 *            分页接口
+	 * @return 用户列表
+	 */
+	public List<UserVo1> findPaged(UserVo1 condition, Pageable pageable);
+
+	/**
+	 * 根据注册IP查询用户
+	 * 
+	 * @param registerIp
+	 *            注册IP
+	 * @return 用户列表
+	 */
+	public List<UserVo> findByRegisterIp(String registerIp);
+
+	/**
+	 * 指定月份查询每天注册的总用户数量
+	 * 
+	 * @param month
+	 *            月份字符串，格式为"yyyy-MM"
+	 * @return 指定月份总用户数量列表
+	 */
+	public List<DailyRegisterTotalCount> findDailyRegisterTotalCount(
+			String month);
+
+	/**
+	 * 地区统计查询，分别统计出各性别用户数量
+	 * 
+	 * @return 各性别用户数量列表，包含其它，其它指未设置性别的用户
+	 */
+	public List<UserSexCount> findSexCount();
+
+	/**
+	 * 设置二级密码
+	 * 
+	 * @param userId
+	 *            UID
+	 * @param spasswd
+	 *            二级密码（明文）
+	 */
+	public void setSecondaryPassword(Integer userId, String spasswd);
+
+	/**
+	 * 二级密码是否已经设置过
+	 * 
+	 * @param userId
+	 *            UID
+	 * @return 标记(0:没设置,1:已设置)
+	 */
+	public int yetSecondaryPassword(int userId);
+
+	/**
+	 * 检查用户名是否存在
+	 * 
+	 * @param username
+	 * @return 标记(0:不存在,1:存在)
+	 */
+	public int yetUsername(String username);
+
+	/**
+	 * 查询用户的邮箱返回
+	 * 
+	 * @param username
+	 *            用户名
+	 * @return 邮箱
+	 */
+	public String findEmail(String username);
+
+	/**
+	 * 查询用户的手机号码
+	 * 
+	 * @param userId
+	 *            用户名
+	 * @return 手机号码
+	 */
+	public String findPhone(String username);
+
+	/**
+	 * 重置用户密码
+	 * 
+	 * @param username
+	 *            用户名
+	 * @param password
+	 *            密码（明文）
+	 */
+	public void resetPassword(String username, String password);
+
+	/**
+	 * 重置用户密码
+	 * 
+	 * @param userId
+	 *            UID
+	 * @param password
+	 *            密码（明文）
+	 */
+	public void resetPassword(int userId, String password);
+
+	/**
+	 * 发送验证码到邮箱(未实现)
+	 * 
+	 * @param email
+	 *            邮件地址
+	 * @param strs
+	 *            用户名，验证码等
+	 */
+	public void sendVerifyCodeByEmail(String email, String[] strs);
+
+	/**
+	 * 发送验证码到手机(未实现)
+	 * 
+	 * @param phone
+	 *            手机号码
+	 * @param strs
+	 *            用户名，验证码等
+	 */
+	public void sendVerifyCodeByPhone(String phone, String[] strs);
+
+	/**
+	 * 检查手机号码是否已经绑定
+	 * 
+	 * @param userId
+	 *            UID
+	 * @return 标记(0:没绑定,1:已绑定)
+	 */
+	public int yetPhone(int userId);
+
+	/**
+	 * 指定UID查询手机号码
+	 * 
+	 * @param userId
+	 *            UID
+	 * @return 手机号码
+	 */
+	public String findPhone(int userId);
+
+	/**
+	 * 更新用户状态码
+	 * 
+	 * @param userId
+	 *            UID
+	 * @param statusCode
+	 *            状态码
+	 */
+	public void updateStatusCode(int userId, int statusCode);
+
+	/**
+	 * 
+	 * @param userId
+	 *            UID
+	 * @return
+	 */
+	public UserVo2 findUserVo2ById(int userId);
+
+	/**
+	 * 检查手机号码是否已经被绑定过
+	 * 
+	 * @param phone
+	 *            手机号码
+	 * @return 绑定与否
+	 */
+	public boolean checkPhone(String phone);
+
+	/**
+	 * 指定UID查询身份证号码
+	 * 
+	 * @param userId
+	 *            UID
+	 * @return 身份证号码
+	 */
+	public String findCardId(int userId);
+
+	/**
+	 * 检查身份证号码是否已经绑定
+	 * 
+	 * @param userId
+	 *            UID
+	 * @return 绑定与否
+	 */
+	public int yetCardId(Integer userId);
+
+	/**
+	 * 
+	 * @param username
+	 * @param password
+	 * @param loginIp
+	 * @return
+	 */
+	public int login(String username, String password, String loginIp);
+
+}

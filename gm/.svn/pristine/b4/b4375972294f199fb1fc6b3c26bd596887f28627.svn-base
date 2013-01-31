@@ -1,0 +1,3 @@
+gm.server.jdbc.url=jdbc\:mysql\://192.168.0.116\:3306/gm?useUnicode=true&characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false
+gm.server.jdbc.username=user
+gm.server.jdbc.password=user

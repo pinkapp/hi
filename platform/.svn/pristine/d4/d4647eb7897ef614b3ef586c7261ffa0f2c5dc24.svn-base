@@ -1,0 +1,39 @@
+package cc.ywxm.service;
+
+import java.util.List;
+
+import cc.ywxm.model.gop.Userlogin;
+import cc.ywxm.vo.DailyUserloginCount;
+import cc.ywxm.vo.DailyUserloginOneUserCount;
+import cc.ywxm.vo.DailyUserloginUserCount;
+
+public interface UserloginService
+{
+
+
+	public void add(Userlogin userlogin);
+
+	/**
+	 * 每日用户登录次数统计
+	 * 
+	 * @return
+	 */
+	public List<DailyUserloginCount> findDailyUserloginCount(String month);
+
+	/**
+	 * 单个用户日登陆次数统计
+	 * 
+	 * @return
+	 */
+	public List<DailyUserloginOneUserCount> findDailyUserloginOneUserCount(String month);
+
+	/**
+	 * 每日登录用户统计
+	 * 
+	 * @param month
+	 * @return
+	 */
+	public List<DailyUserloginUserCount> findDailyUserloginUserCount(
+			String month);
+
+}

@@ -1,0 +1,40 @@
+package cc.ywxm.vo;
+
+public class UserCareerCount
+{
+	// 职业
+	private String career;
+	private Integer usercount;
+
+	public UserCareerCount()
+	{
+		super();
+	}
+
+	public UserCareerCount(String career, Integer usercount)
+	{
+		super();
+		this.career = career;
+		this.usercount = usercount;
+	}
+
+	public String getCareer()
+	{
+		return career;
+	}
+
+	public void setCareer(String career)
+	{
+		this.career = career;
+	}
+
+	public Integer getUsercount()
+	{
+		return usercount;
+	}
+
+	public void setUsercount(Integer usercount)
+	{
+		this.usercount = usercount;
+	}
+}

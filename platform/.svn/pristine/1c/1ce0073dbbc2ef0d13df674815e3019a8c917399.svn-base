@@ -1,0 +1,37 @@
+package cc.ywxm.vo;
+
+public class DailyChargeMoneyCount
+{
+	private String chargetime;
+	private Integer moneycount;
+	
+	public DailyChargeMoneyCount()
+	{
+		super();
+	}
+	
+	public DailyChargeMoneyCount(String chargetime, Integer moneycount)
+	{
+		super();
+		this.chargetime = chargetime;
+		this.moneycount = moneycount;
+	}
+
+	public String getChargetime()
+	{
+		return chargetime;
+	}
+	public void setChargetime(String chargetime)
+	{
+		this.chargetime = chargetime;
+	}
+	public Integer getMoneycount()
+	{
+		return moneycount;
+	}
+	public void setMoneycount(Integer moneycount)
+	{
+		this.moneycount = moneycount;
+	}
+
+}

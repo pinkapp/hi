@@ -1,0 +1,69 @@
+package cc.ywxm.service.impl.game;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import cc.ywxm.dao.game.BaseInfoDao;
+import cc.ywxm.dao.game.PropDao;
+import cc.ywxm.model.game.Prop_;
+import cc.ywxm.service.game.PropInfoService;
+
+/**
+ * 
+ * @author HuangDeCai
+ * @since 2012-12-10 13:34:37
+ */
+@Transactional
+@Service
+public class PropInfoServiceImpl implements PropInfoService
+{
+	@Resource
+	private PropDao propDao;
+	@Resource
+	private BaseInfoDao baseInfoDao;
+
+	public List<Prop_> gets(String nickname)
+	{
+		if (nickname == null || "".trim().equals(nickname))
+		{
+			return new ArrayList<Prop_>();
+		}
+		nickname = nickname.trim();
+		try
+		{
+			Integer player = baseInfoDao.findPlayerByNickname(nickname);
+			return propDao.list(player);
+		} catch (EmptyResultDataAccessException e)
+		{
+			// System.out.println(e.getMessage());
+			return new ArrayList<Prop_>();
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+			return new ArrayList<Prop_>();
+		}
+	}
+
+	public List<Prop_> gets(Integer player)
+	{
+		if (player == null)
+		{
+			return new ArrayList<Prop_>();
+		}
+		try
+		{
+			return propDao.list(player);
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+			return new ArrayList<Prop_>();
+		}
+	}
+
+}

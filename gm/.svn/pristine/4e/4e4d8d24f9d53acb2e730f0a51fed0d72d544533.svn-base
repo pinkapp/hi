@@ -1,0 +1,26 @@
+package cc.ywxm.dao.game;
+
+import java.util.List;
+
+import cc.ywxm.model.game.FunctionBuilding;
+
+/**
+ * 数据库原子操作
+ * 
+ * @author hdc
+ * 
+ */
+public interface FunctionBuildingDao
+{
+
+	void save(FunctionBuilding fb);
+
+	void delete(FunctionBuilding fb);
+
+	void update(FunctionBuilding fb);
+
+	FunctionBuilding findById(Integer player);
+
+	List<FunctionBuilding> list(Integer player);
+
+}

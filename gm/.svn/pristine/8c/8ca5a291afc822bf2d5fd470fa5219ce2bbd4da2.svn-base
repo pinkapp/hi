@@ -1,0 +1,24 @@
+# Properties file with JDBC-related settings.
+# Applied by PropertyPlaceholderConfigurer from "applicationContext.xml".
+# Targeted at system administrators, to avoid touching the context XML files.
+
+jdbcA.driverClassName=com.mysql.jdbc.Driver
+jdbcA.url=jdbc\:mysql\://192.168.0.248\:3306/game?useUnicode=true&characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false
+jdbcA.username=ywxm
+jdbcA.password=ywxm
+
+jdbcB.driverClassName=com.mysql.jdbc.Driver
+jdbcB.url=jdbc\:mysql\://192.168.0.247\:3306/game?useUnicode=true&characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false
+jdbcB.username=ywxm
+jdbcB.password=ywxm
+
+jdbcC.driverClassName=com.mysql.jdbc.Driver
+jdbcC.url=jdbc\:mysql\://192.168.0.201\:3306/game?useUnicode=true&characterEncoding=utf8&autoReconnect=true&failOverReadOnly=false
+jdbcC.username=ywxm
+jdbcC.password=ywxm
+
+#jdbc.driverClassName=oracle.jdbc.OracleDriver
+#jdbc.url=jdbc:oracle:thin:@localhost:1521:imagedb
+#jdbc.username=scott
+#jdbc.password=tiger
+#imageDatabase.lobHandler=oracleLobHandler

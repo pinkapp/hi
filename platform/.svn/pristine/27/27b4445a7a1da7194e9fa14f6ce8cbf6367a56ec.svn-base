@@ -1,0 +1,106 @@
+package cc.ywxm.dao.impl;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.stereotype.Repository;
+
+import cc.ywxm.dao.UserloginDao;
+import cc.ywxm.model.Userlogin;
+import cc.ywxm.utils.DateFormat;
+import cc.ywxm.vo.DailyUserloginCount;
+import cc.ywxm.vo.DailyUserloginUserCount;
+
+@Repository
+public class UserloginDaoImpl implements UserloginDao {
+	@Resource
+	private HibernateTemplate hibernateTemplate;
+
+	@Resource
+	private JdbcTemplate jdbcTemplate;
+
+	public void save(Userlogin userlogin) {
+		hibernateTemplate.save(userlogin);
+	}
+
+	/**
+	 * 每日用户登录次数统计
+	 */
+	public List<DailyUserloginCount> findDailyUserloginCount(String starttime,
+			String endtime) {
+		String oneDay = starttime;
+		String currenttime = DateFormat
+				.currentDateFormat(DateFormat.DATE_PATTERN_2);
+		if (endtime.compareTo(currenttime) > 0) {
+			endtime = currenttime;
+		}
+		List<DailyUserloginCount> logincounts = new ArrayList<DailyUserloginCount>();
+		while (oneDay.compareTo(endtime) <= 0) {
+			String sql = "SELECT COUNT(1) FROM userlogin t WHERE LEFT(t.logintime,10) = ?";
+			List<Object> args = new ArrayList<Object>();
+			args.add(oneDay);
+			int count = jdbcTemplate.queryForInt(sql, args.toArray());
+			logincounts.add(new DailyUserloginCount(oneDay, count));
+			Date date = DateFormat.parse(oneDay, DateFormat.DATE_PATTERN_2);
+			// +1天
+			date.setTime(date.getTime() + 1000 * 60 * 60 * 24);
+			oneDay = DateFormat.format(date, DateFormat.DATE_PATTERN_2);
+		}
+		return logincounts;
+	}
+
+	/**
+	 * 每日用户登录人数统计
+	 */
+	public List<DailyUserloginUserCount> findDailyUserloginUserCount(
+			String starttime, String endtime) {
+		String oneDay = starttime;
+		String currenttime = DateFormat
+				.currentDateFormat(DateFormat.DATE_PATTERN_2);
+		if (endtime.compareTo(currenttime) > 0) {
+			endtime = currenttime;
+		}
+		List<DailyUserloginUserCount> usercounts = new ArrayList<DailyUserloginUserCount>();
+		while (oneDay.compareTo(endtime) <= 0) {
+			String sql = "SELECT COUNT(1) FROM (SELECT DISTINCT t.user_id FROM userlogin t WHERE LEFT(t.logintime,10) = ?) t1";
+			List<Object> args = new ArrayList<Object>();
+			args.add(oneDay);
+			int count = jdbcTemplate.queryForInt(sql, args.toArray());
+			usercounts.add(new DailyUserloginUserCount(oneDay, count));
+			Date date = DateFormat.parse(oneDay, DateFormat.DATE_PATTERN_2);
+			// +1天
+			date.setTime(date.getTime() + 1000 * 60 * 60 * 24);
+			oneDay = DateFormat.format(date, DateFormat.DATE_PATTERN_2);
+		}
+		return usercounts;
+	}
+
+	public int findUserCount(int logincount, String dateString) {
+		String sql = "SELECT COUNT(1) usercount FROM (SELECT user_id, COUNT(user_id) AS logincount FROM (SELECT user_id, LEFT(logintime,10) logindate FROM userlogin) t WHERE t.logindate=? GROUP BY t.user_id HAVING COUNT(user_id) = ?) a";
+		return jdbcTemplate.queryForInt(sql, new Object[] { dateString,
+				logincount });
+	}
+
+	public int findUserCountUp(int logincount, String dateString) {
+		String sql = "SELECT COUNT(1) usercount FROM (SELECT user_id, COUNT(user_id) AS logincount FROM (SELECT user_id, LEFT(logintime,10) logindate FROM userlogin) t WHERE t.logindate=? GROUP BY t.user_id HAVING COUNT(user_id) >= ?) a";
+		return jdbcTemplate.queryForInt(sql, new Object[] { dateString,
+				logincount });
+	}
+
+	public int findUserCountDown(int logincount, String dateString) {
+		String sql = "SELECT COUNT(1) usercount FROM (SELECT user_id, COUNT(user_id) AS logincount FROM (SELECT user_id, LEFT(logintime,10) logindate FROM userlogin) t WHERE t.logindate=? GROUP BY t.user_id HAVING COUNT(user_id) < ?) a";
+		return jdbcTemplate.queryForInt(sql, new Object[] { dateString,
+				logincount });
+	}
+
+	public Integer findLoginUsersPerDay(String dstring) {
+		String sql = "SELECT COUNT(1) FROM userlogin t WHERE LEFT(t.logintime,10) = ?";
+		return jdbcTemplate.queryForInt(sql, new Object[] { dstring });
+	}
+
+}

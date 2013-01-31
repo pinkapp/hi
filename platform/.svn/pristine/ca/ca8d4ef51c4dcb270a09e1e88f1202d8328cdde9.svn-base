@@ -1,0 +1,61 @@
+package cc.ywxm.service.impl;
+
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import cc.ywxm.action.Pageable;
+import cc.ywxm.dao.gop.GameOpenDao;
+import cc.ywxm.model.gop.GameOpen;
+import cc.ywxm.service.GameOpenService;
+import cc.ywxm.vo.GameOpenVo;
+
+@Service
+@Transactional
+public class GameOpenServiceImpl implements GameOpenService
+{
+	@Resource
+	private GameOpenDao gameOpenDao;
+
+	public List<GameOpen> findAll()
+	{
+		return gameOpenDao.findAll();
+	}
+
+	public GameOpen findById(Integer gameOpenId)
+	{
+		return gameOpenDao.findById(gameOpenId);
+	}
+
+	public void edit(GameOpen gameOpen)
+	{
+		GameOpen n = gameOpenDao.findById(gameOpen.getOpenId());
+		gameOpenDao.update(n);
+
+	}
+
+	public void add(GameOpen gameOpen)
+	{
+		gameOpenDao.save(gameOpen);
+	}
+
+	public List<GameOpenVo> findByPage(GameOpenVo condition, Pageable pageable)
+	{
+		return gameOpenDao.findByPage(condition, pageable);
+	}
+
+	public void delete(Integer gameOpenId)
+	{
+		GameOpen gameOpen = gameOpenDao.findById(gameOpenId);
+		gameOpenDao.delete(gameOpen);
+	}
+
+	public List<GameOpenVo> find(Integer gameId, Integer userId)
+	{
+		return gameOpenDao.find(gameId, userId);
+	}
+
+}

@@ -1,0 +1,5 @@
+package cc.ywxm.constant;
+
+public enum MethodEnum {
+	
+}

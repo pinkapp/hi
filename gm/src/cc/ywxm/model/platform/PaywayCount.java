@@ -1,0 +1,37 @@
+package cc.ywxm.model.platform;
+
+/**
+ * 支付方式统计
+ * 
+ * @author HuangDeCai
+ * @since 2012-12-18 15:13:15
+ * 
+ */
+public class PaywayCount
+{
+	// 支付方式
+	private String payway;
+	// 支付次数
+	private int total;
+
+	public String getPayway()
+	{
+		return payway;
+	}
+
+	public void setPayway(String payway)
+	{
+		this.payway = payway;
+	}
+
+	public int getTotal()
+	{
+		return total;
+	}
+
+	public void setTotal(int total)
+	{
+		this.total = total;
+	}
+
+}

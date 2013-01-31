@@ -1,0 +1,88 @@
+package cc.ywxm.model.gop;
+
+// default package
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+/**
+ * FriendlyLink entity. @author MyEclipse Persistence Tools
+ */
+@Entity
+@Table(name = "friendly_link", catalog = "ywxm")
+public class FriendlyLink implements java.io.Serializable
+{
+
+	// Fields
+
+	private Short siteId;
+	private String sitename;
+	private String siteurl;
+	private String sitelogo;
+
+	// Constructors
+
+	/** default constructor */
+	public FriendlyLink()
+	{
+	}
+
+	/** full constructor */
+	public FriendlyLink(String sitename, String siteurl, String sitelogo)
+	{
+		this.sitename = sitename;
+		this.siteurl = siteurl;
+		this.sitelogo = sitelogo;
+	}
+
+	// Property accessors
+	@Id
+	@GeneratedValue
+	@Column(name = "site_id", unique = true, nullable = false)
+	public Short getSiteId()
+	{
+		return this.siteId;
+	}
+
+	public void setSiteId(Short siteId)
+	{
+		this.siteId = siteId;
+	}
+
+	@Column(name = "sitename", length = 50)
+	public String getSitename()
+	{
+		return this.sitename;
+	}
+
+	public void setSitename(String sitename)
+	{
+		this.sitename = sitename;
+	}
+
+	@Column(name = "siteurl", length = 100)
+	public String getSiteurl()
+	{
+		return this.siteurl;
+	}
+
+	public void setSiteurl(String siteurl)
+	{
+		this.siteurl = siteurl;
+	}
+
+	@Column(name = "sitelogo", length = 50)
+	public String getSitelogo()
+	{
+		return this.sitelogo;
+	}
+
+	public void setSitelogo(String sitelogo)
+	{
+		this.sitelogo = sitelogo;
+	}
+
+}

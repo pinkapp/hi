@@ -1,0 +1,27 @@
+package cc.ywxm.service;
+
+import java.util.List;
+
+import cc.ywxm.action.Pageable;
+import cc.ywxm.model.Game;
+import cc.ywxm.model.GameOpen;
+import cc.ywxm.vo.GameVo;
+
+public interface GameService
+{
+
+	public List<Game> findAll();
+
+	public List<GameOpen> findAllGameOpen();
+
+	public Game findById(Integer gameId);
+
+	public void edit(Game game);
+
+	public void add(Game game);
+
+	public List<GameVo> findByPage(GameVo gameVo, Pageable pageable);
+
+	public void delete(Integer gameId);
+
+}

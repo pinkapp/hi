@@ -1,0 +1,67 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@page import="cc.ywxm.constant.Const"%>
+<%@ taglib prefix="s" uri="/struts-tags"%>
+<%
+	String path = request.getContextPath();
+	String url = request.getScheme() + "://" + request.getServerName()
+			+ "/";
+	String basePath = request.getScheme() + "://"
+			+ request.getServerName() + ":" + request.getServerPort()
+			+ path + "/";
+	Object uid = session.getAttribute(Const.SESSION_USERID);
+%>
+<script type="text/javascript">
+<!--
+function change(language){
+	var url = window.location.href;
+	window.location.href = "<%=basePath%>resource_change?lang=" + language +"&url=" + url;
+
+}
+//-->
+</script>
+<div style="border: #dadada 1px solid;height: 20px;background-color: #eef4f6;">
+<DIV class=z style="float: left;">
+<a href="#" onClick="this.style.behavior='url(#default#homepage)';this.setHomePage('<%=basePath%>');event.returnValue=false;">设为首页</a>
+<a href="#" onclick="window.external.addFavorite(this.href,this.title);return false;" title='亿网星漫' rel="sidebar">加入收藏</a>
+<a href="javascript:change('zh_CN');">简体中文</a>
+<a href="javascript:change('zh_TW');">繁體中文</a>
+<a href="javascript:change('en_US');">English</a>
+</DIV>
+<DIV class=y style="float: right;">
+<A title="注册" href="<%=basePath%>reg.jsp" target=_blank>注册</A> 
+<% if(uid==null){ %>
+<A title="马上登录"  href="<%=basePath%>login.jsp">登录</A>
+<%} else {%>
+<A href="<%=basePath%>user">个人中心</A>
+<!--<A href="<%=basePath%>admin/index" target=_blank>管理中心</A>
+--><A href="#" >提醒</A>
+<A href="<%=basePath%>user/logout">注销</A>
+<%} %>
+<A id=myprompt href="<%=basePath%>" >游戏充值</A>
+</DIV>
+</div>
+<div class="top">
+	<table width="100%" border="0" cellspacing="0" cellpadding="4">
+	  <tbody><tr>
+	      <td width="52%" align="left" ><a href="#"><img src="<%=basePath%>images/logo.png" name="Logo" alt="logo name" width="150" height="70" border="0"></a></td>
+	      <td width="48%" style="text-align: right;"><!--<a href="#"> 关于 </a> 
+	        &#149; <a href="#">联系我们</a> &#149; <a href="#">Site Map</a>&nbsp;<br>
+	       --><table width="100%" border="0" cellspacing="0" cellpadding="4">
+	          <thead>
+	            <tr>
+	              <td align="right"><a href="<%=basePath%>">首页</a></td>
+	              <td><strong>|</strong></td>
+	              <td><a href="<%=basePath%>user">个人中心</a></td>
+	              <td><strong>|</strong></td>
+	              <td><a href="<%=basePath%>game">游戏大厅</a></td>
+	              <td><strong>|</strong></td>
+	              <td><a href="<%=basePath%>service">客服中心</a></td>
+	              <td><strong>|</strong></td>
+	              <td><a href="http://192.168.0.116/bbs" target="_blank">游戏论坛</a></td>
+	            </tr>
+	          </thead>
+	        </table>
+	      </td>
+	  </tr></tbody>
+	</table>
+</div>

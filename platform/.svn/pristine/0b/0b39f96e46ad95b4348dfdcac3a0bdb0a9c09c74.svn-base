@@ -1,0 +1,24 @@
+package cc.ywxm.service;
+
+import java.io.File;
+
+import cc.ywxm.model.MoneyAssign;
+
+public interface MoneyAssignService
+{
+	/**
+	 * 通用货币发放
+	 * 
+	 * @param moneyAssign
+	 * @return
+	 */
+	public void assign(MoneyAssign moneyAssign);
+
+	/**
+	 * excel导入批量发放
+	 * 
+	 * @param file
+	 */
+	public void assign(File file, String assigner);
+
+}

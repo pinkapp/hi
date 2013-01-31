@@ -1,0 +1,28 @@
+package cc.ywxm.action;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+
+import cc.ywxm.utils.BaseAction;
+
+@Controller
+// 多例模式
+@Scope("prototype")
+// action注解bean,id="giftcardAction"
+public class GiftcardAction extends BaseAction {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 9121566760829281985L;
+
+	/**
+	 * 充值历史
+	 * 
+	 * @return
+	 */
+	public String history() {
+		return "history";
+	}
+
+}

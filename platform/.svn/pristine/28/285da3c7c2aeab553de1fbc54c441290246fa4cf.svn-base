@@ -1,0 +1,76 @@
+package cc.ywxm.vo;
+
+public class DailyUserloginOneUserCount
+{
+	private String logintime;
+	// 登录1次的用户数
+	private Integer l1Usercount;
+	// 登录2次的用户数
+	private Integer l2Usercount;
+	// 登录3次的用户数
+	private Integer l3Usercount;
+	// 登录4次以上的用户数
+	private Integer l4moreUsercount;
+
+	public DailyUserloginOneUserCount(String logintime, Integer l1Usercount,
+			Integer l2Usercount, Integer l3Usercount, Integer l4moreUsercount)
+	{
+		super();
+		this.logintime = logintime;
+		this.l1Usercount = l1Usercount;
+		this.l2Usercount = l2Usercount;
+		this.l3Usercount = l3Usercount;
+		this.l4moreUsercount = l4moreUsercount;
+	}
+
+	public String getLogintime()
+	{
+		return logintime;
+	}
+
+	public void setLogintime(String logintime)
+	{
+		this.logintime = logintime;
+	}
+
+	public Integer getL1Usercount()
+	{
+		return l1Usercount;
+	}
+
+	public void setL1Usercount(Integer l1Usercount)
+	{
+		this.l1Usercount = l1Usercount;
+	}
+
+	public Integer getL2Usercount()
+	{
+		return l2Usercount;
+	}
+
+	public void setL2Usercount(Integer l2Usercount)
+	{
+		this.l2Usercount = l2Usercount;
+	}
+
+	public Integer getL3Usercount()
+	{
+		return l3Usercount;
+	}
+
+	public void setL3Usercount(Integer l3Usercount)
+	{
+		this.l3Usercount = l3Usercount;
+	}
+
+	public Integer getL4moreUsercount()
+	{
+		return l4moreUsercount;
+	}
+
+	public void setL4moreUsercount(Integer l4moreUsercount)
+	{
+		this.l4moreUsercount = l4moreUsercount;
+	}
+
+}

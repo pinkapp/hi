@@ -1,0 +1,230 @@
+package cc.ywxm.service.impl;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import cc.ywxm.action.Pageable;
+import cc.ywxm.dao.gop.OrderDao;
+import cc.ywxm.dao.gop.UserDao;
+import cc.ywxm.model.gop.Order;
+import cc.ywxm.model.gop.User;
+import cc.ywxm.service.OrderService;
+import cc.ywxm.utils.DateFormat;
+import cc.ywxm.utils.DateUtils;
+import cc.ywxm.vo.ChargeTotalUserCount;
+import cc.ywxm.vo.DailyChargeMoneyCount;
+import cc.ywxm.vo.DailyChargeUserCount;
+import cc.ywxm.vo.GamePayMoneyCount;
+import cc.ywxm.vo.OrderVo;
+import cc.ywxm.vo.UserChargeRank;
+import cc.ywxm.vo.UserPaybankCount;
+import cc.ywxm.vo.UserPaywayCount;
+
+@Service
+@Transactional
+public class OrderServiceImpl implements OrderService
+{
+	@Resource
+	private OrderDao orderDao;
+	@Resource
+	private UserDao userDao;
+
+	public void recharge(Order order)
+	{
+		// 更新用户当前通用货币金额
+		int uid = order.getUserId();
+		User u = userDao.findById(uid);
+		if (u.getMoney() == null)
+		{
+			u.setMoney(order.getOrdermoney() * 100);
+		} else
+		{
+			u.setMoney(u.getMoney() + order.getOrdermoney() * 100);
+		}
+		userDao.update(u);
+		orderDao.save(order);
+	}
+
+	public List<OrderVo> findByPage(Integer userId, Pageable pageable)
+	{
+		return orderDao.findByPage(userId, pageable);
+	}
+
+	public List<UserPaywayCount> findPaywayCount()
+	{
+		// List<UserPaywayCount> userPaywayCounts = new
+		// ArrayList<UserPaywayCount>();
+		// userPaywayCounts.add(new UserPaywayCount("支付宝网银充值", 4565));
+		// userPaywayCounts.add(new UserPaywayCount("财付通网银充值", 5500));
+		// userPaywayCounts.add(new UserPaywayCount("支付宝快捷支付", 6335));
+		// userPaywayCounts.add(new UserPaywayCount("其它", 2335));
+		// return userPaywayCounts;
+		return orderDao.findPaywayCount();
+	}
+
+	public List<UserPaybankCount> findPaybankCount()
+	{
+		// List<UserPaywayCount> userPaywayCounts = new
+		// ArrayList<UserPaywayCount>();
+		// userPaywayCounts.add(new UserPaywayCount("中国工商银行", 4565));
+		// userPaywayCounts.add(new UserPaywayCount("中国建设银行", 3333));
+		// userPaywayCounts.add(new UserPaywayCount("中国农业银行", 4444));
+		// userPaywayCounts.add(new UserPaywayCount("中国交通银行", 6035));
+		// userPaywayCounts.add(new UserPaywayCount("中国银行", 6775));
+		// userPaywayCounts.add(new UserPaywayCount("深圳发展银行", 6735));
+		// userPaywayCounts.add(new UserPaywayCount("支付卡", 7835));
+		// userPaywayCounts.add(new UserPaywayCount("兴业银行", 4635));
+		// userPaywayCounts.add(new UserPaywayCount("中信银行", 245));
+		// return userPaywayCounts;
+		return orderDao.findPaybankCount();
+	}
+
+	public List<UserChargeRank> findChargeRanklist()
+	{
+		// List<UserChargeRank> userChargeRanklist = new
+		// ArrayList<UserChargeRank>();
+		// userChargeRanklist.add(new UserChargeRank("hellokitty", 56000));
+		// userChargeRanklist.add(new UserChargeRank("Baron", 55550));
+		// userChargeRanklist.add(new UserChargeRank("Jack", 44440));
+		// userChargeRanklist.add(new UserChargeRank("Mark", 33330));
+		// userChargeRanklist.add(new UserChargeRank("Paul", 33000));
+		// userChargeRanklist.add(new UserChargeRank("Tom", 31110));
+		// userChargeRanklist.add(new UserChargeRank("Tyler", 28000));
+		// userChargeRanklist.add(new UserChargeRank("Winfred", 20000));
+		// userChargeRanklist.add(new UserChargeRank("Kelly", 19000));
+		// for (int i = 0; i < 191; i++)
+		// {
+		// userChargeRanklist.add(new UserChargeRank("Hyman", 18000));
+		// }
+
+		// return userChargeRanklist;
+		return orderDao.findChargeRanklist();
+	}
+
+	public List<DailyChargeUserCount> findDailyChargeUserCount(String month)
+	{
+		Date date = DateFormat.parse(month, "yyyy-MM");
+		Date firstDay = DateUtils.getfirstDayOfMonth(date);
+		Date lastDay = DateUtils.getLastDayOfMonth(date);
+		String starttime = DateFormat.format(firstDay,
+				DateFormat.DATE_PATTERN_2);
+		String endtime = DateFormat.format(lastDay, DateFormat.DATE_PATTERN_2);
+		String currenttime = DateFormat
+				.currentDateFormat(DateFormat.DATE_PATTERN_2);
+		if (endtime.compareTo(currenttime) > 0)
+		{
+			endtime = currenttime;
+		}
+		return orderDao.findDailyChargeUserCount(starttime, endtime);
+	}
+
+	public List<ChargeTotalUserCount> findChargeTotalUserCount()
+	{
+		List<ChargeTotalUserCount> chargeTotalUserCounts = new ArrayList<ChargeTotalUserCount>();
+		chargeTotalUserCounts.add(new ChargeTotalUserCount("0-49", 0));
+		chargeTotalUserCounts.add(new ChargeTotalUserCount("50-99", 0));
+		chargeTotalUserCounts.add(new ChargeTotalUserCount("100-199", 0));
+		chargeTotalUserCounts.add(new ChargeTotalUserCount("200-499", 0));
+		chargeTotalUserCounts.add(new ChargeTotalUserCount("500-999", 0));
+		chargeTotalUserCounts.add(new ChargeTotalUserCount("1000-1999", 0));
+		chargeTotalUserCounts.add(new ChargeTotalUserCount("2000-4999", 0));
+		chargeTotalUserCounts.add(new ChargeTotalUserCount("5000以上", 0));
+		for (ChargeTotalUserCount chargeTotalUserCount : chargeTotalUserCounts)
+		{
+			if (chargeTotalUserCount.getChargeTotal().equals("5000以上"))
+			{
+				chargeTotalUserCount.setUsercount(orderDao
+						.findChargeTotalUserCountUp(5000));
+			} else
+			{
+				String[] moneys = chargeTotalUserCount.getChargeTotal().split(
+						"-");
+				int startMoney = Integer.parseInt(moneys[0]);
+				int endMoney = Integer.parseInt(moneys[1]);
+				chargeTotalUserCount.setUsercount(orderDao
+						.findChargeTotalUserCount(startMoney, endMoney));
+			}
+		}
+
+		return chargeTotalUserCounts;
+	}
+
+	public List<UserChargeRank> findChargeRanklist(String month)
+	{
+		return orderDao.findChargeRanklist(month);
+	}
+
+	public List<UserChargeRank> findChargeRanklist(String sday, String eday)
+	{
+		return orderDao.findChargeRanklist(sday, eday);
+	}
+
+	public List<GamePayMoneyCount> findGamePayMoneyCount(String month)
+	{
+		Date date = DateFormat.parse(month, "yyyy-MM");
+		Date firstDay = DateUtils.getfirstDayOfMonth(date);
+		Date lastDay = DateUtils.getLastDayOfMonth(date);
+		String starttime = DateFormat.format(firstDay,
+				DateFormat.DATE_PATTERN_2);
+		String endtime = DateFormat.format(lastDay, DateFormat.DATE_PATTERN_2);
+		String currenttime = DateFormat
+				.currentDateFormat(DateFormat.DATE_PATTERN_2);
+		if (endtime.compareTo(currenttime) > 0)
+		{
+			endtime = currenttime;
+		}
+		String oneDay = starttime;
+
+		List<GamePayMoneyCount> gpmcs = new ArrayList<GamePayMoneyCount>();
+		date = DateFormat.parse(month, "yyyy-MM");
+		while (oneDay.compareTo(endtime) <= 0)
+		{
+			GamePayMoneyCount gpmc = null;
+
+			int game1paymoney = orderDao.findGamesPayMoneyCount(1, oneDay);
+			int game2paymoney = orderDao.findGamesPayMoneyCount(2, oneDay);
+			int game3paymoney = orderDao.findGamesPayMoneyCount(3, oneDay);
+			int totalpaymoney = orderDao.findGamesPayMoneyCount(null, oneDay);
+			gpmc = new GamePayMoneyCount(oneDay, game1paymoney, game2paymoney,
+					game3paymoney, totalpaymoney);
+			gpmcs.add(gpmc);
+
+			// +1天
+			date.setTime(date.getTime() + 1000 * 60 * 60 * 24);
+			oneDay = DateFormat.format(date, DateFormat.DATE_PATTERN_2);
+		}
+
+		return gpmcs;
+	}
+
+	public List<DailyChargeMoneyCount> findDailyChargeMoneyCount(String month)
+	{
+		Date date = DateFormat.parse(month, "yyyy-MM");
+		Date firstDay = DateUtils.getfirstDayOfMonth(date);
+		Date lastDay = DateUtils.getLastDayOfMonth(date);
+		List<DailyChargeMoneyCount> dcmcs = new ArrayList<DailyChargeMoneyCount>();
+		for (Date d = firstDay; d.compareTo(lastDay) <= 0; d.setTime(d
+				.getTime()
+				+ 1000 * 60 * 60 * 24l))
+		{
+			String dstring = DateFormat.format(d, DateFormat.DATE_PATTERN_2);
+			String currentDstring = DateFormat.format(new Date(),
+					DateFormat.DATE_PATTERN_2);
+			if (dstring.compareTo(currentDstring) > 0)
+			{
+				break;
+			}
+			DailyChargeMoneyCount dcmc = new DailyChargeMoneyCount(dstring,
+					orderDao.findRechargeMoneyPerday(dstring));
+			dcmcs.add(dcmc);
+		}
+
+		return dcmcs;
+	}
+}

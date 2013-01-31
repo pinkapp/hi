@@ -1,0 +1,76 @@
+package cc.ywxm.service.impl;
+
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import cc.ywxm.action.Pageable;
+import cc.ywxm.dao.gop.GameDao;
+import cc.ywxm.model.gop.Game;
+import cc.ywxm.model.gop.GameOpen;
+import cc.ywxm.service.GameService;
+import cc.ywxm.utils.WebUtils;
+import cc.ywxm.vo.GameVo;
+
+@Service
+@Transactional
+public class GameServiceImpl implements GameService
+{
+	@Resource
+	private GameDao gameDao;
+
+	public List<Game> findAll()
+	{
+		return gameDao.findAll();
+	}
+
+	public Game findById(Integer newsId)
+	{
+		return gameDao.findById(newsId);
+	}
+
+	public void edit(Game game)
+	{
+		Game u = gameDao.findById(game.getGameId());
+		try
+		{
+			WebUtils.setNotNull(game, u);
+			gameDao.update(u);
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	public void add(Game game)
+	{
+		gameDao.save(game);
+	}
+
+	public List<GameOpen> findAllGameOpen()
+	{
+		try
+		{
+			return gameDao.findAllGameOpen();
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public List<GameVo> findByPage(GameVo gameVo, Pageable pageable)
+	{
+		return gameDao.findByPage(gameVo, pageable);
+	}
+
+	public void delete(Integer gameId)
+	{
+		Game game = gameDao.findById(gameId);
+		gameDao.delete(game);
+	}
+
+}

@@ -1,0 +1,49 @@
+package cc.ywxm.dao.impl;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.stereotype.Repository;
+
+import cc.ywxm.dao.MoneyAssignDao;
+import cc.ywxm.model.MoneyAssign;
+import cc.ywxm.utils.ImportExcel;
+
+@Repository
+public class MoneyAssignDaoImpl implements MoneyAssignDao
+{
+	@Resource
+	private HibernateTemplate hibernateTemplate;
+
+	// @Resource
+	// private JdbcTemplate jdbcTemplate;
+
+	public void save(List<MoneyAssign> moneyAssigns)
+	{
+		for (int i = 0; i < moneyAssigns.size(); i++)
+		{
+			if (i % 100 == 0)
+			{
+				hibernateTemplate.flush();
+				hibernateTemplate.clear();
+			}
+			hibernateTemplate.save(moneyAssigns.get(i));
+
+		}
+	}
+
+	public List<MoneyAssign> readExcel(File file)
+	{
+		Map<Integer, String> map = new HashMap<Integer, String>();
+		map.put(0, "receiver");
+		map.put(1, "money");
+		map.put(2, "assignreason");
+		return ImportExcel.importExcel(file, MoneyAssign.class, map);
+	}
+
+}

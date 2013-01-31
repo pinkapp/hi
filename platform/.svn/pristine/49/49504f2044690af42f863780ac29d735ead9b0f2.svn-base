@@ -1,0 +1,117 @@
+package cc.ywxm.interceptor;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.apache.struts2.ServletActionContext;
+import org.springframework.stereotype.Component;
+
+import cc.ywxm.constant.Const;
+
+import com.opensymphony.xwork2.ActionInvocation;
+import com.opensymphony.xwork2.interceptor.Interceptor;
+
+@Component
+public class SafeInterceptor implements Interceptor
+{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6783914372473093519L;
+	private List<String> actions = new ArrayList<String>();
+
+	// private List<String> urls = new ArrayList<String>();// 白名单
+	// @Resource
+	// private UserService userService;
+
+	public void destroy()
+	{
+
+	}
+
+	public void init()
+	{
+
+	}
+
+	/**
+	 * 登录拦截器，权限拦截器（/admin）
+	 */
+	public String intercept(ActionInvocation actionInvocation) throws Exception
+	{
+		HttpServletRequest request = ServletActionContext.getRequest();
+		autoLogin(request);
+		// System.out.println("begin check login interceptor!");
+		actions.add("login");// 登录
+		actions.add("reg");// 注册
+		actions.add("");// 首页
+		actions.add("game");
+		actions.add("service");
+		actions.add("rand");// 生成验证码图片
+		actions.add("resource_change");
+		actions.add("forgotpass");
+		String actionName = actionInvocation.getInvocationContext().getName();
+		if (actions.contains(actionName))
+		{
+			System.err.println("跳过Action:" + actionName);
+			return actionInvocation.invoke();
+		}
+		System.err.println("检查Action:" + actionName);
+		// 确认Session中是否存在LOGIN
+		Map<String, Object> session = actionInvocation.getInvocationContext()
+				.getSession();
+		if (session.containsKey(Const.SESSION_USERID))
+		{
+			return actionInvocation.invoke();
+		} else
+		{
+			/**
+			 * 登录后返回登录前页面
+			 */
+			// 获取HttpServletRequest对象
+			StringBuffer url = request.getRequestURL();
+			String queryString = request.getQueryString();
+			// System.out.println("QueryString=" + request.getQueryString());
+			if (request.getQueryString() != null)
+			{
+				url.append("?" + queryString);
+			}
+			session.put("prePage", url.toString());// 存入session，方便调用
+			System.out.println("no login, forward login page!");// 否则终止后续操作，返回LOGIN
+			System.out.println("after login, go to " + url);
+			return "login";
+		}
+	}
+
+	private int autoLogin(HttpServletRequest request)
+	{
+		Cookie[] cookies = request.getCookies();
+		// System.out.println("cookies: " + cookies);
+		if (cookies != null)
+		{
+			for (Cookie cookie : cookies)
+			{
+				System.out.println("cookie: " + cookie.getName() + ":"
+						+ cookie.getValue());
+				if (Const.COOKIE_NAME_LOGINUSER.equals(cookie.getName()))
+				{
+					String value = cookie.getValue();
+					if (value != "")
+					{
+						HttpSession session = request.getSession();
+						session.setAttribute(Const.SESSION_USERID, Integer
+								.parseInt(value));
+						return 1;
+					}
+				}
+			}
+		}
+		return 0;
+	}
+}

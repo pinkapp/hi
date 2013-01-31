@@ -1,0 +1,82 @@
+package cc.ywxm.model.game;
+
+public class RetentionRate
+{
+	private String date;
+	private int rcount;//注册玩家数
+	private int lcount;//登录玩家数
+	private int morrowlcount;//次日登录玩家数
+	private int alternatelcount;//隔日登录玩家数
+	private int rate1;//次日留存率[morrowlcount/rcount * 100]
+	private int rate2;//隔日留存率[alternatelcount/lcount * 100]
+
+	public String getDate()
+	{
+		return date;
+	}
+
+	public void setDate(String date)
+	{
+		this.date = date;
+	}
+
+	public int getRcount()
+	{
+		return rcount;
+	}
+
+	public void setRcount(int rcount)
+	{
+		this.rcount = rcount;
+	}
+
+	public int getMorrowlcount()
+	{
+		return morrowlcount;
+	}
+
+	public void setMorrowlcount(int morrowlcount)
+	{
+		this.morrowlcount = morrowlcount;
+	}
+
+	public int getAlternatelcount()
+	{
+		return alternatelcount;
+	}
+
+	public void setAlternatelcount(int alternatelcount)
+	{
+		this.alternatelcount = alternatelcount;
+	}
+
+	public int getLcount()
+	{
+		return lcount;
+	}
+
+	public void setLcount(int lcount)
+	{
+		this.lcount = lcount;
+	}
+
+	public int getRate1()
+	{
+		return rate1;
+	}
+
+	public void setRate1(int rate1)
+	{
+		this.rate1 = rate1;
+	}
+
+	public int getRate2()
+	{
+		return rate2;
+	}
+
+	public void setRate2(int rate2)
+	{
+		this.rate2 = rate2;
+	}
+}

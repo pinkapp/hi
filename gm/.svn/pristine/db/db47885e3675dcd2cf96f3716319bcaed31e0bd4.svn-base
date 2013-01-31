@@ -1,0 +1,82 @@
+package cc.ywxm.dao.impl.game;
+
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
+
+import cc.ywxm.dao.game.GiftbagLogDao;
+import cc.ywxm.model.game.GiftbagLog;
+import cc.ywxm.utils.RSMapper;
+
+/**
+ * 礼包使用日志数据访问层接口实现（JDBC）
+ * 
+ * @author HuangDecai
+ * @since 2012-12-29 10:49:09
+ * 
+ */
+@Repository
+public class GiftbagLogDaoImpl implements GiftbagLogDao
+{
+	@Resource
+	private JdbcTemplate jdbcTemplate;
+
+	public int count(Integer player)
+	{
+		String sql = "select count(1) from giftbag_log where player = ?";
+		return jdbcTemplate.queryForInt(sql, new Object[]
+		{ player });
+	}
+
+	public int count(Integer player, String startTime, String endTime)
+	{
+		String sql = "select count(1) from giftbag_log where player = ? and logTime >= ? and logTime <= ?";
+		return jdbcTemplate.queryForInt(sql, new Object[]
+		{ player, startTime, endTime });
+	}
+
+	public List<GiftbagLog> list(Integer rows, Integer page, String sort,
+			String order, Integer player)
+	{
+		String sql = "SELECT * FROM giftbag_log t where t.player = ?";
+		sql = sql + " order by t." + sort + " " + order;
+		sql = "select * from (" + sql + ") a";
+		return RSMapper.queryPage(jdbcTemplate, sql, rows, page,
+				GiftbagLog.class, new Object[]
+				{ player });
+	}
+
+	public List<GiftbagLog> list(Integer rows, Integer page, String sort,
+			String order, Integer player, String startTime, String endTime)
+	{
+		String sql = "SELECT * FROM giftbag_log t where t.player = ? and t.logTime >= ? and t.logTime <= ?";
+		sql = sql + " order by t." + sort + " " + order;
+		sql = "select * from (" + sql + ") a";
+		return RSMapper.queryPage(jdbcTemplate, sql, rows, page,
+				GiftbagLog.class, new Object[]
+				{ player, startTime, endTime });
+	}
+
+	public List<GiftbagLog> list(Integer player)
+	{
+		String sql = "SELECT * FROM giftbag_log t where t.player = ?";
+		sql = "select * from (" + sql + ") a";
+		return RSMapper.queryList(jdbcTemplate, sql, GiftbagLog.class,
+				new Object[]
+				{ player });
+	}
+
+	public List<GiftbagLog> list(Integer player, String startTime,
+			String endTime)
+	{
+		String sql = "SELECT * FROM giftbag_log t WHERE t.player = ? AND t.logTime >= ? AND t.logTime <= ?";
+		sql = "select * from (" + sql + ") a";
+		return RSMapper.queryList(jdbcTemplate, sql, GiftbagLog.class,
+				new Object[]
+				{ player, startTime, endTime });
+	}
+
+}

@@ -1,0 +1,53 @@
+package cc.ywxm.dao.impl.game;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
+
+import cc.ywxm.dao.game.RechargeLogDao;
+import cc.ywxm.model.platform.RechargeRank;
+import cc.ywxm.utils.RSMapper;
+
+@Repository
+public class RechargeLogDaoImpl implements RechargeLogDao
+{
+	@Resource
+	private JdbcTemplate jdbcTemplate;
+
+	public int count(String date)
+	{
+		String sql = "SELECT COUNT(1) FROM recharge_log WHERE DATE(logTime) = ?";
+		return jdbcTemplate.queryForInt(sql, new Object[]
+		{ date });
+	}
+
+	public int count1(String date)
+	{
+		String sql = "SELECT COUNT(1) FROM (SELECT player FROM recharge_log WHERE DATE(logTime) = ? GROUP BY player)a";
+		return jdbcTemplate.queryForInt(sql, new Object[]
+		{ date });
+	}
+
+	public double count2(String date)
+	{
+		String sql = "SELECT COUNT(money) FROM recharge_log WHERE DATE(logTime) = ?";
+		return (Double) jdbcTemplate.queryForObject(sql, new Object[]
+		{ date }, Double.class);
+	}
+
+	public List<RechargeRank> rank()
+	{
+		List<RechargeRank> result = new ArrayList<RechargeRank>();
+		String sql = "SELECT t1.nickname,t.total FROM (SELECT player, SUM(money) total FROM recharge_log GROUP BY player ORDER BY SUM(money) DESC) t LEFT JOIN base_info t1 ON t.player = t1.player LIMIT 0,20";
+		result = RSMapper.queryList(jdbcTemplate, sql, RechargeRank.class);
+		for (RechargeRank rechargeRank : result)
+		{
+			rechargeRank.setRank(result.indexOf(rechargeRank) + 1);
+		}
+		return result;
+	}
+}

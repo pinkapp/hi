@@ -1,0 +1,57 @@
+package cc.ywxm.dao.impl.game;
+
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.stereotype.Repository;
+
+import cc.ywxm.dao.game.PropDao;
+import cc.ywxm.model.game.Prop;
+import cc.ywxm.model.game.PropId;
+import cc.ywxm.model.game.Prop_;
+import cc.ywxm.utils.RSMapper;
+
+@Repository
+public class PropDaoImpl implements PropDao
+{
+	@Resource
+	private HibernateTemplate gameHibernateTemplate;
+	@Resource
+	private JdbcTemplate gameJdbcTemplate;
+
+	public void delete(Prop prop)
+	{
+		gameHibernateTemplate.delete(prop);
+	}
+
+	public Prop get(PropId propId)
+	{
+		return (Prop) gameHibernateTemplate.get(Prop.class, propId);
+	}
+
+	public Prop load(PropId propId)
+	{
+		return (Prop) gameHibernateTemplate.load(Prop.class, propId);
+	}
+
+	public void save(Prop prop)
+	{
+		gameHibernateTemplate.save(prop);
+	}
+
+	public void update(Prop prop)
+	{
+		gameHibernateTemplate.update(prop);
+	}
+
+	public List<Prop_> list(Integer player)
+	{
+		String sql = "SELECT t.player,t.id,t.kind,CASE t.area WHEN 1 THEN '背包' WHEN 2 THEN '仓库' WHEN 3 THEN '英雄' ELSE '未定义' END area,t.location,t.amount FROM prop t WHERE t.player = ?";
+		sql = "select * from (" + sql + ")a";
+		return RSMapper.queryList(gameJdbcTemplate, sql, Prop_.class, player);
+	}
+
+}

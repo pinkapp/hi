@@ -1,0 +1,269 @@
+package cc.ywxm.model;
+
+// default package
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+/**
+ * User entity. @author MyEclipse Persistence Tools
+ */
+@Entity
+@Table(name = "user", catalog = "ywxm")
+public class User implements java.io.Serializable
+{
+
+	// Fields
+
+	private Integer userId;
+	private String username;
+	private String password;
+	private Short sex = 1;
+	private String birthday;
+	private Short careerId;
+	private String phone;
+	private String email;
+	private String realname;
+	private String cardId;
+	private String ip;
+	private String lastTime;
+	private String portraitUrl;
+	private String province;
+	private String city;
+	private Integer money;
+	private String registerIp;
+	private String nickname;
+	private String registertime;
+
+	// private Set<Role> roles = new HashSet<Role>(0);
+
+	// Constructors
+
+	/** default constructor */
+	public User()
+	{
+	}
+
+	public User(Integer userId, String password)
+	{
+		super();
+		this.userId = userId;
+		this.password = password;
+	}
+
+	// Property accessors
+	@Id
+	@GeneratedValue
+	@Column(name = "user_id", unique = true, nullable = false)
+	public Integer getUserId()
+	{
+		return this.userId;
+	}
+
+	public void setUserId(Integer userId)
+	{
+		this.userId = userId;
+	}
+
+	@Column(name = "username", length = 50)
+	public String getUsername()
+	{
+		return this.username;
+	}
+
+	public void setUsername(String username)
+	{
+		this.username = username;
+	}
+
+	@Column(name = "password", length = 50)
+	public String getPassword()
+	{
+		return this.password;
+	}
+
+	public void setPassword(String password)
+	{
+		this.password = password;
+	}
+
+	@Column(name = "sex")
+	public Short getSex()
+	{
+		return this.sex;
+	}
+
+	public void setSex(Short sex)
+	{
+		this.sex = sex;
+	}
+
+	@Column(name = "birthday", length = 50)
+	public String getBirthday()
+	{
+		return this.birthday;
+	}
+
+	public void setBirthday(String birthday)
+	{
+		this.birthday = birthday;
+	}
+
+	@Column(name = "career_id")
+	public Short getCareerId()
+	{
+		return this.careerId;
+	}
+
+	public void setCareerId(Short careerId)
+	{
+		this.careerId = careerId;
+	}
+
+	@Column(name = "phone", length = 50)
+	public String getPhone()
+	{
+		return this.phone;
+	}
+
+	public void setPhone(String phone)
+	{
+		this.phone = phone;
+	}
+
+	@Column(name = "email", length = 50)
+	public String getEmail()
+	{
+		return this.email;
+	}
+
+	public void setEmail(String email)
+	{
+		this.email = email;
+	}
+
+	@Column(name = "realname", length = 50)
+	public String getRealname()
+	{
+		return this.realname;
+	}
+
+	public void setRealname(String realname)
+	{
+		this.realname = realname;
+	}
+
+	@Column(name = "cardID", length = 50)
+	public String getCardId()
+	{
+		return this.cardId;
+	}
+
+	public void setCardId(String cardId)
+	{
+		this.cardId = cardId;
+	}
+
+	@Column(name = "ip", length = 50)
+	public String getIp()
+	{
+		return this.ip;
+	}
+
+	public void setIp(String ip)
+	{
+		this.ip = ip;
+	}
+
+	@Column(name = "lastTime", length = 50)
+	public String getLastTime()
+	{
+		return this.lastTime;
+	}
+
+	public void setLastTime(String lastTime)
+	{
+		this.lastTime = lastTime;
+	}
+
+	@Column(name = "portraitURL", length = 100)
+	public String getPortraitUrl()
+	{
+		return this.portraitUrl;
+	}
+
+	public void setPortraitUrl(String portraitUrl)
+	{
+		this.portraitUrl = portraitUrl;
+	}
+
+	@Column(name = "province", length = 50)
+	public String getProvince()
+	{
+		return this.province;
+	}
+
+	public void setProvince(String province)
+	{
+		this.province = province;
+	}
+
+	@Column(name = "city", length = 50)
+	public String getCity()
+	{
+		return this.city;
+	}
+
+	public void setCity(String city)
+	{
+		this.city = city;
+	}
+
+	@Column(name = "money")
+	public Integer getMoney()
+	{
+		return this.money;
+	}
+
+	public void setMoney(Integer money)
+	{
+		this.money = money;
+	}
+
+	@Column(name = "register_ip", length = 50)
+	public String getRegisterIp()
+	{
+		return this.registerIp;
+	}
+
+	public void setRegisterIp(String registerIp)
+	{
+		this.registerIp = registerIp;
+	}
+
+	@Column(name = "nickname", length = 50)
+	public String getNickname()
+	{
+		return this.nickname;
+	}
+
+	public void setNickname(String nickname)
+	{
+		this.nickname = nickname;
+	}
+
+	@Column(name = "registertime", length = 50)
+	public String getRegistertime()
+	{
+		return this.registertime;
+	}
+
+	public void setRegistertime(String registertime)
+	{
+		this.registertime = registertime;
+	}
+
+}

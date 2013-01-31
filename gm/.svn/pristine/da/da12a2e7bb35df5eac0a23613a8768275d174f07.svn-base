@@ -1,0 +1,83 @@
+package cc.ywxm.model.game;
+
+public class RetentionRate
+{
+	private String date;
+	// 注册玩家数
+	private int count;
+	// 次日留存率
+	private String rate1;
+	// 3日留存率
+	private String rate3;
+	// 7日留存率
+	private String rate7;
+	
+	
+
+	public RetentionRate()
+	{
+		super();
+	}
+
+	public RetentionRate(String date, int count, String rate1, String rate3,
+			String rate7)
+	{
+		super();
+		this.date = date;
+		this.count = count;
+		this.rate1 = rate1;
+		this.rate3 = rate3;
+		this.rate7 = rate7;
+	}
+
+	public String getDate()
+	{
+		return date;
+	}
+
+	public void setDate(String date)
+	{
+		this.date = date;
+	}
+
+	public int getCount()
+	{
+		return count;
+	}
+
+	public void setCount(int count)
+	{
+		this.count = count;
+	}
+
+	public String getRate1()
+	{
+		return rate1;
+	}
+
+	public void setRate1(String rate1)
+	{
+		this.rate1 = rate1;
+	}
+
+	public String getRate3()
+	{
+		return rate3;
+	}
+
+	public void setRate3(String rate3)
+	{
+		this.rate3 = rate3;
+	}
+
+	public String getRate7()
+	{
+		return rate7;
+	}
+
+	public void setRate7(String rate7)
+	{
+		this.rate7 = rate7;
+	}
+
+}

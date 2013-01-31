@@ -1,0 +1,163 @@
+package cc.ywxm.action.gop;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Date;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+
+import cc.ywxm.action.PageableAction;
+import cc.ywxm.service.OrderService;
+import cc.ywxm.utils.DateFormat;
+import cc.ywxm.utils.ExportExcel;
+import cc.ywxm.vo.GamePayMoneyCount;
+
+@Controller
+@Scope("prototype")
+public class OrderCountAction extends PageableAction
+{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3263517931979305863L;
+	@Resource
+	private OrderService orderService;
+	private String month = DateFormat.format(new Date(), "yyyy-MM");
+	private List<GamePayMoneyCount> gamePayMoneyCounts;
+	private String dataString;
+
+	/**
+	 * 游戏消费总额统计导出excel
+	 * 
+	 * @return
+	 */
+	public String order_gamesPayMoneyCount_export()
+	{
+		gamePayMoneyCounts = orderService.findGamePayMoneyCount(month);
+		ExportExcel<GamePayMoneyCount> exporter = new ExportExcel<GamePayMoneyCount>();
+		OutputStream out = null;
+		try
+		{
+			response.setContentType("octets/stream");
+			response.addHeader("Content-Disposition", "attachment;filename="
+					+ DateFormat.currentDateFormat("yyyyMMdd") + ".xls");
+			out = response.getOutputStream();
+			exporter.exportExcel("游戏消费总额统计", new String[]
+			{ "日期", "盛世三国", "神仙道", "天地英雄", "总额" }, gamePayMoneyCounts, out,
+					"yyyy-MM-dd");
+			out.close();
+			return null;
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+			return ERROR;
+		}
+
+	}
+
+	/**
+	 * 游戏消费总额统计
+	 * 
+	 * @return
+	 */
+	public String order_gamesPayMoneyCount()
+	{
+		// month = "2012-06";
+		gamePayMoneyCounts = orderService.findGamePayMoneyCount(month);
+		StringBuffer stringBuffer = new StringBuffer();
+		String s1 = "<chart canvasPadding='10' caption='游戏消费总额统计' subCaption='("
+				+ month
+				+ ")' yAxisName='金额' baseFont='宋体' baseFontSize='12' bgColor='F7F7F7, E9E9E9' numVDivLines='10' divLineAlpha='30'  labelPadding ='10' yAxisValuesPadding ='10' showValues='0' rotateValues='1' labelDisplay='Rotate' slantLabels='1' valuePosition='auto'>";
+		stringBuffer.append(s1);
+		String s2 = "<categories>";
+		stringBuffer.append(s2);
+		for (GamePayMoneyCount dailyUserloginOneUserCount : gamePayMoneyCounts)
+		{
+			stringBuffer.append("<category label='"
+					+ dailyUserloginOneUserCount.getTime() + "' />");
+		}
+		String s3 = "</categories>";
+		stringBuffer.append(s3);
+
+		s2 = "<dataset seriesName='盛世三国' color='1D8BD1' >";
+		stringBuffer.append(s2);
+		for (GamePayMoneyCount dailyUserloginOneUserCount : gamePayMoneyCounts)
+		{
+			stringBuffer.append("<set value='"
+					+ dailyUserloginOneUserCount.getGame1paymoney() + "' />");
+		}
+		s3 = "</dataset>";
+		stringBuffer.append(s3);
+
+		s2 = "<dataset seriesName='神仙道' color='F1683C' >";
+		stringBuffer.append(s2);
+		for (GamePayMoneyCount dailyUserloginOneUserCount : gamePayMoneyCounts)
+		{
+			stringBuffer.append("<set value='"
+					+ dailyUserloginOneUserCount.getGame2paymoney() + "' />");
+		}
+		s3 = "</dataset>";
+		stringBuffer.append(s3);
+
+		s2 = "<dataset seriesName='天地英雄' color='2AD62A' >";
+		stringBuffer.append(s2);
+		for (GamePayMoneyCount dailyUserloginOneUserCount : gamePayMoneyCounts)
+		{
+			stringBuffer.append("<set value='"
+					+ dailyUserloginOneUserCount.getGame3paymoney() + "' />");
+		}
+		s3 = "</dataset>";
+		stringBuffer.append(s3);
+
+		s2 = "<dataset seriesName='总额' color='DBDC25' >";
+		stringBuffer.append(s2);
+		for (GamePayMoneyCount dailyUserloginOneUserCount : gamePayMoneyCounts)
+		{
+			stringBuffer.append("<set value='"
+					+ dailyUserloginOneUserCount.getTotalpaymoney() + "' />");
+		}
+		s3 = "</dataset>";
+		stringBuffer.append(s3);
+
+		String s6 = "</chart>";
+		stringBuffer.append(s6);
+		dataString = stringBuffer.toString();
+		return SUCCESS;
+	}
+
+	public String getMonth()
+	{
+		return month;
+	}
+
+	public void setMonth(String month)
+	{
+		this.month = month;
+	}
+
+	public List<GamePayMoneyCount> getGamesPayMoneyCounts()
+	{
+		return gamePayMoneyCounts;
+	}
+
+	public void setGamesPayMoneyCounts(
+			List<GamePayMoneyCount> gamesPayMoneyCounts)
+	{
+		this.gamePayMoneyCounts = gamesPayMoneyCounts;
+	}
+
+	public String getDataString()
+	{
+		return dataString;
+	}
+
+	public void setDataString(String dataString)
+	{
+		this.dataString = dataString;
+	}
+
+}

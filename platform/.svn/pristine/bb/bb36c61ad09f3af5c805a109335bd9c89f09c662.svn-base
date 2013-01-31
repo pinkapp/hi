@@ -1,0 +1,52 @@
+package cc.ywxm.vo;
+
+public class UserPaybankCount
+{
+	private String bankname;
+	private Integer paycount;
+	private String percent;
+
+	public UserPaybankCount()
+	{
+		super();
+	}
+
+	public UserPaybankCount(String bankname, Integer paycount, String percent)
+	{
+		super();
+		this.bankname = bankname;
+		this.paycount = paycount;
+		this.percent = percent;
+	}
+
+	public String getBankname()
+	{
+		return bankname;
+	}
+
+	public void setBankname(String bankname)
+	{
+		this.bankname = bankname;
+	}
+
+	public Integer getPaycount()
+	{
+		return paycount;
+	}
+
+	public void setPaycount(Integer paycount)
+	{
+		this.paycount = paycount;
+	}
+
+	public String getPercent()
+	{
+		return percent;
+	}
+
+	public void setPercent(String percent)
+	{
+		this.percent = percent;
+	}
+
+}

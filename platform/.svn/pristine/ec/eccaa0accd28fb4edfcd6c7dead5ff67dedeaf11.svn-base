@@ -1,0 +1,54 @@
+package cc.ywxm.vo;
+
+public class UserVo1
+{
+
+	// Fields
+	private Integer user_id;
+	private String username;
+	private String rolename;
+
+	public UserVo1()
+	{
+		super();
+	}
+
+	public UserVo1(Integer user_id, String username, String rolename)
+	{
+		super();
+		this.user_id = user_id;
+		this.username = username;
+		this.rolename = rolename;
+	}
+
+	public Integer getUser_id()
+	{
+		return user_id;
+	}
+
+	public void setUser_id(Integer user_id)
+	{
+		this.user_id = user_id;
+	}
+
+	public String getUsername()
+	{
+		return username;
+	}
+
+	public void setUsername(String username)
+	{
+		this.username = username;
+	}
+
+	public String getRolename()
+	{
+		return rolename;
+	}
+
+	public void setRolename(String rolename)
+	{
+		this.rolename = rolename;
+	}
+
+}

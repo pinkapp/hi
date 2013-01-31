@@ -1,0 +1,57 @@
+package cc.ywxm.action;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.util.Properties;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+
+import cc.ywxm.action.base.BaseAction;
+
+@SuppressWarnings("serial")
+@Controller
+@Scope("prototype")
+public class LinkGameAction extends BaseAction
+{
+	private int serverId;
+	private String src;
+	//private GameServerService gameServerService;
+
+	@Override
+	public String execute() throws Exception
+	{
+		// GameServer gameServer = gameServerService.get(serverId);
+		String root = System.getProperty("platform.root");
+		File file = new File(root + "WEB-INF/", "client.properties");
+		FileInputStream in = new FileInputStream(file);
+		Properties props = new Properties();
+		props.load(in);
+		in.close();
+		String url = props.getProperty("yxly.client.url");
+		System.out.println(url);
+		response.sendRedirect(url);
+		return NONE;
+	}
+
+	public int getServerId()
+	{
+		return serverId;
+	}
+
+	public void setServerId(int serverId)
+	{
+		this.serverId = serverId;
+	}
+
+	public String getSrc()
+	{
+		return src;
+	}
+
+	public void setSrc(String src)
+	{
+		this.src = src;
+	}
+
+}

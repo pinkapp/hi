@@ -1,0 +1,174 @@
+package cc.ywxm.action.gop;
+
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+
+import cc.ywxm.action.PageableAction;
+import cc.ywxm.model.gop.Game;
+import cc.ywxm.model.gop.GameOpen;
+import cc.ywxm.service.GameOpenService;
+import cc.ywxm.service.GameService;
+import cc.ywxm.vo.GameOpenVo;
+
+@Controller
+@Scope("prototype")
+public class GameOpenAction extends PageableAction
+{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7124276462012505850L;
+	private Integer openId;
+	private GameOpen go;
+	private List<Game> games;
+	private GameOpenVo gameOpen;
+	private List<GameOpenVo> gameOpens;
+	@Resource
+	private GameOpenService gameOpenService;
+	@Resource
+	private GameService gameService;
+
+	/**
+	 * 游戏服务器添加
+	 * 
+	 * @return
+	 */
+	public String gameOpen_add()
+	{
+		if (go == null)
+		{
+			// 游戏选择下拉菜单
+			games = gameService.findAll();
+			return INPUT;
+		} else
+		{
+			try
+			{
+				gameOpenService.add(go);
+				message = "添加成功";
+			} catch (Exception e)
+			{
+				message = "添加失败";
+				e.printStackTrace();
+			}
+
+			return gameOpen_manage();
+		}
+	}
+
+	/**
+	 * 游戏开服删除
+	 * 
+	 * @return
+	 */
+	public String gameOpen_delete()
+	{
+		try
+		{
+			gameOpenService.delete(openId);
+			message = "删除成功";
+		} catch (Exception e)
+		{
+			message = "删除失败";
+			e.printStackTrace();
+		}
+		return gameOpen_manage();
+	}
+
+	/**
+	 * 游戏开服修改
+	 * 
+	 * @return
+	 */
+	public String gameOpen_edit()
+	{
+		if (go == null)
+		{
+			// 游戏选择下拉菜单
+			games = gameService.findAll();
+			go = gameOpenService.findById(openId);
+			return INPUT;
+		} else
+		{
+			try
+			{
+				gameOpenService.edit(go);
+				message = "修改成功";
+			} catch (Exception e)
+			{
+				message = "修改失败";
+				e.printStackTrace();
+			}
+			return gameOpen_manage();
+		}
+
+	}
+
+	/**
+	 * 游戏开服管理
+	 * 
+	 * @return
+	 */
+	public String gameOpen_manage()
+	{
+		// 游戏选择下拉菜单
+		games = gameService.findAll();
+		gameOpens = gameOpenService.findByPage(gameOpen, this);
+		return SUCCESS;
+	}
+
+	public GameOpen getGo()
+	{
+		return go;
+	}
+
+	public void setGo(GameOpen go)
+	{
+		this.go = go;
+	}
+
+	public GameOpenVo getGameOpen()
+	{
+		return gameOpen;
+	}
+
+	public void setGameOpen(GameOpenVo gameOpen)
+	{
+		this.gameOpen = gameOpen;
+	}
+
+	public List<GameOpenVo> getGameOpens()
+	{
+		return gameOpens;
+	}
+
+	public void setGameOpens(List<GameOpenVo> gameOpens)
+	{
+		this.gameOpens = gameOpens;
+	}
+
+	public Integer getOpenId()
+	{
+		return openId;
+	}
+
+	public void setOpenId(Integer openId)
+	{
+		this.openId = openId;
+	}
+
+	public List<Game> getGames()
+	{
+		return games;
+	}
+
+	public void setGames(List<Game> games)
+	{
+		this.games = games;
+	}
+
+}

@@ -1,0 +1,93 @@
+package cc.ywxm.service.impl.game;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import cc.ywxm.dao.game.BaseInfoDao;
+import cc.ywxm.model.game.Closed;
+import cc.ywxm.service.game.CloseService;
+
+@Transactional
+@Service
+public class CloseServiceImpl implements CloseService
+{
+	@Resource
+	private BaseInfoDao baseInfoDao;
+
+	public int close(Integer player, String creason)
+	{
+		if (player == null)
+		{
+			return 2;
+		}
+		return 0;
+	}
+
+	public int close(Integer player, String creason, String enddate)
+	{
+		if (player == null)
+		{
+			return 2;
+		}
+		if (enddate == null || "".equals(enddate))
+		{
+			return 3;
+		}
+		return 0;
+	}
+
+	public int close(String nickname, String creason)
+	{
+
+		if (nickname == null || "".equals(nickname))
+		{
+			return 2;
+		}
+
+		return 0;
+	}
+
+	public int close(String nickname, String creason, String enddate)
+	{
+
+		if (nickname == null || "".equals(nickname))
+		{
+			return 2;
+		}
+		if (enddate == null || "".equals(enddate))
+		{
+			return 3;
+		}
+		return 0;
+	}
+
+	public List<Closed> gets(Integer player)
+	{
+		List<Closed> result = new ArrayList<Closed>();
+		return result;
+	}
+
+	public List<Closed> gets(String nickname)
+	{
+		List<Closed> result = new ArrayList<Closed>();
+		Integer player = null;
+		try
+		{
+			player = baseInfoDao.findPlayerByNickname(nickname);
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		if (player != null)
+		{
+			result = this.gets(player);
+		}
+		return result;
+	}
+
+}

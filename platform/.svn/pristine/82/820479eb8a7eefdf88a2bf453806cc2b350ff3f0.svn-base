@@ -1,0 +1,25 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@ taglib prefix="s" uri="/struts-tags"%>
+<%
+String path = request.getContextPath();
+String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+%>
+<div>
+<ul>
+<li class="m1">账号信息</li>
+<li class="icon">&nbsp;&nbsp;<a class="m2" href="#" >我的资料</a> </li>
+<li class="icon">&nbsp;&nbsp;<a class="m2" href="#" >修改资料</a> </li>
+<li class="icon">&nbsp;&nbsp;<a class="m2" href="#" >修改头像</a></li>
+<li class="icon">&nbsp;&nbsp;<a class="m2" href="#" >修改密码</a></li>
+<li class="icon">&nbsp;&nbsp;<a class="m2" href="#" >防沉迷认证</a></li>
+<li class="m1">账号安全</li>
+<li class="icon">&nbsp;&nbsp;<a class="m2" href="#"  >账号安全</a> </li>
+<li class="icon">&nbsp;&nbsp;<a class="m2" href="#" >手机绑定</a></li>
+<li class="icon">&nbsp;&nbsp;<a class="m2" href="#" >二级密码</a></li>
+<li class="m1"><s:text name="leftcontent.ordercenter" /></li>
+<li class="icon">&nbsp;&nbsp;<a class="m2" href="#" >我要充值</a> </li>
+<li class="icon">&nbsp;&nbsp;<a class="m2" href="#" >充值历史</a></li>
+<li class="icon">&nbsp;&nbsp;<a class="m2" href="#" >我的礼券</a></li>
+<li class="icon">&nbsp;&nbsp;<a class="m2" href="#" >我使用过的礼券</a></li>
+</ul>
+</div>

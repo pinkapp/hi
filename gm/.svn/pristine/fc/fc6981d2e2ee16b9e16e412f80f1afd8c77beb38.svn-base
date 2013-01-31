@@ -1,0 +1,39 @@
+package cc.ywxm.service.game;
+
+public interface CloseService
+{
+	/**
+	 * 
+	 * @param player
+	 * @param creason
+	 * @return
+	 */
+	public int close(Integer player, String creason);
+
+	/**
+	 * 
+	 * @param player
+	 * @param creason
+	 * @param enddate
+	 * @return
+	 */
+	public int close(Integer player, String creason, String enddate);
+
+	/**
+	 * 
+	 * @param nickname
+	 * @param creason
+	 * @return
+	 */
+	public int close(String nickname, String creason);
+
+	/**
+	 * 
+	 * @param nickname
+	 * @param creason
+	 * @param enddate
+	 * @return
+	 */
+	public int close(String nickname, String creason, String enddate);
+
+}

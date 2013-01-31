@@ -1,0 +1,35 @@
+package cc.ywxm.vo;
+
+public class DailyUserloginCount
+{
+	private String logintime;
+	private Integer logincount;
+
+	public DailyUserloginCount(String logintime, Integer logincount)
+	{
+		super();
+		this.logintime = logintime;
+		this.logincount = logincount;
+	}
+
+	public String getLogintime()
+	{
+		return logintime;
+	}
+
+	public void setLogintime(String logintime)
+	{
+		this.logintime = logintime;
+	}
+
+	public Integer getLogincount()
+	{
+		return logincount;
+	}
+
+	public void setLogincount(Integer logincount)
+	{
+		this.logincount = logincount;
+	}
+
+}

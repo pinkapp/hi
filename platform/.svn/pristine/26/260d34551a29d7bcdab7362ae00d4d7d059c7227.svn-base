@@ -1,0 +1,174 @@
+package cc.ywxm.action.gop;
+
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+
+import cc.ywxm.action.PageableAction;
+import cc.ywxm.model.Game;
+import cc.ywxm.model.GameNotice;
+import cc.ywxm.service.GameNoticeService;
+import cc.ywxm.service.GameService;
+import cc.ywxm.vo.GameNoticeVo;
+
+@Controller
+@Scope("prototype")
+public class GameNoticeAction extends PageableAction
+{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7124276462012505850L;
+	private Integer noticeId;
+	private GameNotice gn;
+	private List<Game> games;
+	private GameNoticeVo gameNotice;
+	private List<GameNoticeVo> gameNotices;
+	@Resource
+	private GameNoticeService gameNoticeService;
+	@Resource
+	private GameService gameService;
+
+	/**
+	 * 游戏公告添加
+	 * 
+	 * @return
+	 */
+	public String gameNotice_add()
+	{
+		if (gn == null)
+		{
+			// 游戏选择下拉菜单
+			games = gameService.findAll();
+			return INPUT;
+		} else
+		{
+			try
+			{
+				gameNoticeService.add(gn);
+				message = "添加成功";
+			} catch (Exception e)
+			{
+				message = "添加失败";
+				e.printStackTrace();
+			}
+			return gameNotice_manage();
+		}
+	}
+
+	/**
+	 * 游戏公告删除
+	 * 
+	 * @return
+	 */
+	public String gameNotice_delete()
+	{
+		try
+		{
+			gameNoticeService.delete(noticeId);
+			message = "删除成功";
+		} catch (Exception e)
+		{
+			message = "删除失败";
+			e.printStackTrace();
+		}
+
+		return gameNotice_manage();
+	}
+
+	/**
+	 * 游戏公告修改
+	 * 
+	 * @return
+	 */
+	public String gameNotice_edit()
+	{
+		if (gn == null)
+		{
+			// 游戏选择下拉菜单
+			games = gameService.findAll();
+			gn = gameNoticeService.findById(noticeId);
+			return INPUT;
+		} else
+		{
+			try
+			{
+				gameNoticeService.edit(gn);
+				message = "修改成功";
+			} catch (Exception e)
+			{
+				message = "修改失败";
+				e.printStackTrace();
+			}
+			return gameNotice_manage();
+		}
+
+	}
+
+	/**
+	 * 游戏公告管理
+	 * 
+	 * @return
+	 */
+	public String gameNotice_manage()
+	{
+		// 游戏选择下拉菜单
+		games = gameService.findAll();
+		gameNotices = gameNoticeService.findByPage(gameNotice, this);
+		return SUCCESS;
+	}
+
+	public GameNotice getGn()
+	{
+		return gn;
+	}
+
+	public void setGn(GameNotice gn)
+	{
+		this.gn = gn;
+	}
+
+	public List<Game> getGames()
+	{
+		return games;
+	}
+
+	public void setGames(List<Game> games)
+	{
+		this.games = games;
+	}
+
+	public GameNoticeVo getGameNotice()
+	{
+		return gameNotice;
+	}
+
+	public void setGameNotice(GameNoticeVo gameNotice)
+	{
+		this.gameNotice = gameNotice;
+	}
+
+	public List<GameNoticeVo> getGameNotices()
+	{
+		return gameNotices;
+	}
+
+	public void setGameNotices(List<GameNoticeVo> gameNotices)
+	{
+		this.gameNotices = gameNotices;
+	}
+
+	public Integer getNoticeId()
+	{
+		return noticeId;
+	}
+
+	public void setNoticeId(Integer noticeId)
+	{
+		this.noticeId = noticeId;
+	}
+
+}

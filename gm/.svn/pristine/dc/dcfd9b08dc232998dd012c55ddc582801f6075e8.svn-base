@@ -1,0 +1,22 @@
+package cc.ywxm.action;
+
+import java.io.IOException;
+
+public class Test {
+
+	/**
+	 * @param args
+	 * @throws IOException
+	 */
+	public static void main(String[] args) throws IOException {
+//		File file = new File("D:/", "node.obj");
+//		FileOutputStream fileOutputStream = null;
+//		fileOutputStream = new FileOutputStream(file);
+//		ObjectOutputStream objectOutputStream = new ObjectOutputStream(
+//				fileOutputStream);
+//		objectOutputStream.writeObject(new Node());
+		Short s = null;
+		System.out.println((s+"4"));
+	}
+
+}

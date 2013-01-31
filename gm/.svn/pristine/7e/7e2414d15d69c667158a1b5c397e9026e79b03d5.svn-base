@@ -1,0 +1,212 @@
+package cc.ywxm.service.impl.game;
+
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import cc.ywxm.constant.Const;
+import cc.ywxm.dao.game.BaseInfoDao;
+import cc.ywxm.dao.game.BusinessBuildingDao;
+import cc.ywxm.dao.game.FunctionBuildingDao;
+import cc.ywxm.model.game.BusinessBuilding;
+import cc.ywxm.model.game.FunctionBuilding;
+import cc.ywxm.model.game.FunctionBuildingId;
+import cc.ywxm.model.game.FunctionBuilding_;
+import cc.ywxm.service.game.BuildInfoService;
+
+/**
+ * 
+ * @author HuangDeCai
+ * @since 2012-11-30 14:07:43
+ */
+@Transactional
+@Service
+public class BuildInfoServiceImpl implements BuildInfoService
+{
+	@Resource
+	private BusinessBuildingDao businessBuildingDao;
+	@Resource
+	private FunctionBuildingDao functionBuildingDao;
+	@Resource
+	private BaseInfoDao baseInfoDao;
+
+	public List<BusinessBuilding> gets(String nickname)
+	{
+		if (nickname == null || "".equals(nickname))
+		{
+			return new ArrayList<BusinessBuilding>();
+		}
+		nickname = nickname.trim();
+		try
+		{
+			Integer player = baseInfoDao.findPlayerByNickname(nickname);
+			return businessBuildingDao.list(player);
+		} catch (EmptyResultDataAccessException e)
+		{
+			// System.out.println(e.getMessage());
+			return new ArrayList<BusinessBuilding>();
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+			return new ArrayList<BusinessBuilding>();
+		}
+	}
+
+	public List<BusinessBuilding> gets(Integer player)
+	{
+		if (player == null)
+		{
+			return new ArrayList<BusinessBuilding>();
+		}
+		try
+		{
+			return businessBuildingDao.list(player);
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+			return new ArrayList<BusinessBuilding>();
+		}
+	}
+
+	public List<FunctionBuilding_> gets2(Integer player)
+	{
+		if (player == null)
+		{
+			return new ArrayList<FunctionBuilding_>();
+		}
+		try
+		{
+			return functionBuildingDao.list(player);
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+			return new ArrayList<FunctionBuilding_>();
+		}
+	}
+
+	public List<FunctionBuilding_> gets2(String nickname)
+	{
+		if (nickname == null || "".equals(nickname))
+		{
+			return new ArrayList<FunctionBuilding_>();
+		}
+		try
+		{
+			Integer player = baseInfoDao.findPlayerByNickname(nickname);
+			return functionBuildingDao.list(player);
+		} catch (EmptyResultDataAccessException e)
+		{
+			// System.out.println(e.getMessage());
+			return new ArrayList<FunctionBuilding_>();
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+			return new ArrayList<FunctionBuilding_>();
+		}
+	}
+
+	public int edit(String nickname, Integer id, Short kind, Short x, Short y,
+			Short aspect, Short level, Short progress, String lastReap)
+	{
+		if (nickname == null || "".equals(nickname.trim()))
+		{
+			return 2;
+		}
+		if (id == null)
+		{
+			return 3;
+		}
+		Integer player = null;
+		try
+		{
+			player = baseInfoDao.findPlayerByNickname(nickname.trim());
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		if (player == null)
+		{
+			return 4;
+		}
+		FunctionBuildingId functionBuildingId = new FunctionBuildingId(player,
+				id);
+		FunctionBuilding functionBuilding = null;
+		try
+		{
+			functionBuilding = functionBuildingDao.findById(functionBuildingId);
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		if (functionBuilding == null)
+		{
+			return 5;
+		}
+		FunctionBuilding clone = null;
+		try
+		{
+			clone = (FunctionBuilding) functionBuilding.clone();
+		} catch (CloneNotSupportedException e1)
+		{
+			e1.printStackTrace();
+		}
+		if (kind != null)
+		{
+			functionBuilding.setKind(kind);
+		}
+		if (x != null)
+		{
+			functionBuilding.setX(x);
+		}
+		if (y != null)
+		{
+			functionBuilding.setY(y);
+		}
+		if (aspect != null)
+		{
+			functionBuilding.setAspect(aspect);
+		}
+		if (level != null)
+		{
+			functionBuilding.setLevel(level);
+		}
+		if (progress != null)
+		{
+			functionBuilding.setProgress(progress);
+		}
+		if (lastReap != null)
+		{
+			SimpleDateFormat sdf = new SimpleDateFormat(Const.DATE_TIME_PATTERN);
+			Date d = null;
+			try
+			{
+				d = sdf.parse(lastReap);
+			} catch (ParseException e)
+			{
+				e.printStackTrace();
+			}
+			if (d == null)
+			{
+				return 6;
+			}
+			Timestamp timestamp = new Timestamp(d.getTime());
+			functionBuilding.setLastReap(timestamp);
+		}
+		if (functionBuilding.equals(clone))
+		{
+			return 0;
+		}
+		functionBuildingDao.findById(functionBuildingId);
+		return 1;
+	}
+
+}

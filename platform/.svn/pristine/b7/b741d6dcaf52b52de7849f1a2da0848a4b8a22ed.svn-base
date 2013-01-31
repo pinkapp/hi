@@ -1,0 +1,75 @@
+package cc.ywxm.model;
+
+// default package
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+/**
+ * Role entity. @author MyEclipse Persistence Tools
+ */
+@Entity
+@Table(name = "role", catalog = "ywxm")
+public class Role implements java.io.Serializable
+{
+
+	// Fields
+
+	private Short roleId;
+	private String rolename;
+
+	// private Set<User> users = new HashSet<User>(0);
+
+	// Constructors
+
+	/** default constructor */
+	public Role()
+	{
+	}
+
+	/** full constructor */
+	public Role(String rolename)
+	{
+		this.rolename = rolename;
+	}
+
+	// Property accessors
+	@Id
+	@GeneratedValue
+	@Column(name = "role_id", unique = true, nullable = false)
+	public Short getRoleId()
+	{
+		return this.roleId;
+	}
+
+	public void setRoleId(Short roleId)
+	{
+		this.roleId = roleId;
+	}
+
+	@Column(name = "rolename", length = 50)
+	public String getRolename()
+	{
+		return this.rolename;
+	}
+
+	public void setRolename(String rolename)
+	{
+		this.rolename = rolename;
+	}
+	// @ManyToMany(
+	// cascade={CascadeType.PERSIST,CascadeType.MERGE},
+	// mappedBy="roles"
+	// )
+	// public Set<User> getUsers() {
+	// return users;
+	// }
+	//
+	// public void setUsers(Set<User> users) {
+	// this.users = users;
+	// }
+
+}

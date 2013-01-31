@@ -1,0 +1,113 @@
+package cc.ywxm.model;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+/**
+ * MoneyAssign entity. @author MyEclipse Persistence Tools
+ */
+@Entity
+@Table(name = "money_assign", catalog = "ywxm")
+public class MoneyAssign implements java.io.Serializable
+{
+
+	// Fields
+
+	private Long assignId;
+	private String assigner;
+	private String receiver;
+	private String assigntime;
+	private String assignreason;
+	private Integer money;
+
+	// Constructors
+
+	/** default constructor */
+	public MoneyAssign()
+	{
+	}
+
+	/** full constructor */
+	public MoneyAssign(String assigner, String receiver, String assigntime,
+			String assignreason, Integer money)
+	{
+		this.assigner = assigner;
+		this.receiver = receiver;
+		this.assigntime = assigntime;
+		this.assignreason = assignreason;
+		this.money = money;
+	}
+
+	// Property accessors
+	@Id
+	@GeneratedValue
+	@Column(name = "assign_id", unique = true, nullable = false)
+	public Long getAssignId()
+	{
+		return this.assignId;
+	}
+
+	public void setAssignId(Long assignId)
+	{
+		this.assignId = assignId;
+	}
+
+	@Column(name = "assigner", length = 50)
+	public String getAssigner()
+	{
+		return this.assigner;
+	}
+
+	public void setAssigner(String assigner)
+	{
+		this.assigner = assigner;
+	}
+
+	@Column(name = "receiver", length = 50)
+	public String getReceiver()
+	{
+		return this.receiver;
+	}
+
+	public void setReceiver(String receiver)
+	{
+		this.receiver = receiver;
+	}
+
+	@Column(name = "assigntime", length = 50)
+	public String getAssigntime()
+	{
+		return this.assigntime;
+	}
+
+	public void setAssigntime(String assigntime)
+	{
+		this.assigntime = assigntime;
+	}
+
+	@Column(name = "assignreason", length = 100)
+	public String getAssignreason()
+	{
+		return this.assignreason;
+	}
+
+	public void setAssignreason(String assignreason)
+	{
+		this.assignreason = assignreason;
+	}
+
+	@Column(name = "money")
+	public Integer getMoney()
+	{
+		return this.money;
+	}
+
+	public void setMoney(Integer money)
+	{
+		this.money = money;
+	}
+
+}

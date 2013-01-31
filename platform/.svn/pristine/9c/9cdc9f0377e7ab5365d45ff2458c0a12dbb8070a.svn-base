@@ -1,0 +1,89 @@
+package cc.ywxm.model;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+/**
+ * Function entity. @author MyEclipse Persistence Tools
+ */
+@Entity
+@Table(name = "function", catalog = "ywxm")
+public class Function implements java.io.Serializable
+{
+
+	// Fields
+
+	private Short functionId;
+	private String functionname;
+	private String functionurl;
+	private String functiontype;
+
+	// private Set<RoleFunction> roleFunctions = new HashSet<RoleFunction>(0);
+
+	// Constructors
+
+	/** default constructor */
+	public Function()
+	{
+	}
+
+	/** full constructor */
+	public Function(String functionname, String functionurl, String functiontype)
+	{
+		this.functionname = functionname;
+		this.functionurl = functionurl;
+		this.functiontype = functiontype;
+		// this.roleFunctions = roleFunctions;
+	}
+
+	// Property accessors
+	@Id
+	@GeneratedValue
+	@Column(name = "function_id", unique = true, nullable = false)
+	public Short getFunctionId()
+	{
+		return this.functionId;
+	}
+
+	public void setFunctionId(Short functionId)
+	{
+		this.functionId = functionId;
+	}
+
+	@Column(name = "functionname", length = 100)
+	public String getFunctionname()
+	{
+		return this.functionname;
+	}
+
+	public void setFunctionname(String functionname)
+	{
+		this.functionname = functionname;
+	}
+
+	@Column(name = "functionurl", length = 100)
+	public String getFunctionurl()
+	{
+		return this.functionurl;
+	}
+
+	public void setFunctionurl(String functionurl)
+	{
+		this.functionurl = functionurl;
+	}
+
+	@Column(name = "functiontype", length = 100)
+	public String getFunctiontype()
+	{
+		return this.functiontype;
+	}
+
+	public void setFunctiontype(String functiontype)
+	{
+		this.functiontype = functiontype;
+	}
+
+}

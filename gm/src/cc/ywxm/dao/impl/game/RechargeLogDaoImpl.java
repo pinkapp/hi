@@ -1,0 +1,168 @@
+package cc.ywxm.dao.impl.game;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
+
+import cc.ywxm.dao.game.RechargeLogDao;
+import cc.ywxm.model.game.RechargeLog;
+import cc.ywxm.model.platform.PaywayCount;
+import cc.ywxm.model.platform.RechargeRank;
+import cc.ywxm.utils.RSMapper;
+
+@Repository
+public class RechargeLogDaoImpl implements RechargeLogDao
+{
+	@Resource
+	private JdbcTemplate jdbcTemplate;
+
+	public int count(String date)
+	{
+		String sql = "SELECT COUNT(1) FROM recharge_log WHERE DATE(logTime) = ?";
+		return jdbcTemplate.queryForInt(sql, new Object[]
+		{ date });
+	}
+
+	public int count1(String date)
+	{
+		String sql = "SELECT COUNT(1) FROM (SELECT player FROM recharge_log WHERE DATE(logTime) = ? GROUP BY player)a";
+		return jdbcTemplate.queryForInt(sql, new Object[]
+		{ date });
+	}
+
+	public double count2(String date)
+	{
+		String sql = "SELECT COUNT(money) FROM recharge_log WHERE DATE(logTime) = ?";
+		return (Double) jdbcTemplate.queryForObject(sql, new Object[]
+		{ date }, Double.class);
+	}
+
+	public List<RechargeRank> rank()
+	{
+		List<RechargeRank> result = new ArrayList<RechargeRank>();
+		String sql = "SELECT t1.nickname,t.total FROM (SELECT player, SUM(money) total FROM recharge_log GROUP BY player ORDER BY SUM(money) DESC) t LEFT JOIN base_info t1 ON t.player = t1.player LIMIT 0,20";
+		result = RSMapper.queryList(jdbcTemplate, sql, RechargeRank.class);
+		for (RechargeRank rechargeRank : result)
+		{
+			rechargeRank.setRank(result.indexOf(rechargeRank) + 1);
+		}
+		return result;
+	}
+
+	public List<RechargeRank> rank(int year, int month)
+	{
+		List<RechargeRank> result = new ArrayList<RechargeRank>();
+		String sql = "SELECT t1.nickname,t.total FROM (SELECT player, SUM(money) total FROM recharge_log WHERE YEAR(logTime) = ? AND MONTH(logTime) = ? GROUP BY player ORDER BY SUM(money) DESC) t LEFT JOIN base_info t1 ON t.player = t1.player LIMIT 0,20";
+		result = RSMapper.queryList(jdbcTemplate, sql, RechargeRank.class,
+				new Object[]
+				{ year, month });
+		for (RechargeRank rechargeRank : result)
+		{
+			rechargeRank.setRank(result.indexOf(rechargeRank) + 1);
+		}
+		return result;
+	}
+
+	public List<RechargeRank> rank(String startDate, String endDate)
+	{
+		List<RechargeRank> result = new ArrayList<RechargeRank>();
+		String sql = "SELECT t1.nickname,t.total FROM (SELECT player, SUM(money) total FROM recharge_log WHERE DATE(logTime) >= ? AND DATE(logTime) <= ? GROUP BY player ORDER BY SUM(money) DESC) t LEFT JOIN base_info t1 ON t.player = t1.player LIMIT 0,20";
+		result = RSMapper.queryList(jdbcTemplate, sql, RechargeRank.class,
+				new Object[]
+				{ startDate, endDate });
+		for (RechargeRank rechargeRank : result)
+		{
+			rechargeRank.setRank(result.indexOf(rechargeRank) + 1);
+		}
+		return result;
+	}
+
+	public List<PaywayCount> countByBank()
+	{
+		String sql = "SELECT bank AS payway, COUNT(1) AS total FROM recharge_log GROUP BY bank";
+		sql = "select * from (" + sql + ")a";
+		return RSMapper.queryList(jdbcTemplate, sql, PaywayCount.class);
+	}
+
+	public List<PaywayCount> countByPlatform()
+	{
+		String sql = "SELECT platform AS payway, COUNT(1) AS total FROM recharge_log GROUP BY platform";
+		sql = "select * from (" + sql + ")a";
+		return RSMapper.queryList(jdbcTemplate, sql, PaywayCount.class);
+	}
+
+	public int count(double minMoney, double maxMoney)
+	{
+		String sql = "SELECT COUNT(1) FROM recharge_log WHERE money >= ? and money <= ?";
+		return jdbcTemplate.queryForInt(sql, new Object[]
+		{ minMoney, maxMoney });
+	}
+
+	public int count(Integer player)
+	{
+		String sql = "select count(1) from recharge_log where player = ?";
+		return jdbcTemplate.queryForInt(sql, new Object[]
+		{ player });
+	}
+
+	public int count(Integer player, String startTime, String endTime)
+	{
+		String sql = "select count(1) from recharge_log where player = ? and logTime >= ? and logTime <= ?";
+		return jdbcTemplate.queryForInt(sql, new Object[]
+		{ player, startTime, endTime });
+	}
+
+	public List<RechargeLog> list(Integer rows, Integer page, String sort,
+			String order, Integer player)
+	{
+		String sql = "SELECT * FROM recharge_log t where t.player = ?";
+		sql = sql + " order by t." + sort + " " + order;
+		sql = "select * from (" + sql + ") a";
+		return RSMapper.queryPage(jdbcTemplate, sql, rows, page,
+				RechargeLog.class, new Object[]
+				{ player });
+	}
+
+	public List<RechargeLog> list(Integer rows, Integer page, String sort,
+			String order, Integer player, String startTime, String endTime)
+	{
+		String sql = "SELECT * FROM recharge_log t where t.player = ? and t.logTime >= ? and t.logTime <= ?";
+		sql = sql + " order by t." + sort + " " + order;
+		sql = "select * from (" + sql + ") a";
+		return RSMapper.queryPage(jdbcTemplate, sql, rows, page,
+				RechargeLog.class, new Object[]
+				{ player, startTime, endTime });
+	}
+
+	public List<RechargeLog> list(Integer player)
+	{
+		String sql = "SELECT * FROM recharge_log t where t.player = ?";
+		sql = "select * from (" + sql + ") a";
+		return RSMapper.queryList(jdbcTemplate, sql, RechargeLog.class,
+				new Object[]
+				{ player });
+	}
+
+	public List<RechargeLog> list(Integer player, String startTime,
+			String endTime)
+	{
+		String sql = "SELECT * FROM recharge_log t where t.player = ? and t.logTime >= ? and t.logTime <= ?";
+		sql = "select * from (" + sql + ") a";
+		return RSMapper.queryList(jdbcTemplate, sql, RechargeLog.class,
+				new Object[]
+				{ player, startTime, endTime });
+	}
+
+	public void save(Integer player, Double money, Double surplus,
+			Integer platform, Integer bank)
+	{
+		String sql = "INSERT INTO recharge_log(player, money, surplus, platform, bank, logTime) VALUES (?,?,?,?,?,NOW())";
+		jdbcTemplate.update(sql, new Object[]
+		{ player, money, surplus, platform, bank });
+	}
+
+}

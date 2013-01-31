@@ -1,0 +1,36 @@
+package cc.ywxm.vo;
+
+public class UserAgegroupCount
+{
+	// 年龄段
+	private String agegroup;
+	private Integer usercount;
+
+	public UserAgegroupCount(String agegroup, Integer usercount)
+	{
+		super();
+		this.agegroup = agegroup;
+		this.usercount = usercount;
+	}
+
+	public String getAgegroup()
+	{
+		return agegroup;
+	}
+
+	public void setAgegroup(String agegroup)
+	{
+		this.agegroup = agegroup;
+	}
+
+	public Integer getUsercount()
+	{
+		return usercount;
+	}
+
+	public void setUsercount(Integer usercount)
+	{
+		this.usercount = usercount;
+	}
+
+}

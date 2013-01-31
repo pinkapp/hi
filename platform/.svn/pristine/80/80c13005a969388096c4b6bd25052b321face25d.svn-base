@@ -1,0 +1,32 @@
+package cc.ywxm.dao.gop;
+
+import java.util.List;
+
+import cc.ywxm.action.Pageable;
+import cc.ywxm.model.gop.Function;
+import cc.ywxm.model.gop.Role;
+import cc.ywxm.vo.RoleVo;
+
+public interface RoleDao
+{
+
+	public Role findById(Integer roleId);
+
+	public void update(Role role);
+
+	public void save(Role role);
+
+	public List<Role> find(Role condition);
+
+	public List<RoleVo> findPaged(Role condition, Pageable pageable);
+
+	public void delele(Integer roleId);
+
+	public void add(Role role);
+
+	public List<Function> findFunctions(Function condition);
+
+	public void edit_function(Integer roleId, Integer[] function_ids);
+
+	public List<Short> findFunctionsByRoleId(Short roleId);
+}

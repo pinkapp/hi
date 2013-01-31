@@ -1,0 +1,57 @@
+package cc.ywxm.service.game;
+
+import java.util.List;
+
+import cc.ywxm.model.game.Closed;
+
+public interface CloseService
+{
+	/**
+	 * 
+	 * @param player
+	 * @param creason
+	 * @return
+	 */
+	public int close(Integer player, String creason);
+
+	/**
+	 * 
+	 * @param player
+	 * @param creason
+	 * @param enddate
+	 * @return
+	 */
+	public int close(Integer player, String creason, String enddate);
+
+	/**
+	 * 
+	 * @param nickname
+	 * @param creason
+	 * @return
+	 */
+	public int close(String nickname, String creason);
+
+	/**
+	 * 
+	 * @param nickname
+	 * @param creason
+	 * @param enddate
+	 * @return
+	 */
+	public int close(String nickname, String creason, String enddate);
+
+	/**
+	 * 
+	 * @param player
+	 * @return
+	 */
+	public List<Closed> gets(Integer player);
+
+	/**
+	 * 
+	 * @param nickname
+	 * @return
+	 */
+	public List<Closed> gets(String nickname);
+
+}

@@ -1,0 +1,206 @@
+package cc.ywxm.action.game;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.apache.struts2.json.JSONException;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+
+import cc.ywxm.action.BaseAction;
+import cc.ywxm.constant.Const;
+import cc.ywxm.datasource.CustomerContextHolder;
+import cc.ywxm.model.game.Closed;
+import cc.ywxm.model.gm.Server;
+import cc.ywxm.service.game.SendLetterService;
+import cc.ywxm.utils.JSONtool;
+
+/**
+ * 发信模块
+ * 
+ * @author hdc
+ * 
+ */
+@SuppressWarnings("serial")
+@Controller
+@Scope("prototype")
+public class SendLetterAction extends BaseAction
+{
+	private int type = 0;
+	private String receiver1;
+	private File receiver2;
+	private String receiver2ContentType;
+	private String receiver2FileName;
+	private String subject;
+	private String content;
+
+	@Resource
+	private SendLetterService sendLetterService;
+
+	/**
+	 * ajax 发信
+	 * 
+	 * @return
+	 * @throws IOException
+	 * @throws JSONException
+	 */
+	public String send() throws IOException
+	{
+		Server dbsrv = (Server) session.get(Const.SESSION_DBSRV);
+		CustomerContextHolder.setCustomerType(dbsrv.getDataSource());
+		int code = 0;
+		switch (type)
+		{
+		case 0:
+			message = "此功能暂未实现";
+			break;
+		case 1:
+			code = sendLetterService.send(receiver1, subject, content);
+			switch (code)
+			{
+			case 1:
+				message = "操作成功";
+				break;
+			case 2:
+				message = "未输入玩家ID，操作失败";
+				break;
+			default:
+				message = "未知错误，操作失败";
+				break;
+			}
+			break;
+		case 2:
+			code = sendLetterService.send(receiver2, receiver2ContentType,
+					subject, content);
+			switch (code)
+			{
+			case 1:
+				message = "操作成功";
+				break;
+			case 2:
+				message = "数据文件存在无效玩家ID，操作失败";
+				break;
+			default:
+				message = "未知错误，操作失败";
+				break;
+			}
+			break;
+		default:
+			return NONE;
+		}
+		response.setContentType("text/html;charset=utf-8");
+		response.setHeader("Cache-Control", "no-cache");
+		PrintWriter out = response.getWriter();
+		out.append(message);
+		out.close();
+
+		return NONE;
+	}
+
+	/**
+	 * 记录查询
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
+	public String gets() throws IOException
+	{
+		Server dbsrv = (Server) session.get(Const.SESSION_DBSRV);
+		CustomerContextHolder.setCustomerType(dbsrv.getDataSource());
+		String jsonString = "";
+		List<Closed> list = null;
+		switch (type)
+		{
+		case 1:
+			// list = closeService.gets(player);
+			break;
+		case 2:
+			// list = closeService.gets(nickname);
+			break;
+		default:
+			return NONE;
+		}
+		jsonString = JSONtool.serialize(list);
+		response.setContentType("text/xml;charset=utf-8");
+		response.setHeader("Cache-Control", "no-cache");
+		PrintWriter out = response.getWriter();
+		out.append(jsonString);
+		out.close();
+		return NONE;
+	}
+
+	public int getType()
+	{
+		return type;
+	}
+
+	public void setType(int type)
+	{
+		this.type = type;
+	}
+
+	public String getReceiver1()
+	{
+		return receiver1;
+	}
+
+	public void setReceiver1(String receiver1)
+	{
+		this.receiver1 = receiver1;
+	}
+
+	public File getReceiver2()
+	{
+		return receiver2;
+	}
+
+	public void setReceiver2(File receiver2)
+	{
+		this.receiver2 = receiver2;
+	}
+
+	public String getSubject()
+	{
+		return subject;
+	}
+
+	public void setSubject(String subject)
+	{
+		this.subject = subject;
+	}
+
+	public String getContent()
+	{
+		return content;
+	}
+
+	public void setContent(String content)
+	{
+		this.content = content;
+	}
+
+	public String getReceiver2ContentType()
+	{
+		return receiver2ContentType;
+	}
+
+	public void setReceiver2ContentType(String receiver2ContentType)
+	{
+		this.receiver2ContentType = receiver2ContentType;
+	}
+
+	public String getReceiver2FileName()
+	{
+		return receiver2FileName;
+	}
+
+	public void setReceiver2FileName(String receiver2FileName)
+	{
+		this.receiver2FileName = receiver2FileName;
+	}
+
+}

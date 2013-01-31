@@ -1,0 +1,95 @@
+package cc.ywxm.action.gop;
+
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+
+import cc.ywxm.action.PageableAction;
+import cc.ywxm.model.gop.GameServer;
+import cc.ywxm.service.GameServerService;
+
+/**
+ * 游戏服务器功能
+ * 
+ * @author huangdc
+ * 
+ */
+@SuppressWarnings("serial")
+@Controller
+@Scope("prototype")
+public class GameServerAction extends PageableAction {
+	private Integer serverId;
+	private String serverName;
+	private String game;
+	private Integer otime;
+	private String url;
+	private GameServer gameServer;
+	private List<GameServer> gameServers;
+	@Resource
+	private GameServerService gameServerService;
+
+	public String gets() {
+		gameServers = gameServerService.gets();
+		return SUCCESS;
+	}
+
+	public Integer getServerId() {
+		return serverId;
+	}
+
+	public void setServerId(Integer serverId) {
+		this.serverId = serverId;
+	}
+
+	public String getServerName() {
+		return serverName;
+	}
+
+	public void setServerName(String serverName) {
+		this.serverName = serverName;
+	}
+
+	public String getGame() {
+		return game;
+	}
+
+	public void setGame(String game) {
+		this.game = game;
+	}
+
+	public Integer getOtime() {
+		return otime;
+	}
+
+	public void setOtime(Integer otime) {
+		this.otime = otime;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
+	public GameServer getGameServer() {
+		return gameServer;
+	}
+
+	public void setGameServer(GameServer gameServer) {
+		this.gameServer = gameServer;
+	}
+
+	public List<GameServer> getGameServers() {
+		return gameServers;
+	}
+
+	public void setGameServers(List<GameServer> gameServers) {
+		this.gameServers = gameServers;
+	}
+
+}

@@ -1,0 +1,36 @@
+package cc.ywxm.action;
+
+import javax.servlet.http.Cookie;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+
+import cc.ywxm.action.base.PageableAction;
+import cc.ywxm.constant.Const;
+
+@SuppressWarnings("serial")
+@Controller
+@Scope("prototype")
+public class LogoutAction extends PageableAction
+{
+
+	/**
+	 * 账号退出
+	 * 
+	 * @return
+	 */
+	public String logout()
+	{
+		// removeCookie(response, Const.COOKIE_NAME_LOGINUSER);
+		Cookie cookie = new Cookie(Const.COOKIE_NAME_LOGINUSER, null);
+		cookie.setMaxAge(0);
+		response.addCookie(cookie);
+		session.remove(Const.SESSION_USERID);// 清除会话
+		// 论坛同步
+		// ucsyn = userService.uc_user_synlogout();
+		// 游戏客户端同步
+		// syncString = userService.server_user_synlogout();
+		return SUCCESS;
+	}
+
+}

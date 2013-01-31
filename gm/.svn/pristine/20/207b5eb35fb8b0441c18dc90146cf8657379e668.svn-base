@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - Middle tier application context definition for the image database.
+  -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:context="http://www.springframework.org/schema/context"
+		xmlns:tx="http://www.springframework.org/schema/tx"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+				http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+				http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+    <context:component-scan base-package="cc.ywxm" />
+	<!-- Configurer that replaces ${...} placeholders with values from a properties file -->
+	<!-- (in this case, JDBC-related settings for the dataSource definition below) -->
+	<context:property-placeholder location="WEB-INF/jdbc.properties,WEB-INF/mail.properties"/>
+
+	<!-- Local C3P0 DataSource that works in any environment -->
+	<!-- See JPetStore for an example of using Apache Commons DBCP as alternative -->
+	<!-- (Both DataSource implementations have a "close" method to be called on shutdown) -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+		<property name="driverClass" value="com.mysql.jdbc.Driver"/>
+		<property name="jdbcUrl" value="jdbc:mysql://192.168.0.116:3306/website"/>
+		<property name="user" value="root"/>
+		<property name="password" value="root"/>
+	</bean>
+	<bean id="dataSourceA" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+		<property name="driverClass" value="${jdbcA.driverClassName}"/>
+		<property name="jdbcUrl" value="${jdbcA.url}"/>
+		<property name="user" value="${jdbcA.username}"/>
+		<property name="password" value="${jdbcA.password}"/>
+	</bean>
+	<bean id="dataSourceB" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+		<property name="driverClass" value="${jdbcB.driverClassName}"/>
+		<property name="jdbcUrl" value="${jdbcB.url}"/>
+		<property name="user" value="${jdbcB.username}"/>
+		<property name="password" value="${jdbcB.password}"/>
+	</bean>
+	<bean id="dataSourceC" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+		<property name="driverClass" value="${jdbcC.driverClassName}"/>
+		<property name="jdbcUrl" value="${jdbcC.url}"/>
+		<property name="user" value="${jdbcC.username}"/>
+		<property name="password" value="${jdbcC.password}"/>
+	</bean>
+	<bean id="dynamicDataSource" class="cc.ywxm.datasource.DynamicDataSource"  >
+        <!-- 通过key-value的形式来关联数据源 -->
+		<property name="targetDataSources">
+			<map key-type="java.lang.String">
+				<entry value-ref="dataSource" key="dataSource"></entry>
+				<entry value-ref="dataSourceA" key="dataSourceA"></entry>
+				<entry value-ref="dataSourceB" key="dataSourceB"></entry>
+				<entry value-ref="dataSourceC" key="dataSourceC"></entry>
+			</map>
+		</property>
+		<property name="defaultTargetDataSource" ref="dataSource" >
+		</property>
+	</bean> 
+	
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+		<property name="dataSource" ref="dynamicDataSource" />
+		<property name="packagesToScan">
+			<list>
+				<!-- hibernate注解model扫描路径 -->
+				<value>cc.ywxm.model.game</value>
+				<value>cc.ywxm.model.gm</value>
+			</list>
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">
+					org.hibernate.dialect.MySQLDialect  
+                    </prop>
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.format_sql">false</prop>
+			</props>
+		</property>
+	</bean>
+	<bean id="hibernateTemplate" class="org.springframework.orm.hibernate3.HibernateTemplate">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="dynamicDataSource" />
+	</bean>
+
+	<!-- Transaction manager for a single JDBC DataSource -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dynamicDataSource"/>
+	</bean>
+
+	<!-- Activates @Transactional for DefaultImageDatabase -->
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+</beans>

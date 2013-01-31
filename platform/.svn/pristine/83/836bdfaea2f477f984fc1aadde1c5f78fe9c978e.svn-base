@@ -1,0 +1,87 @@
+package cc.ywxm.dao.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.stereotype.Repository;
+
+import cc.ywxm.dao.FriendlyLinkDao;
+import cc.ywxm.model.FriendlyLink;
+import cc.ywxm.utils.Pageable;
+import cc.ywxm.utils.RSMapper;
+import cc.ywxm.vo.FriendlyLinkVo;
+
+@Repository
+public class FriendlyLinkDaoImpl implements FriendlyLinkDao
+{
+	@Resource
+	private HibernateTemplate hibernateTemplate;
+	@Resource
+	private JdbcTemplate jdbcTemplate;
+
+	public void save(FriendlyLink friendlyLink)
+	{
+		hibernateTemplate.save(friendlyLink);
+	}
+
+	public void delete(FriendlyLink friendlyLink)
+	{
+		hibernateTemplate.delete(friendlyLink);
+	}
+
+	public void update(FriendlyLink friendlyLink)
+	{
+		hibernateTemplate.update(friendlyLink);
+	}
+
+	public FriendlyLink findById(Short friendlyLinkId)
+	{
+		FriendlyLink friendlyLink;
+		try
+		{
+			friendlyLink = (FriendlyLink)hibernateTemplate.get(FriendlyLink.class,
+					friendlyLinkId);
+		} catch (DataAccessException e)
+		{
+			e.printStackTrace();
+			return null;
+		}
+		return friendlyLink;
+	}
+
+	public List<FriendlyLinkVo> findByPage(FriendlyLinkVo condition,
+			Pageable pageable)
+	{
+		String sql = "SELECT t.site_id, t.sitename, t.siteurl FROM friendly_link t WHERE 1 = 1";
+		if (condition != null)
+		{
+			List<Object> args = new ArrayList<Object>();
+			if (StringUtils.isNotEmpty(condition.getSitename()))
+			{
+				sql += " AND t.sitename like ?";
+				args.add("%" + condition.getSitename() + "%");
+			}
+			sql += " ORDER BY t.site_id desc";
+			return RSMapper.queryPage(jdbcTemplate, sql, pageable,
+					FriendlyLinkVo.class, args.toArray());
+		} else
+		{
+			sql += " ORDER BY t.site_id desc";
+			return RSMapper.queryPage(jdbcTemplate, sql, pageable,
+					FriendlyLinkVo.class);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<FriendlyLink> findAll()
+	{
+		return hibernateTemplate.find("from FriendlyLink");
+	}
+
+}

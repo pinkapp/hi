@@ -1,0 +1,266 @@
+package cc.ywxm.action;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.apache.struts2.ServletActionContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+
+import cc.ywxm.model.FriendlyLink;
+import cc.ywxm.service.FriendlyLinkService;
+import cc.ywxm.utils.DateFormat;
+import cc.ywxm.utils.FileUtils;
+import cc.ywxm.utils.PageableAction;
+import cc.ywxm.vo.FriendlyLinkVo;
+
+@Controller
+@Scope("prototype")
+public class FriendlyLinkAction extends PageableAction
+{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7124276462012505850L;
+	private Short siteId;
+	private FriendlyLink flk;
+	private FriendlyLinkVo friendlyLink;
+	private List<FriendlyLinkVo> friendlyLinks;
+	@Resource
+	private FriendlyLinkService friendlyLinkService;
+
+	private File image;
+	private String imageFileName;
+	private String imageContentType;
+	private List<String> allowContentTypes = new ArrayList<String>();
+
+	/**
+	 * 友情链接添加
+	 * 
+	 * @return
+	 */
+	public String friendlyLink_add()
+	{
+		if (flk == null)
+		{
+			return INPUT;
+		} else
+		{
+			allowContentTypes.add("image/pjpeg");
+			allowContentTypes.add("image/gif");
+			allowContentTypes.add("image/bmp");
+			allowContentTypes.add("image/x-png");
+			if (!allowContentTypes.contains(imageContentType))
+			{
+				imageFileName = null;
+				message = "文件类型不正确或者没选择文件";
+				return ERROR;
+			} else
+			{
+				String _uploadPath = ServletActionContext.getServletContext()
+						.getRealPath("/upload");
+				String _dateString = DateFormat
+						.currentDateFormat("yyyyMMddHHmmss");
+				String _saveFilePath = _uploadPath + "/sitelogo/";
+				// 当前时间+上传时文件名
+				imageFileName = _dateString + imageFileName;
+				String srcImageFile = _saveFilePath + "/" + imageFileName;
+				FileUtils.coppyFile(image, srcImageFile);
+				flk.setSitelogo(imageFileName);
+				friendlyLinkService.add(flk);
+				return friendlyLink_manage();
+			}
+		}
+	}
+
+	/**
+	 * 友情链接删除
+	 * 
+	 * @return
+	 */
+	public String friendlyLink_delete()
+	{
+		String _uploadPath = ServletActionContext.getServletContext()
+				.getRealPath("/upload");
+		String _saveFilePath = _uploadPath + "/sitelogo/";
+		FriendlyLink _flk = friendlyLinkService.findById(siteId);
+		boolean b = false;
+		try
+		{
+			friendlyLinkService.delete(siteId);
+			b = true;
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+			b = false;
+		}
+		if (b == true)
+		{
+			// 把Logo文件从磁盘中删除
+			if (_flk.getSitelogo() != null)
+			{
+				FileUtils.removeFile(_saveFilePath + _flk.getSitelogo());
+			}
+			message = "删除成功";
+		} else
+		{
+			message = "删除失败";
+		}
+		return friendlyLink_manage();
+	}
+
+	/**
+	 * 友情链接修改
+	 * 
+	 * @return
+	 */
+	public String friendlyLink_edit()
+	{
+		if (flk == null)
+		{
+			flk = friendlyLinkService.findById(siteId);
+			return INPUT;
+		} else
+		{
+			if (imageContentType != null)
+			{
+				allowContentTypes.add("image/pjpeg");
+				allowContentTypes.add("image/gif");
+				allowContentTypes.add("image/bmp");
+				allowContentTypes.add("image/x-png");
+				if (!allowContentTypes.contains(imageContentType))
+				{
+					imageFileName = null;
+					message = "文件类型不正确";
+					return ERROR;
+				} else
+				{
+					String _uploadPath = ServletActionContext
+							.getServletContext().getRealPath("/upload");
+
+					String _saveFilePath = _uploadPath + "/sitelogo/";
+					FriendlyLink _flk = friendlyLinkService.findById(flk
+							.getSiteId());
+					String _dateString = DateFormat
+							.currentDateFormat("yyyyMMddHHmmss");
+					// 当前时间+上传时文件名
+					imageFileName = _dateString + imageFileName;
+					String _srcImageFile = _saveFilePath + imageFileName;
+					FileUtils.coppyFile(image, _srcImageFile);
+					flk.setSitelogo(imageFileName);
+					boolean b = false;
+					try
+					{
+						friendlyLinkService.edit(flk);
+						b = true;
+					} catch (Exception e)
+					{
+						e.printStackTrace();
+						b = false;
+					}
+					if (b == true)
+					{
+						// 把原Logo文件从磁盘中删除
+						if (_flk.getSitelogo() != null)
+						{
+							FileUtils.removeFile(_saveFilePath
+									+ _flk.getSitelogo());
+						}
+						message = "编辑成功";
+					} else
+					{
+						message = "编辑失败";
+					}
+
+				}
+			}
+			return friendlyLink_manage();
+
+		}
+
+	}
+
+	/**
+	 * 友情链接管理
+	 * 
+	 * @return
+	 */
+	public String friendlyLink_manage()
+	{
+		friendlyLinks = friendlyLinkService.findByPage(friendlyLink, this);
+		return SUCCESS;
+	}
+
+	public FriendlyLinkVo getFriendlyLink()
+	{
+		return friendlyLink;
+	}
+
+	public void setFriendlyLink(FriendlyLinkVo friendlyLink)
+	{
+		this.friendlyLink = friendlyLink;
+	}
+
+	public FriendlyLink getFlk()
+	{
+		return flk;
+	}
+
+	public void setFlk(FriendlyLink flk)
+	{
+		this.flk = flk;
+	}
+
+	public Short getSiteId()
+	{
+		return siteId;
+	}
+
+	public void setSiteId(Short siteId)
+	{
+		this.siteId = siteId;
+	}
+
+	public List<FriendlyLinkVo> getFriendlyLinks()
+	{
+		return friendlyLinks;
+	}
+
+	public void setFriendlyLinks(List<FriendlyLinkVo> friendlyLinks)
+	{
+		this.friendlyLinks = friendlyLinks;
+	}
+
+	public File getImage()
+	{
+		return image;
+	}
+
+	public void setImage(File image)
+	{
+		this.image = image;
+	}
+
+	public String getImageFileName()
+	{
+		return imageFileName;
+	}
+
+	public void setImageFileName(String imageFileName)
+	{
+		this.imageFileName = imageFileName;
+	}
+
+	public String getImageContentType()
+	{
+		return imageContentType;
+	}
+
+	public void setImageContentType(String imageContentType)
+	{
+		this.imageContentType = imageContentType;
+	}
+}

@@ -1,0 +1,184 @@
+package cc.ywxm.vo;
+
+public class UserVo
+{
+
+	// Fields
+
+	private String username;
+	private String email;
+	private String phone;
+	private String careeName;
+	private String area;
+	private Integer age;
+	private String ip;
+	private String lastTime;
+	private String sex;
+	private Integer user_id;
+	private Integer money;
+	private String register_ip;
+	private String registertime;
+	private String nickname;
+	private Short statusCode;
+
+	public String getUsername()
+	{
+		return username;
+	}
+
+	public void setUsername(String username)
+	{
+		this.username = username;
+	}
+
+	public String getEmail()
+	{
+		return email;
+	}
+
+	public void setEmail(String email)
+	{
+		this.email = email;
+	}
+
+	public String getIp()
+	{
+		return ip;
+	}
+
+	public void setIp(String ip)
+	{
+		this.ip = ip;
+	}
+
+	public String getLastTime()
+	{
+		return lastTime;
+	}
+
+	public void setLastTime(String lastTime)
+	{
+		this.lastTime = lastTime;
+	}
+
+	public Integer getUser_id()
+	{
+		return user_id;
+	}
+
+	public void setUser_id(Integer user_id)
+	{
+		this.user_id = user_id;
+	}
+
+	public Integer getMoney()
+	{
+		return money;
+	}
+
+	public void setMoney(Integer money)
+	{
+		this.money = money;
+	}
+
+	public String getRegister_ip()
+	{
+		return register_ip;
+	}
+
+	public void setRegister_ip(String register_ip)
+	{
+		this.register_ip = register_ip;
+	}
+
+	public String getNickname()
+	{
+		return nickname;
+	}
+
+	public void setNickname(String nickname)
+	{
+		this.nickname = nickname;
+	}
+
+	public String getPhone()
+	{
+		return phone;
+	}
+
+	public void setPhone(String phone)
+	{
+		this.phone = phone;
+	}
+
+	// public String getCareer()
+	// {
+	// return career;
+	// }
+	//
+	// public void setCareer(String career)
+	// {
+	// this.career = career;
+	// }
+
+	public String getArea()
+	{
+		return area;
+	}
+
+	public void setArea(String area)
+	{
+		this.area = area;
+	}
+
+	public Integer getAge()
+	{
+		return age;
+	}
+
+	public void setAge(Integer age)
+	{
+		this.age = age;
+	}
+
+	public String getCareeName()
+	{
+		return careeName;
+	}
+
+	public void setCareeName(String careeName)
+	{
+		this.careeName = careeName;
+	}
+
+	public String getSex()
+	{
+		return sex;
+	}
+
+	public void setSex(String sex)
+	{
+		this.sex = sex;
+	}
+
+	public String getRegistertime()
+	{
+		return registertime;
+	}
+
+	public void setRegistertime(String registertime)
+	{
+		this.registertime = registertime;
+	}
+
+	public Short getStatusCode()
+	{
+		return statusCode;
+	}
+
+	public void setStatusCode(Short statusCode)
+	{
+		this.statusCode = statusCode;
+	}
+
+}

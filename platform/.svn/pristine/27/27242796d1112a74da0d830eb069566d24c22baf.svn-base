@@ -1,0 +1,69 @@
+package cc.ywxm.model;
+// default package
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+/**
+ * City entity. @author MyEclipse Persistence Tools
+ */
+@Entity
+@Table(name = "city", catalog = "ywxm")
+public class City implements java.io.Serializable {
+
+	// Fields
+
+	private String cityName;
+	private Province province;
+	private Integer cityId;
+
+	// Constructors
+
+	/** default constructor */
+	public City() {
+	}
+
+	/** full constructor */
+	public City(Province province, Integer cityId) {
+		this.province = province;
+		this.cityId = cityId;
+	}
+
+	// Property accessors
+	@Id
+	@GeneratedValue
+	@Column(name = "cityName", unique = true, nullable = false, length = 50)
+	public String getCityName() {
+		return this.cityName;
+	}
+
+	public void setCityName(String cityName) {
+		this.cityName = cityName;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "proID")
+	public Province getProvince() {
+		return this.province;
+	}
+
+	public void setProvince(Province province) {
+		this.province = province;
+	}
+
+	@Column(name = "cityID")
+	public Integer getCityId() {
+		return this.cityId;
+	}
+
+	public void setCityId(Integer cityId) {
+		this.cityId = cityId;
+	}
+
+}

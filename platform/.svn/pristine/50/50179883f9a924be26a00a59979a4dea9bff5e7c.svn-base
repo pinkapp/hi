@@ -1,0 +1,94 @@
+package cc.ywxm.vo;
+
+public class OrderVo
+{
+	private Long order_id;
+	private String gamename;
+	private String game_server;
+	private Integer ordermoney;
+	private String wayname;
+	private String bankname;
+	private String ordertime;
+	private Integer user_id;
+
+	public Long getOrder_id()
+	{
+		return order_id;
+	}
+
+	public void setOrder_id(Long order_id)
+	{
+		this.order_id = order_id;
+	}
+
+	public String getGamename()
+	{
+		return gamename;
+	}
+
+	public void setGamename(String gamename)
+	{
+		this.gamename = gamename;
+	}
+
+	public String getGame_server()
+	{
+		return game_server;
+	}
+
+	public void setGame_server(String game_server)
+	{
+		this.game_server = game_server;
+	}
+
+	public Integer getOrdermoney()
+	{
+		return ordermoney;
+	}
+
+	public void setOrdermoney(Integer ordermoney)
+	{
+		this.ordermoney = ordermoney;
+	}
+
+	public String getWayname()
+	{
+		return wayname;
+	}
+
+	public void setWayname(String wayname)
+	{
+		this.wayname = wayname;
+	}
+
+	public String getBankname()
+	{
+		return bankname;
+	}
+
+	public void setBankname(String bankname)
+	{
+		this.bankname = bankname;
+	}
+
+	public String getOrdertime()
+	{
+		return ordertime;
+	}
+
+	public void setOrdertime(String ordertime)
+	{
+		this.ordertime = ordertime;
+	}
+
+	public Integer getUser_id()
+	{
+		return user_id;
+	}
+
+	public void setUser_id(Integer user_id)
+	{
+		this.user_id = user_id;
+	}
+
+}

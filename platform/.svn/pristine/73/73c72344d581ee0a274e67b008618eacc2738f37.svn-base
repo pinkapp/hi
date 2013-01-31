@@ -1,0 +1,177 @@
+package cc.ywxm.dao.impl;
+
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.lang.StringUtils;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.stereotype.Repository;
+
+import cc.ywxm.action.Pageable;
+import cc.ywxm.dao.RoleDao;
+import cc.ywxm.model.Function;
+import cc.ywxm.model.Role;
+import cc.ywxm.utils.RSMapper;
+import cc.ywxm.vo.RoleVo;
+
+@Repository
+public class RoleDaoImpl implements RoleDao
+{
+	@Resource
+	private HibernateTemplate hibernateTemplate;
+	@Resource
+	private JdbcTemplate jdbcTemplate;
+
+	public Role findById(Integer roleId)
+	{
+		Role role;
+		try
+		{
+			role = (Role) hibernateTemplate
+					.get(Role.class, roleId.shortValue());
+		} catch (DataAccessException e)
+		{
+			e.printStackTrace();
+			return null;
+		}
+		return role;
+	}
+
+	public void update(Role role)
+	{
+		hibernateTemplate.update(role);
+	}
+
+	public void save(Role role)
+	{
+		hibernateTemplate.save(role);
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Role> find(Role condition)
+	{
+		try
+		{
+			List<Role> roles = hibernateTemplate.find("from Role");
+			return roles;
+		} catch (DataAccessException e)
+		{
+			e.printStackTrace();
+			return null;
+		}
+
+	}
+
+	public List<RoleVo> findPaged(Role condition, Pageable pageable)
+	{
+		String sql = "SELECT t.role_id, t.rolename FROM role t WHERE 1 = 1";
+		if (condition != null)
+		{
+			List<Object> args = new ArrayList<Object>();
+			if (StringUtils.isNotEmpty(condition.getRolename()))
+			{
+				sql += " AND t.rolename like ?";
+				args.add("%" + condition.getRolename() + "%");
+			}
+			sql += " ORDER BY t.role_id desc";
+			return RSMapper.queryPage(jdbcTemplate, sql, pageable,
+					RoleVo.class, args.toArray());
+		} else
+		{
+			sql += " ORDER BY t.role_id desc";
+			return RSMapper
+					.queryPage(jdbcTemplate, sql, pageable, RoleVo.class);
+		}
+	}
+
+	public void delele(Integer roleId)
+	{
+		// 超级管理员不能被删除
+		if (roleId.intValue() == 1)
+		{
+			return;
+		}
+		Object o = hibernateTemplate.get(Role.class, roleId.shortValue());
+		hibernateTemplate.delete(o);
+
+	}
+
+	public void add(Role role)
+	{
+		hibernateTemplate.save(role);
+
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Function> findFunctions(Function condition)
+	{
+		try
+		{
+			List<Function> functions = hibernateTemplate
+					.find("from Function order by functiontype");
+			return functions;
+		} catch (DataAccessException e)
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public void edit_function(final Integer roleId, final Integer[] function_ids)
+	{
+		String deleteSQL = "delete from role_function where role_id = ?";
+		String insertSQL = "insert into role_function(role_id, function_id) values(?, ?)";
+		// 超级管理员功能不能修改
+		if (roleId.intValue() == 1)
+		{
+			return;
+		}
+		jdbcTemplate.update(deleteSQL, new Object[]
+		{ roleId });
+		if (function_ids != null)
+		{
+			jdbcTemplate.batchUpdate(insertSQL,
+					new BatchPreparedStatementSetter()
+					{
+
+						public void setValues(PreparedStatement ps, int i)
+								throws SQLException
+						{
+							ps.setShort(1, roleId.shortValue());
+							ps.setShort(2, function_ids[i].shortValue());
+						}
+
+						public int getBatchSize()
+						{
+							return function_ids.length;
+						}
+					});
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Short> findFunctionsByRoleId(final Short roleId)
+	{
+		final String sql = "SELECT t.function_id FROM role_function t WHERE t.role_id = ?";
+		return (List<Short>) hibernateTemplate.execute(new HibernateCallback()
+		{
+
+			public Object doInHibernate(Session session)
+					throws HibernateException, SQLException
+			{
+				return session.createSQLQuery(sql).setShort(0, roleId).list();
+			}
+		});
+	}
+
+}

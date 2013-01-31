@@ -1,0 +1,86 @@
+package cc.ywxm.dao.impl.gop;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.stereotype.Repository;
+
+import cc.ywxm.action.Pageable;
+import cc.ywxm.dao.gop.GameNoticeDao;
+import cc.ywxm.model.gop.GameNotice;
+import cc.ywxm.utils.RSMapper;
+import cc.ywxm.vo.GameNoticeVo;
+
+@Repository
+public class GameNoticeDaoImpl implements GameNoticeDao
+{
+	@Resource
+	private HibernateTemplate hibernateTemplate;
+	@Resource
+	private JdbcTemplate jdbcTemplate;
+
+	public void save(GameNotice gameNotice)
+	{
+		hibernateTemplate.save(gameNotice);
+	}
+
+	public void delete(GameNotice gameNotice)
+	{
+		hibernateTemplate.delete(gameNotice);
+	}
+
+	public void update(GameNotice gameNotice)
+	{
+		hibernateTemplate.update(gameNotice);
+	}
+
+	public GameNotice findById(Integer gameNoticeId)
+	{
+		GameNotice gameNotice;
+		try
+		{
+			gameNotice = (GameNotice)hibernateTemplate.get(GameNotice.class, gameNoticeId);
+		} catch (DataAccessException e)
+		{
+			e.printStackTrace();
+			return null;
+		}
+		return gameNotice;
+	}
+
+	public List<GameNoticeVo> findByPage(GameNoticeVo condition,
+			Pageable pageable)
+	{
+		String sql = "SELECT t.notice_id, t1.gamename, t.noticetitle,t.noticecontent FROM game_notice t LEFT JOIN game t1 ON t.game_id = t1.game_id WHERE 1 = 1";
+		if (condition != null)
+		{
+			List<Object> args = new ArrayList<Object>();
+			if (StringUtils.isNotEmpty(condition.getGamename()))
+			{
+				sql += " AND t1.gamename like ?";
+				args.add("%" + condition.getGamename() + "%");
+			}
+			sql += " ORDER BY t.notice_id desc";
+			return RSMapper.queryPage(jdbcTemplate, sql, pageable,
+					GameNoticeVo.class, args.toArray());
+		} else
+		{
+			sql += " ORDER BY t.notice_id desc";
+			return RSMapper.queryPage(jdbcTemplate, sql, pageable,
+					GameNoticeVo.class);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<GameNotice> findAll()
+	{
+		return hibernateTemplate.find("from GameNotice");
+	}
+
+}

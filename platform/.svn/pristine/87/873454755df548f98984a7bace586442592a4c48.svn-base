@@ -1,0 +1,49 @@
+package cc.ywxm.vo;
+
+public class FriendlyLinkVo
+{
+	private Short site_id;
+	private String sitename;
+	private String siteurl;
+	private String sitelogo;
+
+	public Short getSite_id()
+	{
+		return site_id;
+	}
+
+	public void setSite_id(Short site_id)
+	{
+		this.site_id = site_id;
+	}
+
+	public String getSitename()
+	{
+		return sitename;
+	}
+
+	public void setSitename(String sitename)
+	{
+		this.sitename = sitename;
+	}
+
+	public String getSiteurl()
+	{
+		return siteurl;
+	}
+
+	public void setSiteurl(String siteurl)
+	{
+		this.siteurl = siteurl;
+	}
+
+	public String getSitelogo()
+	{
+		return sitelogo;
+	}
+
+	public void setSitelogo(String sitelogo)
+	{
+		this.sitelogo = sitelogo;
+	}
+}

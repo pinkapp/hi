@@ -1,0 +1,55 @@
+package cc.ywxm.vo;
+
+public class ChargeTotalUserCount
+{
+	private String chargeTotal;
+	private Integer usercount;
+	private String percent;
+
+	public ChargeTotalUserCount(String chargeTotal, Integer usercount)
+	{
+		super();
+		this.chargeTotal = chargeTotal;
+		this.usercount = usercount;
+	}
+
+	public ChargeTotalUserCount(String chargeTotal, Integer usercount,
+			String percent)
+	{
+		super();
+		this.chargeTotal = chargeTotal;
+		this.usercount = usercount;
+		this.percent = percent;
+	}
+
+	public String getChargeTotal()
+	{
+		return chargeTotal;
+	}
+
+	public void setChargeTotal(String chargeTotal)
+	{
+		this.chargeTotal = chargeTotal;
+	}
+
+	public Integer getUsercount()
+	{
+		return usercount;
+	}
+
+	public void setUsercount(Integer usercount)
+	{
+		this.usercount = usercount;
+	}
+
+	public String getPercent()
+	{
+		return percent;
+	}
+
+	public void setPercent(String percent)
+	{
+		this.percent = percent;
+	}
+
+}

@@ -1,0 +1,29 @@
+package cc.ywxm.dao;
+
+import java.util.List;
+
+import cc.ywxm.model.FriendlyLink;
+import cc.ywxm.utils.Pageable;
+import cc.ywxm.vo.FriendlyLinkVo;
+
+/**
+ * 新闻数据访问层
+ * 
+ * @author hdc
+ * 
+ * 
+ */
+public interface FriendlyLinkDao
+{
+	public void save(FriendlyLink friendlyLink);
+
+	public void delete(FriendlyLink friendlyLink);
+
+	public void update(FriendlyLink friendlyLink);
+
+	public FriendlyLink findById(Short friendlyLinkId);
+	
+	public List<FriendlyLink> findAll();
+
+	public List<FriendlyLinkVo> findByPage(FriendlyLinkVo condition, Pageable pageable);
+}

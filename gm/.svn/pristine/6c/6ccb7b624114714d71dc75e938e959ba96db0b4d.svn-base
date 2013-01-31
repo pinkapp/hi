@@ -1,0 +1,142 @@
+package cc.ywxm.service.impl.game;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import cc.ywxm.dao.game.BaseInfoDao;
+import cc.ywxm.dao.game.PropDao;
+import cc.ywxm.model.game.Prop;
+import cc.ywxm.model.game.PropId;
+import cc.ywxm.model.game.Prop_;
+import cc.ywxm.service.game.PropInfoService;
+
+/**
+ * 
+ * @author HuangDeCai
+ * @since 2012-12-10 13:34:37
+ */
+@Transactional
+@Service
+public class PropInfoServiceImpl implements PropInfoService
+{
+	@Resource
+	private PropDao propDao;
+	@Resource
+	private BaseInfoDao baseInfoDao;
+
+	public List<Prop_> gets(String nickname)
+	{
+		if (nickname == null || "".trim().equals(nickname))
+		{
+			return new ArrayList<Prop_>();
+		}
+		nickname = nickname.trim();
+		try
+		{
+			Integer player = baseInfoDao.findPlayerByNickname(nickname);
+			return propDao.list(player);
+		} catch (EmptyResultDataAccessException e)
+		{
+			// System.out.println(e.getMessage());
+			return new ArrayList<Prop_>();
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+			return new ArrayList<Prop_>();
+		}
+	}
+
+	public List<Prop_> gets(Integer player)
+	{
+		if (player == null)
+		{
+			return new ArrayList<Prop_>();
+		}
+		try
+		{
+			return propDao.list(player);
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+			return new ArrayList<Prop_>();
+		}
+	}
+
+	public int edit(Integer player, Integer id, Short location, Short area,
+			Short amount, Short kind)
+	{
+		if (player == null)
+		{
+			return 2;
+		}
+		if (id == null)
+		{
+			return 3;
+		}
+
+		if (location == null)
+		{
+			return 4;
+		}
+		if (area == null)
+		{
+			return 5;
+		}
+		PropId propId = new PropId(player, id, location, area);
+		Prop prop = null;
+
+		try
+		{
+			prop = propDao.get(propId);
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		if (prop == null)
+		{
+			return 6;
+		}
+		Prop clone = (Prop) prop.clone();
+		if (amount != null)
+		{
+			prop.setAmount(amount);
+		}
+		if (kind != null)
+		{
+			prop.setKind(kind);
+		}
+
+		if (clone.equals(prop))
+		{
+			return 0;
+		}
+		//prop.setAmount(new Integer(345).shortValue());
+		propDao.update(prop);
+		return 1;
+	}
+
+	public int edit(String nickname, Integer id, Short location, Short area,
+			Short amount, Short kind)
+	{
+		Integer player = null;
+		try
+		{
+			player = baseInfoDao.findPlayerByNickname(nickname);
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		if (player == null)
+		{
+			return 2;
+		}
+		return this.edit(player, id, location, area, amount, kind);
+	}
+
+}

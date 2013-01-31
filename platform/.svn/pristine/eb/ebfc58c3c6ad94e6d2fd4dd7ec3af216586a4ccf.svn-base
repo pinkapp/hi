@@ -1,0 +1,699 @@
+package cc.ywxm.action.gop;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.List;
+
+import javax.annotation.Resource;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.struts2.json.JSONException;
+import org.apache.struts2.json.JSONUtil;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+
+import cc.ywxm.action.PageableAction;
+import cc.ywxm.constant.Const;
+import cc.ywxm.service.UserService;
+import cc.ywxm.utils.RandomUtils;
+import cc.ywxm.utils.WebUtils;
+
+@SuppressWarnings("serial")
+@Controller
+@Scope("prototype")
+public class UserAction extends PageableAction
+{
+	
+	private Integer userId;
+	private String username;
+	private String realname;
+	private String password;
+	private String sex;
+	private String birth;
+	private String career;
+	private String phone;
+	private String email;
+	private String cid;
+	private String lip;
+	private String lasttime;
+	private String purl;
+	private String province;
+	private String city;
+	private Integer money;
+	private String rip;
+	private String rtime;
+	private String spasswd;
+	private String status;
+	private String source;
+
+	private String prePage; // 登录前页面
+	private boolean exist = false;
+	private String rand = "";
+	private String term;
+	private boolean autoLogin = false;// 是否自动登陆
+	private String syncString = "";// 加密字符串
+	private String ucsyn = "";// 论坛同步字符串
+	private int step = 1;
+	private int findway = -1;
+	private String verifyCode = "";// 验证码
+
+	@Resource
+	private UserService userService;
+
+	/**
+	 * 账号登录
+	 * 
+	 * @return
+	 */
+	public String login()
+	{
+		org.springframework.web.util.WebUtils.getCookie(request, "");
+		if (session.get(Const.AUTH_CODE) == null)
+		{
+			return INPUT;
+		}
+		if (!session.get(Const.AUTH_CODE).equals(rand))
+		{
+			message = "验证码错误,登录失败";
+			return INPUT;
+		}
+		// int code = userService.login(username, password);
+		String loginIp = WebUtils.getIpAddr(request);
+		int code = userService.login(username, password, loginIp);
+		switch (code)
+		{
+		case 1:
+			message = "登录成功";
+			break;
+		case 2:
+			message = "用户名为空，登录失败";
+			break;
+		case 3:
+			message = "用户名不存在，登录失败";
+			break;
+		case 4:
+			message = "密码，登录失败";
+			break;
+		case 5:
+			message = "登录失败";
+			break;
+
+		default:
+			message = "未知错误，登录失败";
+			break;
+		}
+		if (code != 1)
+		{
+			return INPUT;
+		}
+		userId = userService.findByUsername(username).getUserId();
+		// 把参数放到session中
+		session.put(Const.SESSION_USERID, userId);
+
+		// 如果自动登陆
+		if (autoLogin)
+		{
+			String encrypt = userService.encrypt(username, password);
+			addCookie(response, Const.COOKIE_NAME_LOGINUSER, encrypt);
+		} else
+		{
+			removeCookie(response, Const.COOKIE_NAME_LOGINUSER);
+		}
+
+		// 论坛同步
+		ucsyn = userService.uc_user_synlogin(username, password);
+		System.out.println("discuz：" + ucsyn);
+		// 游戏客户端同步
+		syncString = userService.server_user_synlogin(username, password);
+
+		// System.out.println(syncString);
+		return SUCCESS;
+	}
+
+	/**
+	 * 账号退出
+	 * 
+	 * @return
+	 */
+	public String logout()
+	{
+		removeCookie(response, Const.COOKIE_NAME_LOGINUSER);
+
+		session.remove(Const.SESSION_USERID);// 清除会话
+		// 论坛同步
+		ucsyn = userService.uc_user_synlogout();
+		// 游戏客户端同步
+		syncString = userService.server_user_synlogout();
+
+		return SUCCESS;
+	}
+
+	/**
+	 * 找回密码
+	 * 
+	 * @return
+	 */
+	public String ftpasswd()
+	{
+		// 第一步：输入用户名
+		// 第二步：选择找回方式
+		if (step == 2)
+		{
+			if (username == null || "".equals(username))
+			{
+				step = 1;
+				message = "您还没输入用户名呢";
+			} else
+			{
+				int yetUsername = userService.yetUsername(username);
+				if (yetUsername == 1)
+				{
+				} else
+				{
+					step--;
+					message = "您输入的用户名不存在呢";
+				}
+			}
+
+		}
+		// 第三步：验证身份
+		if (step == 3)
+		{
+			switch (findway)
+			{
+			// 邮箱找回方式
+			case 0:
+
+				email = userService.findEmail(username);
+				if (email == null || "".equals(email))
+				{
+					step--;
+					message = "您没有设置安全邮箱，请选择其它找回方式试一试";
+					break;
+				}
+				break;
+			// 手机找回方式
+			case 1:
+
+				phone = userService.findPhone(username);
+				if (phone == null || "".equals(phone))
+				{
+					step--;
+					message = "您没有设置安全手机，请选择其它找回方式试一试";
+					break;
+				}
+				break;
+
+			default:
+				step--;
+				message = "您没有选择正确的找回方式";
+				break;
+			}
+
+		}
+		// 第四步：密码重置
+		if (step == 4)
+		{
+			// session中获取验证码
+			Object vc = session.get(Const.VERIFY_CODE);
+			if (vc == null)
+			{
+				message = "您还没获取验证码呢";
+				step--;
+			} else
+			{
+				if (verifyCode.equals(vc))
+				{
+					session.remove(Const.VERIFY_CODE);
+					session.put(Const.VERIFY_FLAG, "checked");
+				} else
+				{
+					message = "验证码错误";
+					step--;
+				}
+			}
+		}
+		// 第五步：完成
+		if (step == 5)
+		{
+			Object verify_flag = session.get(Const.VERIFY_FLAG);
+			session.remove(Const.VERIFY_FLAG);
+			if ("checked".equals(verify_flag))
+			{
+				userService.resetPassword(username, password);
+			} else
+			{
+				message = "非法请求";
+			}
+		}
+		return SUCCESS;
+	}
+
+	// 删除cookie
+	public int removeCookie(HttpServletResponse response, String cookieName)
+	{
+		Cookie cookie = new Cookie(cookieName, null);
+		cookie.setValue("");
+		cookie.setMaxAge(0);
+		cookie.setPath("/");
+		response.addCookie(cookie);
+		return 1;
+	}
+
+	public int addCookie(HttpServletResponse response, String cookieName,
+			String cookieValue)
+	{
+		Cookie cookie = new Cookie(cookieName, cookieValue);
+		cookie.setMaxAge(Const.COOKIE_MAXAGE);
+		cookie.setPath("/");
+		response.addCookie(cookie);
+		return 1;
+	}
+
+	/**
+	 * 账号注册
+	 * 
+	 * @return
+	 */
+	public String reg()
+	{
+		String regAddress = WebUtils.getIpAddr(request);
+		int code = 0;
+		code = userService.add(username, password, realname, cid, email,
+				regAddress);
+		switch (code)
+		{
+		case 1:
+			message = "注册成功";
+			break;
+		case 2:
+			message = "用户名为空，注册失败";
+			break;
+		case 3:
+			message = "密码为空，注册失败";
+			break;
+		case 4:
+			message = "用户名重名，注册失败";
+			break;
+		case 5:
+			message = "电子邮件为空，注册失败";
+			break;
+		default:
+			message = "未知错误，注册失败";
+			break;
+		}
+		if (code == 1)
+		{
+			return SUCCESS;
+		} else
+		{
+			return INPUT;
+		}
+
+	}
+
+	/**
+	 * 检查账号名是否存在
+	 * 
+	 * @return
+	 */
+	public String checkUsername()
+	{
+		exist = userService.checkUsername(username);
+		return SUCCESS;
+	}
+
+	/**
+	 * 搜索用户名
+	 * 
+	 * @return
+	 */
+	public String searchUsername()
+	{
+		if (term == null)
+			return null;
+		term = term.trim().toLowerCase();
+		List<String> usernames = userService.findUsersByUsername(term);
+		String jsonString = "";
+		try
+		{
+			jsonString = JSONUtil.serialize(usernames);
+			System.out.println("ssss" + jsonString);
+		} catch (JSONException e1)
+		{
+			e1.printStackTrace();
+		}
+		response.setCharacterEncoding("utf-8");
+		try
+		{
+			PrintWriter out = response.getWriter();
+			out.append(jsonString);
+			out.close();
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+		return null;
+
+	}
+
+	/**
+	 * 检查电子邮件是否存在
+	 * 
+	 * @return
+	 */
+	public String checkEmail()
+	{
+		exist = userService.checkEmail(email);
+		return SUCCESS;
+
+	}
+
+	/**
+	 * 手机验证发送手机验证码
+	 * 
+	 * @return
+	 */
+	public String sendMobileVerifyCode()
+	{
+		String vc = RandomUtils.randString(6);
+		String[] strs = new String[2];
+		strs[1] = vc;
+		userService.sendVerifyCodeByPhone(phone, strs);
+		System.out.println("已通过手机" + phone + "发送验证码：" + vc);
+		session.put(Const.MOBILE_VERIFY_CODE, vc);
+		return null;
+	}
+
+	public Integer getUserId()
+	{
+		return userId;
+	}
+
+	public void setUserId(Integer userId)
+	{
+		this.userId = userId;
+	}
+
+	public String getUsername()
+	{
+		return username;
+	}
+
+	public void setUsername(String username)
+	{
+		this.username = username;
+	}
+
+	public String getRealname()
+	{
+		return realname;
+	}
+
+	public void setRealname(String realname)
+	{
+		this.realname = realname;
+	}
+
+	public String getPassword()
+	{
+		return password;
+	}
+
+	public void setPassword(String password)
+	{
+		this.password = password;
+	}
+
+	public String getSex()
+	{
+		return sex;
+	}
+
+	public void setSex(String sex)
+	{
+		this.sex = sex;
+	}
+
+	public String getBirth()
+	{
+		return birth;
+	}
+
+	public void setBirth(String birth)
+	{
+		this.birth = birth;
+	}
+
+	public String getCareer()
+	{
+		return career;
+	}
+
+	public void setCareer(String career)
+	{
+		this.career = career;
+	}
+
+	public String getPhone()
+	{
+		return phone;
+	}
+
+	public void setPhone(String phone)
+	{
+		this.phone = phone;
+	}
+
+	public String getEmail()
+	{
+		return email;
+	}
+
+	public void setEmail(String email)
+	{
+		this.email = email;
+	}
+
+	public String getCid()
+	{
+		return cid;
+	}
+
+	public void setCid(String cid)
+	{
+		this.cid = cid;
+	}
+
+	public String getLip()
+	{
+		return lip;
+	}
+
+	public void setLip(String lip)
+	{
+		this.lip = lip;
+	}
+
+	public String getLasttime()
+	{
+		return lasttime;
+	}
+
+	public void setLasttime(String lasttime)
+	{
+		this.lasttime = lasttime;
+	}
+
+	public String getPurl()
+	{
+		return purl;
+	}
+
+	public void setPurl(String purl)
+	{
+		this.purl = purl;
+	}
+
+	public String getProvince()
+	{
+		return province;
+	}
+
+	public void setProvince(String province)
+	{
+		this.province = province;
+	}
+
+	public String getCity()
+	{
+		return city;
+	}
+
+	public void setCity(String city)
+	{
+		this.city = city;
+	}
+
+	public Integer getMoney()
+	{
+		return money;
+	}
+
+	public void setMoney(Integer money)
+	{
+		this.money = money;
+	}
+
+	public String getRip()
+	{
+		return rip;
+	}
+
+	public void setRip(String rip)
+	{
+		this.rip = rip;
+	}
+
+	public String getRtime()
+	{
+		return rtime;
+	}
+
+	public void setRtime(String rtime)
+	{
+		this.rtime = rtime;
+	}
+
+	public String getSpasswd()
+	{
+		return spasswd;
+	}
+
+	public void setSpasswd(String spasswd)
+	{
+		this.spasswd = spasswd;
+	}
+
+	public String getStatus()
+	{
+		return status;
+	}
+
+	public void setStatus(String status)
+	{
+		this.status = status;
+	}
+
+	public String getSource()
+	{
+		return source;
+	}
+
+	public void setSource(String source)
+	{
+		this.source = source;
+	}
+
+	public String getPrePage()
+	{
+		return prePage;
+	}
+
+	public void setPrePage(String prePage)
+	{
+		this.prePage = prePage;
+	}
+
+	public boolean isExist()
+	{
+		return exist;
+	}
+
+	public void setExist(boolean exist)
+	{
+		this.exist = exist;
+	}
+
+	public String getRand()
+	{
+		return rand;
+	}
+
+	public void setRand(String rand)
+	{
+		this.rand = rand;
+	}
+
+	public String getTerm()
+	{
+		return term;
+	}
+
+	public void setTerm(String term)
+	{
+		this.term = term;
+	}
+
+	public boolean isAutoLogin()
+	{
+		return autoLogin;
+	}
+
+	public void setAutoLogin(boolean autoLogin)
+	{
+		this.autoLogin = autoLogin;
+	}
+
+	public String getSyncString()
+	{
+		return syncString;
+	}
+
+	public void setSyncString(String syncString)
+	{
+		this.syncString = syncString;
+	}
+
+	public String getUcsyn()
+	{
+		return ucsyn;
+	}
+
+	public void setUcsyn(String ucsyn)
+	{
+		this.ucsyn = ucsyn;
+	}
+
+	public int getStep()
+	{
+		return step;
+	}
+
+	public void setStep(int step)
+	{
+		this.step = step;
+	}
+
+	public int getFindway()
+	{
+		return findway;
+	}
+
+	public void setFindway(int findway)
+	{
+		this.findway = findway;
+	}
+
+	public String getVerifyCode()
+	{
+		return verifyCode;
+	}
+
+	public void setVerifyCode(String verifyCode)
+	{
+		this.verifyCode = verifyCode;
+	}
+
+}

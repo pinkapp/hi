@@ -1,0 +1,66 @@
+package cc.ywxm.model;
+
+public class Letter
+{
+
+	private String lettercontent;
+	private String poster;
+	private String receiver;
+	private String subject;
+
+	public Letter()
+	{
+		super();
+	}
+
+	public Letter(String lettercontent, String poster, String receiver,
+			String subject)
+	{
+		super();
+		this.lettercontent = lettercontent;
+		this.poster = poster;
+		this.receiver = receiver;
+		this.subject = subject;
+	}
+
+	public String getLettercontent()
+	{
+		return lettercontent;
+	}
+
+	public void setLettercontent(String lettercontent)
+	{
+		this.lettercontent = lettercontent;
+	}
+
+	public String getPoster()
+	{
+		return poster;
+	}
+
+	public void setPoster(String poster)
+	{
+		this.poster = poster;
+	}
+
+	public String getReceiver()
+	{
+		return receiver;
+	}
+
+	public void setReceiver(String receiver)
+	{
+		this.receiver = receiver;
+	}
+
+	public String getSubject()
+	{
+		return subject;
+	}
+
+	public void setSubject(String subject)
+	{
+		this.subject = subject;
+	}
+
+}

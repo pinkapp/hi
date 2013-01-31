@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"dtds/struts-2.3.dtd">
+
+<struts>
+	<package name="struts-ajax" extends="struts-root" namespace="/ajax">
+		<action name="login" class="managerAction" method="login" />
+		<action name="logout" class="managerAction" method="logout" />
+		<action name="chdbsrv" class="sessionAction" method="chdbsrv" />
+		<action name="managerType_right_gets" class="managerTypeAction" method="right_gets" />
+		<action name="mobilityLog_gets" class="mobilityLogAction" method="gets" />
+		<action name="giftbagLog_gets" class="giftbagLogAction" method="gets" />
+		<action name="rechargeLog_gets" class="rechargeLogAction" method="gets" />
+		<action name="consumeLog_gets" class="consumeLogAction" method="gets" />
+		<action name="rechargeCount1_gets" class="rechargeCount1Action" method="gets" />
+		<action name="careerCount_gets" class="careerCountAction" method="gets" />
+		<action name="ageGroupCount_gets" class="ageGroupCountAction" method="gets" />
+		<action name="rechargeRank2_gets" class="rechargeRank2Action" method="gets" />
+		<action name="rechargeRank1_gets" class="rechargeRank1Action" method="gets" />
+		<action name="rechargeRank_gets" class="rechargeRankAction" method="gets" />
+		<action name="rechargeCount_gets" class="rechargeCountAction" method="gets" />
+		<action name="loginCount_gets" class="loginCountAction" method="gets" />
+		<action name="paywayCount_gets1" class="paywayCountAction" method="gets1" />
+		<action name="paywayCount_gets" class="paywayCountAction" method="gets" />
+		<action name="regCount_gets" class="regCountAction" method="gets" />
+		<action name="propInfo_gets" class="propInfoAction" method="gets" />
+		<action name="baseInfo_gets" class="baseInfoAction" method="gets" />
+		<action name="heroInfo_gets" class="heroInfoAction" method="gets" />
+		<action name="guildInfo_gets" class="guildInfoAction" method="gets" />
+		<action name="buildInfo_gets" class="buildInfoAction" method="gets" />
+		<action name="mailInfo_gets" class="mailInfoAction" method="gets" />
+		<action name="arenaInfo_gets" class="arenaInfoAction" method="gets" />
+		<action name="sameIP_gets" class="sameIPAction" method="gets" />
+		<action name="loginLog_gets" class="loginLogAction" method="gets" />
+		<action name="retentionRate_gets" class="retentionRateAction" method="gets" />
+		<action name="buildInfo_gets2" class="buildInfoAction" method="gets2" />
+		<action name="baseInfo_doAdd" class="baseInfoAction" method="doAdd" />
+		<action name="managerType_gets" class="managerTypeAction" method="gets" />
+		<action name="right_gets_" class="rightAction" method="gets_" />
+		<action name="right_gets" class="rightAction" method="gets" />
+		<action name="right_doAdd" class="rightAction" method="doAdd" />
+		<action name="right_doEdit" class="rightAction" method="doEdit" />
+		<action name="right_remove" class="rightAction" method="remove" />
+		<action name="manager_gets" class="managerAction" method="gets" />
+		<action name="manager_doAdd" class="managerAction" method="doAdd" />
+		<action name="manager_doEdit" class="managerAction" method="doEdit" />
+		<action name="manager_remove" class="managerAction" method="remove" />
+		<action name="managerType_doAdd" class="managerTypeAction" method="doAdd" />
+		<action name="managerType_doEdit" class="managerTypeAction" method="doEdit" />
+		<action name="managerType_doAssign" class="managerTypeAction" method="doAssign" />
+		<action name="managerType_remove" class="managerTypeAction" method="remove" />
+		<action name="kick" class="kickAction" method="kick" />
+		<action name="funcBuildInfo_edit" class="funcBuildInfoAction" method="edit" />
+		<action name="propInfo_edit" class="propInfoAction" method="edit" />
+		<action name="close" class="closeAction" method="close" />
+		<action name="close_gets" class="closeAction" method="gets" />
+		<action name="closeIP" class="closeIPAction" method="close" />
+		<action name="closeIP_gets" class="closeIPAction" method="gets" />
+		<action name="sendLetter" class="sendLetterAction" method="send" />
+		<action name="sendGold" class="sendGoldAction" method="send" />
+	</package>
+</struts>

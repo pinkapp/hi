@@ -1,0 +1,51 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@ taglib prefix="s" uri="/struts-tags"%>
+<%
+	String url = request.getScheme() + "://" + request.getServerName()
+			+ "/";
+	String path = request.getContextPath();
+	String basePath = request.getScheme() + "://"
+			+ request.getServerName() + ":" + request.getServerPort()
+			+ path + "/";
+%>
+
+<!DOCTYPE html >
+<html>
+	<head>
+		<base href="<%=basePath%>">
+
+		<title>亿网星漫游戏-注册成功</title>
+		<meta http-equiv="pragma" content="no-cache">
+		<meta http-equiv="cache-control" content="no-cache">
+		<meta http-equiv="expires" content="0">
+		<meta http-equiv="keywords" content="ywxm,亿网星漫">
+		<meta http-equiv="description" content="亿网星漫">
+		<link rel="stylesheet" type="text/css"
+			href="<%=basePath%>css/styles.css">
+	</head>
+	<body>
+		<DIV class=widget>
+			<DIV class=header>
+				<DIV class=title>
+					注册成功
+				</DIV>
+			</DIV>
+			<DIV class=body>
+				<table width="600" border="0" cellspacing="0" cellpadding="4">
+					<tr>
+						<td>
+							<h1>
+								注册成功！
+							</h1>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<a href="<%=basePath%>">进入首页</a>
+						</td>
+					</tr>
+				</table>
+			</DIV>
+		</DIV>
+	</body>
+</html>

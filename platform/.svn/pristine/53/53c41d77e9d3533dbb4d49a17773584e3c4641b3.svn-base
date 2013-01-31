@@ -1,0 +1,71 @@
+package cc.ywxm.vo;
+
+public class GamePayMoneyCount
+{
+	private String time;
+	
+	private Integer game1paymoney;
+	private Integer game2paymoney;
+	private Integer game3paymoney;
+	private Integer totalpaymoney;
+	
+	public GamePayMoneyCount()
+	{
+		super();
+	}
+	
+	public GamePayMoneyCount(String time, Integer game1paymoney,
+			Integer game2paymoney, Integer game3paymoney, Integer totalpaymoney)
+	{
+		super();
+		this.time = time;
+		this.game1paymoney = game1paymoney;
+		this.game2paymoney = game2paymoney;
+		this.game3paymoney = game3paymoney;
+		this.totalpaymoney = totalpaymoney;
+	}
+
+	public String getTime()
+	{
+		return time;
+	}
+	public void setTime(String time)
+	{
+		this.time = time;
+	}
+	public Integer getGame1paymoney()
+	{
+		return game1paymoney;
+	}
+	public void setGame1paymoney(Integer game1paymoney)
+	{
+		this.game1paymoney = game1paymoney;
+	}
+	public Integer getGame2paymoney()
+	{
+		return game2paymoney;
+	}
+	public void setGame2paymoney(Integer game2paymoney)
+	{
+		this.game2paymoney = game2paymoney;
+	}
+	public Integer getGame3paymoney()
+	{
+		return game3paymoney;
+	}
+	public void setGame3paymoney(Integer game3paymoney)
+	{
+		this.game3paymoney = game3paymoney;
+	}
+	public Integer getTotalpaymoney()
+	{
+		return totalpaymoney;
+	}
+	public void setTotalpaymoney(Integer totalpaymoney)
+	{
+		this.totalpaymoney = totalpaymoney;
+	}
+
+	
+
+}

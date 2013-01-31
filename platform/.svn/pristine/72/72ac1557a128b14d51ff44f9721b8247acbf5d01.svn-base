@@ -1,0 +1,60 @@
+package cc.ywxm.vo;
+
+public class UserSexCount
+{
+
+	private String sex;
+	private Integer usercount;
+	private String percent;
+
+	public UserSexCount()
+	{
+		super();
+	}
+
+	public UserSexCount(String sex, Integer usercount)
+	{
+		super();
+		this.sex = sex;
+		this.usercount = usercount;
+	}
+
+	public UserSexCount(String sex, Integer usercount, String percent)
+	{
+		super();
+		this.sex = sex;
+		this.usercount = usercount;
+		this.percent = percent;
+	}
+
+	public String getSex()
+	{
+		return sex;
+	}
+
+	public void setSex(String sex)
+	{
+		this.sex = sex;
+	}
+
+	public Integer getUsercount()
+	{
+		return usercount;
+	}
+
+	public void setUsercount(Integer usercount)
+	{
+		this.usercount = usercount;
+	}
+
+	public String getPercent()
+	{
+		return percent;
+	}
+
+	public void setPercent(String percent)
+	{
+		this.percent = percent;
+	}
+
+}

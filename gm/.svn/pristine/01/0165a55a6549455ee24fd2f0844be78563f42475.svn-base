@@ -1,0 +1,31 @@
+package cc.ywxm.dao.impl.gm;
+
+import javax.annotation.Resource;
+
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
+
+import cc.ywxm.dao.gm.OperateLogDao;
+
+@Repository
+public class OperateLogDaoImpl implements OperateLogDao
+{
+	@Resource
+	private JdbcTemplate gmJdbcTemplate;
+
+	public void save(String info, String operator, String ipAddress)
+	{
+		String sql = "INSERT INTO operate_log(info, operator, ipAddress, logTime) VALUE (?,?,?,NOW())";
+		gmJdbcTemplate.update(sql, new Object[]
+		{ info, operator, ipAddress });
+	}
+
+	public void save(String info, String operator, String ipAddress,
+			String logTime)
+	{
+		String sql = "INSERT INTO operate_log(info, operator, ipAddress, logTime) VALUE (?,?,?,?)";
+		gmJdbcTemplate.update(sql, new Object[]
+		{ info, operator, ipAddress, logTime });
+	}
+
+}

@@ -1,0 +1,84 @@
+package cc.ywxm.service.impl.game;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import cc.ywxm.dao.game.BaseInfoDao;
+import cc.ywxm.dao.game.ConsumeLogDao;
+import cc.ywxm.service.game.ConsumeLogService;
+
+@Transactional
+@Service
+public class ConsumeLogServiceImpl implements ConsumeLogService
+{
+	@Resource
+	private BaseInfoDao baseInfoDao;
+	@Resource
+	private ConsumeLogDao consumeLogDao;
+
+	public Map<String, Object> gets(Integer rows, Integer page, String sort,
+			String order, Integer player, String startTime, String endTime)
+	{
+		Map<String, Object> result = new HashMap<String, Object>();
+
+		if (sort == null || "".equals(sort.trim()))
+		{
+			sort = "logId";
+		}
+		if (order == null || "".equals(order.trim()))
+		{
+			order = "desc";
+		}
+		try
+		{
+			int total = 0;
+			Object list = null;
+			if (startTime != null && endTime != null && !"".equals(startTime)
+					&& !"".equals(endTime))
+			{
+				total = consumeLogDao.count(player, startTime, endTime);
+				list = consumeLogDao.list(rows, page, sort, order, player,
+						startTime, endTime);
+
+			} else
+			{
+				total = consumeLogDao.count(player);
+				list = consumeLogDao.list(rows, page, sort, order, player);
+			}
+			result.put("rows", list);
+			result.put("total", total);
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	public Map<String, Object> gets(Integer rows, Integer page, String sort,
+			String order, String nickname, String startTime, String endTime)
+	{
+		Integer player = null;
+		Map<String, Object> result = new HashMap<String, Object>();
+		if (nickname != null)
+		{
+			nickname = nickname.trim();
+		}
+		if (nickname == null || "".equals(nickname))
+		{
+			return result;
+		} else if ("system".equals(nickname))
+		{
+			player = 0;
+		} else
+		{
+			player = baseInfoDao.findPlayerByNickname(nickname);
+		}
+		return this.gets(rows, page, sort, order, player, startTime, endTime);
+	}
+
+}

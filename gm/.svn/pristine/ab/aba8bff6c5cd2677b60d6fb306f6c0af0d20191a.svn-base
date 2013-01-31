@@ -1,0 +1,32 @@
+package cc.ywxm.share;
+
+import java.util.List;
+
+import cc.ywxm.model.gm.Server;
+
+public class ShareData
+{
+	private static List<Server> servers;
+	private static Server defaultServer;
+
+	public static List<Server> getServers()
+	{
+		return servers;
+	}
+
+	public static void setServers(List<Server> servers)
+	{
+		ShareData.servers = servers;
+	}
+
+	public static Server getDefaultServer()
+	{
+		return defaultServer;
+	}
+
+	public static void setDefaultServer(Server defaultServer)
+	{
+		ShareData.defaultServer = defaultServer;
+	}
+	
+}

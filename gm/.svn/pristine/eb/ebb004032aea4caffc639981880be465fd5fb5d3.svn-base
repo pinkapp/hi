@@ -1,0 +1,56 @@
+package cc.ywxm.service.impl.platform;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import cc.ywxm.model.platform.CareerCount;
+import cc.ywxm.service.platform.CareerCountService;
+
+@Transactional
+@Service
+public class CareerCountServiceImpl implements CareerCountService
+{
+
+	private Logger log = LoggerFactory.getLogger(this.getClass());
+	public List<CareerCount> gets()
+	{
+		log.debug("开始模拟数据");
+		List<CareerCount> result = new ArrayList<CareerCount>();
+		CareerCount[] careerCounts = new CareerCount[15];
+		for (int i = 0; i < careerCounts.length; i++)
+		{
+			careerCounts[i] = new CareerCount("职业-" + (i + 1), (int) (Math
+					.random() * 1000));
+		}
+		for (int i = 0; i < careerCounts.length; i++)
+		{
+			result.add(careerCounts[i]);
+		}
+		return result;
+	}
+
+	public String XMLData()
+	{
+		String result = "";
+		List<CareerCount> list = this.gets();
+		StringBuffer stringBuffer = new StringBuffer();
+		String s1 = "<chart yAxisName='玩家人数' caption='玩家职业统计' baseFont='宋体' baseFontSize='12' useRoundEdges='1' bgColor='FFFFFF,FFFFFF' showBorder='0'>";
+		stringBuffer.append(s1);
+		for (CareerCount careerCount : list)
+		{
+			stringBuffer.append("<set value='" + careerCount.getTotal()
+					+ "' label='" + careerCount.getCareer() + "'/>");
+
+		}
+		String s2 = "</chart>";
+		stringBuffer.append(s2);
+		result = stringBuffer.toString();
+		return result;
+	}
+
+}

@@ -1,0 +1,86 @@
+package cc.ywxm.model.gop;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+/**
+ * GameServer entity. @author MyEclipse Persistence Tools
+ */
+@Entity
+@Table(name = "game_server", catalog = "ywxm")
+public class GameServer implements java.io.Serializable {
+
+	// Fields
+
+	private Integer serverId;
+	private String serverName;
+	private String game;
+	private String otime;
+	private String url;
+
+	// Constructors
+
+	/** default constructor */
+	public GameServer() {
+	}
+
+	/** full constructor */
+	public GameServer(String serverName, String game, String otime, String url) {
+		this.serverName = serverName;
+		this.game = game;
+		this.otime = otime;
+		this.url = url;
+	}
+
+	// Property accessors
+	@Id
+	@GeneratedValue
+	@Column(name = "serverId", unique = true, nullable = false)
+	public Integer getServerId() {
+		return this.serverId;
+	}
+
+	public void setServerId(Integer serverId) {
+		this.serverId = serverId;
+	}
+
+	@Column(name = "serverName", length = 50)
+	public String getServerName() {
+		return this.serverName;
+	}
+
+	public void setServerName(String serverName) {
+		this.serverName = serverName;
+	}
+
+	@Column(name = "game", length = 10)
+	public String getGame() {
+		return this.game;
+	}
+
+	public void setGame(String game) {
+		this.game = game;
+	}
+
+	@Column(name = "otime")
+	public String getOtime() {
+		return this.otime;
+	}
+
+	public void setOtime(String otime) {
+		this.otime = otime;
+	}
+
+	@Column(name = "url", length = 50)
+	public String getUrl() {
+		return this.url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
+}

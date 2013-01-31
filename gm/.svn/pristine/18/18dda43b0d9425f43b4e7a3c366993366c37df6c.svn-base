@@ -1,0 +1,43 @@
+package cc.ywxm.dao.impl.game;
+
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
+
+import cc.ywxm.dao.game.LoginDao;
+
+@Repository
+public class LoginDaoImpl implements LoginDao
+{
+	@Resource
+	private JdbcTemplate jdbcTemplate;
+
+	public int count(String date, String includePlayers)
+	{
+		String sql = "SELECT * FROM login_log GROUP BY player, DATE(ltime) HAVING DATE(ltime) = ? AND player IN ("
+				+ includePlayers + ")";
+		sql = "select count(1) from (" + sql + ")a";
+		return jdbcTemplate.queryForInt(sql, new Object[]
+		{ date });
+	}
+
+	public int count(String date)
+	{
+		String sql = "SELECT * FROM login_log GROUP BY player, DATE(ltime) HAVING DATE(ltime) = ?";
+		sql = "select count(1) from (" + sql + ")a";
+		return jdbcTemplate.queryForInt(sql, new Object[]
+		{ date });
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<Integer> gets(String date)
+	{
+		String sql = "SELECT player FROM login_log WHERE DATE(ltime) = ?";
+		return (List<Integer>) jdbcTemplate.queryForList(sql, new Object[]
+		{ date }, Integer.class);
+	}
+
+}

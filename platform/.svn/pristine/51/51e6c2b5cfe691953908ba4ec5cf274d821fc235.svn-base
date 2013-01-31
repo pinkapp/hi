@@ -1,0 +1,29 @@
+package cc.ywxm.dao;
+
+import java.util.List;
+
+import cc.ywxm.action.Pageable;
+import cc.ywxm.model.Game;
+import cc.ywxm.model.GameOpen;
+import cc.ywxm.vo.GameVo;
+
+public interface GameDao
+{
+
+	public List<Game> findAll();
+
+	public Game findById(Integer gameId);
+
+	public void update(Game game);
+
+	public void delete(Game game);
+
+	public void save(Game game);
+
+	public List<Game> find(Game condition);
+
+	public List<GameOpen> findAllGameOpen();
+
+	public List<GameVo> findByPage(GameVo condition, Pageable pageable);
+
+}

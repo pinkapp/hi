@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="admin" extends="default" namespace="/admin">
+		<!-- 用户action start -->
+		<action name="user_manage" class="userAction" method="user_manage">
+			<result>
+				/WEB-INF/view/user/user_manage.jsp
+            </result>
+		</action>
+		<action name="user_edit" class="userAction" method="user_edit">
+			<result name="input">
+				/WEB-INF/view/user/user_update.jsp
+			</result>
+			<result>
+				/WEB-INF/view/user/user_manage.jsp
+			</result>
+		</action>
+		<action name="user_close" class="userAction" method="user_close">
+			<result name="input">
+				/WEB-INF/view/user/user_close.jsp
+			</result>
+			<result>
+				/WEB-INF/view/user/user_manage.jsp
+			</result>
+		</action>
+		<action name="user_recover" class="userAction" method="user_recover">
+			<result name="input">
+				/WEB-INF/view/user/user_recover.jsp
+			</result>
+			<result>
+				/WEB-INF/view/user/user_manage.jsp
+			</result>
+		</action>
+		<action name="userinfo" class="userAction" method="userinfo">
+			<result>
+				/WEB-INF/view/user/user_info.jsp
+			</result>
+		</action>
+		<action name="user_role_manage" class="userAction" method="user_role_manage">
+			<result>
+				/WEB-INF/view/user/user_role_manage.jsp
+			</result>
+		</action>
+		<action name="user_grant" class="userAction" method="user_grant">
+			<result name="input">
+				/WEB-INF/view/user/user_grant.jsp
+			</result>
+			<result>
+				/WEB-INF/view/user/user_role_manage.jsp
+			</result>
+		</action>
+		<!-- 用户action end -->
+		<!-- 角色action start -->
+		<action name="role_edit_function" class="roleAction" method="role_edit_function">
+			<result name="input">
+				/WEB-INF/view/role/role_edit_function.jsp
+			</result>
+			<result>
+				/WEB-INF/view/role/role_edit_function.jsp
+			</result>
+		</action>
+		<action name="role_view_function" class="roleAction" method="role_view_function">
+			<result>
+				/WEB-INF/view/role/role_view_function.jsp
+			</result>
+		</action>
+		<action name="role_function_manage" class="roleAction"
+			method="role_function_manage">
+			<result>
+				/WEB-INF/view/role/role_function_manage.jsp
+			</result>
+		</action>
+		<!-- 角色action end -->
+		<!-- 统计action start -->
+		<action name="*_*Count_export" class="{1}CountAction" method="{1}_{2}Count_export" />
+		<action name="*_*Count" class="{1}CountAction" method="{1}_{2}Count">
+			<result>
+				/WEB-INF/view/{1}/{1}_{2}Count.jsp
+			</result>
+		</action>
+		<action name="user_*_chargeRank" class="chargeRankAction"
+			method="user_{1}_chargeRank">
+			<result>
+				/WEB-INF/view/user/user_{1}_chargeRank.jsp
+			</result>
+		</action>
+		<action name="user_*_chargeRank_export" class="chargeRankAction"
+			method="user_{1}_chargeRank_export" />
+		<!-- 统计action end -->
+
+		<!-- 信件action start -->
+		<action name="letter_outbox" class="letterAction" method="letter_outbox">
+			<result>
+				/WEB-INF/view/letter/letter_outbox.jsp
+			</result>
+		</action>
+		<action name="letter_inbox" class="letterAction" method="letter_inbox">
+			<result>
+				/WEB-INF/view/letter/letter_inbox.jsp
+			</result>
+		</action>
+		<action name="letter_inbox_view" class="letterAction" method="letter_inbox_view">
+			<result>
+				/WEB-INF/view/letter/letter_inbox_view.jsp
+			</result>
+		</action>
+		<action name="letter_outbox_view" class="letterAction" method="letter_outbox_view">
+			<result>
+				/WEB-INF/view/letter/letter_outbox_view.jsp
+			</result>
+		</action>
+		<action name="letter_post" class="letterAction" method="letter_post">
+			<result name="input">
+				/WEB-INF/view/letter/letter_post.jsp
+			</result>
+		</action>
+		<action name="letter_outbox_bdelete" class="letterAction"
+			method="letter_outbox_bdelete">
+			<result>
+				/WEB-INF/view/letter/letter_outbox.jsp
+			</result>
+		</action>
+		<action name="letter_outbox_delete" class="letterAction"
+			method="letter_outbox_delete">
+			<result>
+				/WEB-INF/view/letter/letter_outbox.jsp
+			</result>
+		</action>
+		<action name="letter_inbox_bdelete" class="letterAction"
+			method="letter_inbox_bdelete">
+			<result>
+				/WEB-INF/view/letter/letter_inbox.jsp
+			</result>
+		</action>
+		<action name="letter_inbox_delete" class="letterAction" method="letter_inbox_delete">
+			<result>
+				/WEB-INF/view/letter/letter_inbox.jsp
+			</result>
+		</action>
+		<action name="letter_markInboxAllReaded" class="letterAction"
+			method="letter_markInboxAllReaded">
+			<result>
+				/WEB-INF/view/letter/letter_inbox.jsp
+			</result>
+		</action>
+		<action name="moneyAssign_assign" class="moneyAssignAction"
+			method="assign">
+			<result name="input">
+				/WEB-INF/view/moneyAssign/moneyAssign_assign.jsp
+			</result>
+			<result>
+				/WEB-INF/view/moneyAssign/moneyAssign_assign.jsp
+			</result>
+			<result name="error">
+				/WEB-INF/view/moneyAssign/moneyAssign_assign.jsp
+			</result>
+		</action>
+		<action name="moneyAssign_bassign" class="moneyAssignAction"
+			method="bassign">
+			<result name="input">
+				/WEB-INF/view/moneyAssign/moneyAssign_assign.jsp
+			</result>
+			<result>
+				/WEB-INF/view/moneyAssign/moneyAssign_assign.jsp
+			</result>
+			<result name="error">
+				/WEB-INF/view/moneyAssign/moneyAssign_assign.jsp
+			</result>
+		</action>
+		<action name="summary" class="summaryAction" method="summary">
+			<result>
+				/WEB-INF/view/summary/summary.jsp
+			</result>
+		</action>
+		<action name="summary_export" class="summaryAction" method="summary_export">
+			<result name="input">
+				/WEB-INF/view/summary/summary.jsp
+			</result>
+		</action>
+		<!-- 信件action end -->
+		<action name="*_*" class="{1}Action" method="{0}">
+			<result name="input">
+				/WEB-INF/view/{1}/{0}.jsp
+            </result>
+			<result>
+				/WEB-INF/view/{1}/{1}_manage.jsp
+            </result>
+			<result name="error">
+				/WEB-INF/view/{1}/{0}.jsp
+            </result>
+		</action>
+	</package>
+</struts>

@@ -1,0 +1,81 @@
+package cc.ywxm.action.gop;
+
+import java.io.IOException;
+import java.util.Locale;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+
+import cc.ywxm.action.BaseAction;
+
+import com.opensymphony.xwork2.ActionContext;
+
+/**
+ * 切换语言
+ * 
+ * @author hdc
+ * 
+ */
+@Controller
+// 多例模式,默认单例
+@Scope("prototype")
+public class ResourceAction extends BaseAction
+{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2255561338157563324L;
+	private String lang;
+	private String url;
+
+	public String resource_change()
+	{
+		Locale locale = Locale.getDefault();
+
+		if ("zh_CN".equals(lang))
+		{
+			locale = new Locale("zh", "CN");
+		}
+		if ("zh_TW".equals(lang))
+		{
+			locale = new Locale("zh", "TW");
+		}
+		if ("en_US".equals(lang))
+		{
+			locale = new Locale("en", "US");
+		}
+
+		ActionContext.getContext().setLocale(locale);
+		session.put("WW_TRANS_I18N_LOCALE", locale);
+		try
+		{
+			response.sendRedirect(url);
+			return null;
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+			return null;
+		}
+
+	}
+
+	public String getLang()
+	{
+		return lang;
+	}
+
+	public void setLang(String lang)
+	{
+		this.lang = lang;
+	}
+
+	public String getUrl()
+	{
+		return url;
+	}
+
+	public void setUrl(String url)
+	{
+		this.url = url;
+	}
+}

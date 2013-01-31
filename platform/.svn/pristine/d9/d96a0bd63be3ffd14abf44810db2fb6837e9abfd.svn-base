@@ -1,0 +1,25 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@ taglib prefix="s" uri="/struts-tags"%>
+<%
+String path = request.getContextPath();
+String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+%>
+<div>
+<ul>
+<li class="m1"><s:text name="leftcontent.userinfo" /></li>
+<li class="icon">&nbsp;&nbsp;<a class="m2" href="<%=basePath%>user" ><s:text name="leftcontent.myinfo" /></a> </li>
+<li class="icon">&nbsp;&nbsp;<a class="m2" href="<%=basePath%>user/edit" ><s:text name="leftcontent.editinfo" /></a> </li>
+<li class="icon">&nbsp;&nbsp;<a class="m2" href="<%=basePath%>user/edit_portrait" ><s:text name="leftcontent.editportrait" /></a></li>
+<li class="icon">&nbsp;&nbsp;<a class="m2" href="<%=basePath%>user/editpass" ><s:text name="leftcontent.editpassword" /></a></li>
+<li class="icon">&nbsp;&nbsp;<a class="m2" href="<%=basePath%>user/cardidauth" ><s:text name="leftcontent.cardidauth" /></a></li>
+<li class="m1"><s:text name="leftcontent.usersafe" /></li>
+<li class="icon">&nbsp;&nbsp;<a class="m2" href="<%=basePath%>user/security"  ><s:text name="leftcontent.usersafe" /></a> </li>
+<li class="icon">&nbsp;&nbsp;<a class="m2" href="<%=basePath%>user/mobile_verify" ><s:text name="leftcontent.mobileverify" /></a></li>
+<li class="icon">&nbsp;&nbsp;<a class="m2" href="<%=basePath%>user/spasswd" ><s:text name="leftcontent.secondarypassword" /></a></li>
+<li class="m1"><s:text name="leftcontent.ordercenter" /></li>
+<li class="icon">&nbsp;&nbsp;<a class="m2" href="<%=basePath%>order/recharge" ><s:text name="leftcontent.orderrecharge" /></a> </li>
+<li class="icon">&nbsp;&nbsp;<a class="m2" href="<%=basePath%>order/history" ><s:text name="leftcontent.orderhistory" /></a></li>
+<li class="icon">&nbsp;&nbsp;<a class="m2" href="<%=basePath%>giftcard" ><s:text name="leftcontent.mygiftcard" /></a></li>
+<li class="icon">&nbsp;&nbsp;<a class="m2" href="<%=basePath%>giftcard/history" ><s:text name="leftcontent.giftcardhistory" /></a></li>
+</ul>
+</div>

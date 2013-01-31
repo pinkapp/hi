@@ -1,0 +1,119 @@
+package cc.ywxm.dao;
+
+import java.util.List;
+
+import cc.ywxm.model.LetterInbox;
+import cc.ywxm.model.LetterOutbox;
+import cc.ywxm.utils.Pageable;
+import cc.ywxm.vo.LetterInboxVo;
+import cc.ywxm.vo.LetterOutboxVo;
+
+/**
+ * 信件访问层
+ * 
+ * @author hdc
+ * 
+ * 
+ */
+public interface LetterDao
+{
+	/**
+	 * 保存信件到发件箱
+	 * 
+	 * @param letterOutbox
+	 * @return
+	 */
+	public void save(LetterOutbox letterOutbox);
+
+	/**
+	 * 保存信件到收件箱
+	 * 
+	 * @param letterInboxes
+	 * @return
+	 */
+	public void save(List<LetterInbox> letterInboxes);
+
+	/**
+	 * 发件箱-分页
+	 * 
+	 * @param username
+	 * @param pageable
+	 * @return
+	 */
+	public List<LetterOutboxVo> findOutboxByPage(String username,
+			Pageable pageable);
+
+	/**
+	 * 收件箱-分页
+	 * 
+	 * @param username
+	 * @param pageable
+	 * @return
+	 */
+	public List<LetterInboxVo> findInboxByPage(String username,
+			Pageable pageable);
+
+	/**
+	 * 发件箱信件批量删除(假删除)
+	 * 
+	 * @param ids
+	 * @return
+	 */
+	public boolean batchOutboxDelete(Long[] ids);
+
+	/**
+	 * 收件箱信件批量删除(假删除)
+	 * 
+	 * @param ids
+	 * @return
+	 */
+	public void batchInboxDelete(Long[] ids);
+
+	/**
+	 * 标记收件箱所有信件已读
+	 * 
+	 * @return
+	 */
+	public void markInboxAllReaded(String username);
+
+	/**
+	 * 查看收件箱信件
+	 * 
+	 * @param letterId
+	 * @return
+	 */
+	public LetterInbox findInboxById(Long letterId);
+
+	/**
+	 * 查看发件箱信件
+	 * 
+	 * @param letterId
+	 * @return
+	 */
+	public LetterOutbox findOutboxById(Long letterId);
+
+	/**
+	 * 收件箱信件删除(假删除)
+	 * 
+	 * @param letterId
+	 * @return
+	 */
+	public void inboxDelete(Long letterId);
+
+	/**
+	 * 发件箱信件删除(假删除)
+	 * 
+	 * @param letterId
+	 * @return
+	 */
+	public void outboxDelete(Long letterId);
+
+	/**
+	 * 标记为已读
+	 * 
+	 * @param username
+	 * @param letterId
+	 * @return
+	 */
+	public void markInboxReaded(Long letterId);
+}

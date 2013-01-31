@@ -1,0 +1,261 @@
+package cc.ywxm.client;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.Collection;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.zeromq.EmbeddedLibraryTools;
+import org.zeromq.ZMQ;
+
+import cc.ywxm.io.CPPInputStream;
+import cc.ywxm.io.CPPOutputStream;
+import cc.ywxm.io.HeadByteArray;
+
+/**
+ * ZeroMQ java远程过程调用RFC客户端 内部通讯协议
+ * 
+ * @author 黄德财
+ * @email hd.c@qq.com
+ * @since 2012-12-12 13:42:24
+ */
+public class ZMQClient
+{
+	private Logger log = LoggerFactory.getLogger(this.getClass());
+	private String serverURI = "tcp://192.168.0.248:16006";
+
+	public ZMQClient()
+	{
+		super();
+	}
+
+	public ZMQClient(String serverURI)
+	{
+		super();
+		this.serverURI = serverURI;
+	}
+
+	/**
+	 * 远程过程调用
+	 * 
+	 * @param aid
+	 *            玩家ID
+	 * @param type
+	 *            消息类型
+	 * @param flag
+	 * @return
+	 * @throws ZMQRecvTimeoutException
+	 *             ZMQ请求超时
+	 */
+	public String call(Integer aid, Integer type, Integer flag)
+			throws ZMQRecvTimeoutException
+	{
+		String JSON = "{test:\"java\"}";
+		log.debug("java.library.path:"
+				+ System.getProperty("java.library.path"));
+		log.debug("ZMQ版本:" + ZMQ.getVersionString());
+		log.debug("current platform:"
+				+ EmbeddedLibraryTools.getCurrentPlatformIdentifier());
+		final Collection<String> files = EmbeddedLibraryTools
+				.getEmbeddedLibraryList();
+		for (final String file : files)
+		{
+			log.debug("embedded library:" + file);
+		}
+		String result = null;
+		int oiThreads = 1;
+		ZMQ.Context context = ZMQ.context(oiThreads);
+		ZMQ.Socket socket = context.socket(ZMQ.XREQ);
+		ZMQ.Poller poller = context.poller(1);
+		poller.register(socket, ZMQ.Poller.POLLIN);
+		socket.connect(serverURI);
+		HeadByteArray headByteArray = new HeadByteArray(aid, type.shortValue(),
+				flag.shortValue());
+		log.debug("消息头：" + "aid:" + aid + ",type:" + type + ",flag:" + flag);
+		log.debug("消息体：" + JSON);
+		byte[] head = headByteArray.toByteArray();
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+		CPPOutputStream cppOutputStream = new CPPOutputStream(
+				byteArrayOutputStream);
+		try
+		{
+			// System.out.println(head.length);
+			cppOutputStream.write(head);
+			cppOutputStream.writeUTF(JSON);
+		} catch (IOException e)
+		{
+			log.error(e.getMessage());
+		}
+		byte[] bytes = byteArrayOutputStream.toByteArray();
+		for (byte b : bytes)
+		{
+			System.out.println(Integer.toBinaryString(b));
+		}
+		// 发送
+		socket.send(bytes, 0);
+		byte[] reply = null;
+		poller.poll(1000);
+		if (poller.pollin(0))
+		{
+			// 接收
+			reply = socket.recv(0);
+		}
+		if (reply == null)
+		{
+			throw new ZMQRecvTimeoutException("ZMQ请求超时");
+		}
+		// System.out.println("aaa");
+		ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(
+				reply);
+		CPPInputStream cppInputStream = new CPPInputStream(byteArrayInputStream);
+		try
+		{
+			cppInputStream.readInt();
+			cppInputStream.readShort();
+			cppInputStream.readShort();
+			result = cppInputStream.readUTF();
+		} catch (Exception e)
+		{
+			log.error(e.getMessage());
+		}
+		return result;
+	}
+
+	/**
+	 * 远程过程调用
+	 * 
+	 * @param aid
+	 *            玩家ID
+	 * @param type
+	 *            消息类型
+	 * @param flag
+	 * @param JSON
+	 *            JSON格式字符串
+	 * @return
+	 * @throws ZMQRecvTimeoutException
+	 *             ZMQ请求超时
+	 */
+	public String call(Integer aid, Integer type, Integer flag, String JSON)
+			throws ZMQRecvTimeoutException
+	{
+		log.debug("java.library.path:"
+				+ System.getProperty("java.library.path"));
+		log.debug("ZMQ版本:" + ZMQ.getVersionString());
+		log.debug("current platform:"
+				+ EmbeddedLibraryTools.getCurrentPlatformIdentifier());
+		final Collection<String> files = EmbeddedLibraryTools
+				.getEmbeddedLibraryList();
+		for (final String file : files)
+		{
+			log.debug("embedded library:" + file);
+		}
+		String result = null;
+		int oiThreads = 1;
+		ZMQ.Context context = ZMQ.context(oiThreads);
+		ZMQ.Socket socket = context.socket(ZMQ.XREQ);
+		ZMQ.Poller poller = context.poller(1);
+		poller.register(socket, ZMQ.Poller.POLLIN);
+		socket.connect(serverURI);
+		HeadByteArray headByteArray = new HeadByteArray(aid, type.shortValue(),
+				flag.shortValue());
+		log.debug("消息头：" + "aid:" + aid + ",type:" + type + ",flag:" + flag);
+		log.debug("消息体：" + JSON);
+		byte[] head = headByteArray.toByteArray();
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+		CPPOutputStream cppOutputStream = new CPPOutputStream(
+				byteArrayOutputStream);
+		try
+		{
+			// System.out.println(head.length);
+			cppOutputStream.write(head);
+			cppOutputStream.writeUTF(JSON);
+		} catch (IOException e)
+		{
+			log.error(e.getMessage());
+		}
+		byte[] bytes = byteArrayOutputStream.toByteArray();
+		for (byte b : bytes)
+		{
+			System.out.println(Integer.toBinaryString(b));
+		}
+		// 发送
+		socket.send(bytes, 0);
+		byte[] reply = null;
+		poller.poll(1000);
+		if (poller.pollin(0))
+		{
+			// 接收
+			reply = socket.recv(0);
+		}
+		if (reply == null)
+		{
+			throw new ZMQRecvTimeoutException("ZMQ请求超时");
+		}
+		// System.out.println("aaa");
+		ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(
+				reply);
+		CPPInputStream cppInputStream = new CPPInputStream(byteArrayInputStream);
+		try
+		{
+			cppInputStream.readInt();
+			cppInputStream.readShort();
+			cppInputStream.readShort();
+			result = cppInputStream.readUTF();
+		} catch (Exception e)
+		{
+			log.error(e.getMessage());
+		}
+		return result;
+	}
+
+	public void headByteArray(int aid, short type, short flag)
+	{
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		CPPOutputStream cppOutputStream = new CPPOutputStream(out);
+		try
+		{
+			cppOutputStream.writeInt(aid);
+			cppOutputStream.writeShort(type);
+			cppOutputStream.writeShort(flag);
+			cppOutputStream.close();
+		} catch (IOException e)
+		{
+			log.error(e.getMessage());
+		}
+	}
+
+	/**
+	 * 远程调用测试
+	 * 
+	 * @param args
+	 */
+	public static void main(String[] args)
+	{
+		int aid = 1;
+		int type = 1;
+		int flag = 1;
+		String jsonString = "{test:\"java\"}";
+		ZMQClient zmqClient = new ZMQClient();
+		String result = "";
+		try
+		{
+			result = zmqClient.call(aid, type, flag, jsonString);
+		} catch (ZMQRecvTimeoutException e)
+		{
+			e.printStackTrace();
+		}
+		System.out.println(result);
+	}
+
+	public String getServerURI()
+	{
+		return serverURI;
+	}
+
+	public void setServerURI(String serverURI)
+	{
+		this.serverURI = serverURI;
+	}
+}

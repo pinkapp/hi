@@ -1,0 +1,163 @@
+package cc.ywxm.action.platform;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+
+import cc.ywxm.action.PageableAction;
+import cc.ywxm.constant.Const;
+import cc.ywxm.datasource.CustomerContextHolder;
+import cc.ywxm.excel.ExportExcel;
+import cc.ywxm.model.gm.Server;
+import cc.ywxm.model.platform.PaywayCount;
+import cc.ywxm.service.platform.PaywayCountService;
+import cc.ywxm.utils.DateFormat;
+import cc.ywxm.utils.JSONtool;
+
+/**
+ * 支付方式统计
+ * 
+ * @author HuangDeCai
+ * @since 2012-12-18 15:02:17
+ * 
+ */
+@SuppressWarnings("serial")
+@Controller
+@Scope("prototype")
+public class PaywayCountAction extends PageableAction
+{
+
+	@Resource
+	private PaywayCountService paywayCountService;
+
+	@Override
+	public String execute() throws Exception
+	{
+		return super.execute();
+	}
+
+	/**
+	 * 查询（按第三方支付平台）
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
+	public String gets() throws IOException
+	{
+		Server dbsrv = (Server) session.get(Const.SESSION_DBSRV);
+		CustomerContextHolder.setCustomerType(dbsrv.getDataSource());
+		response.setContentType("text/xml;charset=utf-8");
+		response.setHeader("Cache-Control", "no-cache");
+		PrintWriter out = response.getWriter();
+		String jsonString = JSONtool.serialize(paywayCountService.gets());
+		out.append(jsonString);
+		out.close();
+
+		return NONE;
+	}
+
+	/**
+	 * 查询（按支付银行统计）
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
+	public String gets1() throws IOException
+	{
+		Server dbsrv = (Server) session.get(Const.SESSION_DBSRV);
+		CustomerContextHolder.setCustomerType(dbsrv.getDataSource());
+		response.setContentType("text/xml;charset=utf-8");
+		response.setHeader("Cache-Control", "no-cache");
+		PrintWriter out = response.getWriter();
+		String jsonString = JSONtool.serialize(paywayCountService.gets1());
+		out.append(jsonString);
+		out.close();
+
+		return NONE;
+	}
+
+	/**
+	 * 图表（按第三方支付平台）
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
+	public String chart() throws IOException
+	{
+		String result = paywayCountService.XMLData();
+		response.setContentType("text/xml;charset=utf-8");
+		response.setHeader("Cache-Control", "no-cache");
+		PrintWriter out = response.getWriter();
+		out.append(JSONtool.serialize(result));
+		out.close();
+		return NONE;
+	}
+
+	/**
+	 * 图表（按支付银行统计）
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
+	public String chart1() throws IOException
+	{
+		String result = paywayCountService.XMLData1();
+		response.setContentType("text/xml;charset=utf-8");
+		response.setHeader("Cache-Control", "no-cache");
+		PrintWriter out = response.getWriter();
+		out.append(JSONtool.serialize(result));
+		out.close();
+		return NONE;
+	}
+
+	/**
+	 * 导出（按第三方支付平台）
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
+	public String export() throws IOException
+	{
+		List<PaywayCount> list = paywayCountService.gets();
+		ExportExcel<PaywayCount> exporter = new ExportExcel<PaywayCount>();
+		OutputStream out = null;
+		response.setContentType("octets/stream");
+		response.addHeader("Content-Disposition", "attachment;filename="
+				+ DateFormat.currentDateFormat("yyyyMMdd") + ".xls");
+		out = response.getOutputStream();
+		exporter.exportExcel("按第三方支付平台统计", new String[]
+		{ "第三方支付平台", "支付次数" }, list, out, "yyyy-MM-dd");
+		out.close();
+		return NONE;
+
+	}
+
+	/**
+	 * 导出（按银行统计）
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
+	public String export1() throws IOException
+	{
+		List<PaywayCount> list = paywayCountService.gets1();
+		ExportExcel<PaywayCount> exporter = new ExportExcel<PaywayCount>();
+		OutputStream out = null;
+		response.setContentType("octets/stream");
+		response.addHeader("Content-Disposition", "attachment;filename="
+				+ DateFormat.currentDateFormat("yyyyMMdd") + ".xls");
+		out = response.getOutputStream();
+		exporter.exportExcel("按支付银行统计", new String[]
+		{ "支付银行", "支付次数" }, list, out, "yyyy-MM-dd");
+		out.close();
+		return NONE;
+
+	}
+
+}

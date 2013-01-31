@@ -1,0 +1,201 @@
+package cc.ywxm.client;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.Collection;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.zeromq.EmbeddedLibraryTools;
+import org.zeromq.ZMQ;
+
+import cc.ywxm.io.CPPInputStream;
+import cc.ywxm.io.CPPOutputStream;
+
+/**
+ * ZeroMQ java远程过程调用RFC客户端 内部通讯协议
+ * 
+ * @author 黄德财
+ * @email hd.c@qq.com
+ * @since 2012-12-12 13:42:24
+ */
+public class ZMQClient
+{
+	private Logger log = LoggerFactory.getLogger(this.getClass());
+	private String serverURI = "tcp://192.168.0.248:16006";
+
+	public ZMQClient()
+	{
+		super();
+	}
+
+	public ZMQClient(String serverURI)
+	{
+		super();
+		this.serverURI = serverURI;
+	}
+
+	/**
+	 * 无返回值调用
+	 * 
+	 * @param aid
+	 *            玩家ID
+	 * @param type
+	 *            消息类型
+	 * @param flag
+	 * @return JSON格式字符串
+	 * @throws IOException
+	 */
+	public void callNoReturn(Integer aid, Integer type, Integer flag,
+			String data) throws IOException
+	{
+		log.debug("java.library.path:"
+				+ System.getProperty("java.library.path"));
+		log.debug("ZMQ版本:" + ZMQ.getVersionString());
+		log.debug("current platform:"
+				+ EmbeddedLibraryTools.getCurrentPlatformIdentifier());
+		final Collection<String> files = EmbeddedLibraryTools
+				.getEmbeddedLibraryList();
+		for (final String file : files)
+		{
+			log.debug("embedded library:" + file);
+		}
+
+		int oiThreads = 1;
+		ZMQ.Context context = ZMQ.context(oiThreads);
+		ZMQ.Socket socket = context.socket(ZMQ.XREQ);
+		socket.connect(serverURI);
+		ByteArrayOutputStream byteArrayOut = new ByteArrayOutputStream();
+		CPPOutputStream cppOut = new CPPOutputStream(byteArrayOut);
+		writeHeader(cppOut, aid, type.shortValue(), flag.shortValue());
+		cppOut.writeUTF(data);
+		cppOut.close();
+		byteArrayOut.close();
+		// 发送
+		socket.send(byteArrayOut.toByteArray(), 0);
+		log.debug("send header：" + "aid:" + aid + ",type:" + type + ",flag:"
+				+ flag);
+		log.debug("send data：" + data);
+		socket.close();
+	}
+
+	/**
+	 * 远程过程调用
+	 * 
+	 * @param aid
+	 *            玩家ID
+	 * @param type
+	 *            消息类型
+	 * @param flag
+	 * @param data
+	 *            JSON格式字符串
+	 * @return JSON格式字符串
+	 * @throws IOException
+	 *             IO异常
+	 */
+	public String call(Integer aid, Integer type, Integer flag, String data)
+			throws IOException
+	{
+		log.debug("java.library.path:"
+				+ System.getProperty("java.library.path"));
+		log.debug("ZMQ版本:" + ZMQ.getVersionString());
+		log.debug("current platform:"
+				+ EmbeddedLibraryTools.getCurrentPlatformIdentifier());
+		final Collection<String> files = EmbeddedLibraryTools
+				.getEmbeddedLibraryList();
+		for (final String file : files)
+		{
+			log.debug("embedded library:" + file);
+		}
+
+		String result = null;
+		int oiThreads = 1;
+		ZMQ.Context context = ZMQ.context(oiThreads);
+		ZMQ.Socket socket = context.socket(ZMQ.XREQ);
+
+		socket.connect(serverURI);
+		ByteArrayOutputStream byteArrayOut = new ByteArrayOutputStream();
+		CPPOutputStream cppOut = new CPPOutputStream(byteArrayOut);
+		writeHeader(cppOut, aid, type.shortValue(), flag.shortValue());
+		cppOut.writeUTF(data);
+		cppOut.close();
+		byteArrayOut.close();
+		// 发送
+		socket.send(byteArrayOut.toByteArray(), 0);
+		log.debug("send header：" + "aid:" + aid + ",type:" + type + ",flag:"
+				+ flag);
+		log.debug("send data：" + data);
+		byte[] reply = null;
+		ZMQ.Poller poller = context.poller(1);
+		poller.register(socket, ZMQ.Poller.POLLIN);
+		// 等待时间（毫秒）
+		poller.poll(1000);
+		if (poller.pollin(0))
+		{
+			// 接收
+			reply = socket.recv(0);
+		}
+		if (reply == null)
+		{
+			return null;
+		}
+		ByteArrayInputStream byteArrayIn = new ByteArrayInputStream(reply);
+		CPPInputStream cppIn = new CPPInputStream(byteArrayIn);
+		int aid_ = 0;
+		short type_ = 0;
+		short flag_ = 0;
+		String data_ = "";
+		aid = cppIn.readInt();
+		type_ = cppIn.readShort();
+		flag_ = cppIn.readShort();
+		data_ = cppIn.readUTF();
+		result = data_;
+		log.debug("receive header：" + "aid:" + aid_ + ",type:" + type_
+				+ ",flag:" + flag_);
+		log.debug("receive data：" + data_);
+		socket.close();
+		return result;
+	}
+
+	public void writeHeader(CPPOutputStream out, int aid, short type, short flag)
+			throws IOException
+	{
+		out.writeInt(aid);
+		out.writeShort(type);
+		out.writeShort(flag);
+	}
+
+	/**
+	 * 远程调用测试
+	 * 
+	 * @param args
+	 */
+	public static void main(String[] args)
+	{
+		int aid = 1;
+		int type = 1;
+		int flag = 1;
+		String jsonString = "{test:\"java\"}";
+		ZMQClient zmqClient = new ZMQClient();
+		String result = "";
+		try
+		{
+			result = zmqClient.call(aid, type, flag, jsonString);
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+		System.out.println(result);
+	}
+
+	public String getServerURI()
+	{
+		return serverURI;
+	}
+
+	public void setServerURI(String serverURI)
+	{
+		this.serverURI = serverURI;
+	}
+}

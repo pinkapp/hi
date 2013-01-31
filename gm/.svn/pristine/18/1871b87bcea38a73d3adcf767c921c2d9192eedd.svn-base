@@ -1,0 +1,153 @@
+package cc.ywxm.dao.impl.game;
+
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCallback;
+import org.springframework.stereotype.Repository;
+
+import cc.ywxm.dao.game.BaseInfoDao;
+import cc.ywxm.model.game.BaseInfo;
+import cc.ywxm.utils.RSMapper;
+
+@Repository
+public class BaseInfoDaoImpl implements BaseInfoDao
+{
+	// @Resource
+	// private HibernateTemplate hibernateTemplate;
+	@Resource
+	private JdbcTemplate jdbcTemplate;
+
+	public int count(String nickname)
+	{
+		String sql = "select count(1) from base_info where 1 = 1";
+		List<Object> args = new ArrayList<Object>();
+		if (nickname != null)
+		{
+			sql = sql + " and nickname like ?";
+			args.add("%" + nickname + "%");
+		}
+		try
+		{
+			return jdbcTemplate.queryForInt(sql, args.toArray());
+		} catch (DataAccessException e)
+		{
+			e.printStackTrace();
+			return 0;
+		}
+	}
+
+	public void delete(BaseInfo baseInfo)
+	{
+
+	}
+
+	public BaseInfo findById(Integer player)
+	{
+		return null;
+	}
+
+	public List<BaseInfo> list(Integer rows, Integer page, String nickname)
+	{
+		String sql = "SELECT t.player, t.nickname, t1.name guild, t.silver, t.gold, t.energy, t.country FROM base_info t LEFT JOIN guild t1 ON t.guild_id = t1.guild_id where 1 = 1";
+		List<Object> args = new ArrayList<Object>();
+		if (nickname != null)
+		{
+			sql = sql + " and t.nickname like ?";
+			args.add("%" + nickname + "%");
+		}
+		sql = "select * from (" + sql + ") a";
+		try
+		{
+			return RSMapper.queryPage(jdbcTemplate, sql, rows, page,
+					BaseInfo.class, args.toArray());
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public void update(BaseInfo baseInfo)
+	{
+
+	}
+
+	public List<BaseInfo> list(Integer rows, Integer page, String sort,
+			String order, String nickname)
+	{
+		String sql = "SELECT t.player, t.nickname, t1.name guild, t.silver, t.gold, t.energy, t.country FROM base_info t LEFT JOIN guild t1 ON t.guild_id = t1.guild_id where 1 = 1";
+		List<Object> args = new ArrayList<Object>();
+		if (nickname != null)
+		{
+			sql = sql + " and t.nickname like ?";
+			args.add("%" + nickname + "%");
+		}
+		if (sort != null && order != null)
+		{
+			sql = sql + " order by " + sort + " " + order;
+			// args.add(sort);
+			// args.add(order);
+		}
+		sql = "select * from (" + sql + ") a";
+		try
+		{
+			return RSMapper.queryPage(jdbcTemplate, sql, rows, page,
+					BaseInfo.class, args.toArray());
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public void save(final BaseInfo baseInfo)
+	{
+		String sql = "call create_player(?, ?, ?)";
+		jdbcTemplate.execute(sql, new PreparedStatementCallback()
+		{
+
+			public Object doInPreparedStatement(PreparedStatement ps)
+					throws SQLException, DataAccessException
+			{
+				ps.setInt(1, baseInfo.getPlayer());
+				ps.setString(2, baseInfo.getNickname());
+				ps.setString(3, baseInfo.getSex());
+				ps.execute();
+				return null;
+			}
+		});
+	}
+
+	public int maxId()
+	{
+		String sql = "select max(player) from base_info";
+		return jdbcTemplate.queryForInt(sql);
+	}
+
+	public boolean nicknameExist(String nickname)
+	{
+		String sql = "select count(1) from base_info where nickname = ?";
+		int n = jdbcTemplate.queryForInt(sql, new Object[]
+		{ nickname });
+		if (n > 0)
+		{
+			return true;
+		}
+		return false;
+	}
+
+	public Integer findPlayerByNickname(String nickname)
+	{
+		String sql = "select player from base_info where nickname = ?";
+		return jdbcTemplate.queryForInt(sql, new Object[]
+		{ nickname });
+	}
+
+}

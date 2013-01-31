@@ -1,0 +1,104 @@
+package cc.ywxm.service.impl;
+
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import cc.ywxm.dao.RoleDao;
+import cc.ywxm.model.Function;
+import cc.ywxm.model.Role;
+import cc.ywxm.service.RoleService;
+import cc.ywxm.utils.Pageable;
+import cc.ywxm.utils.WebUtils;
+import cc.ywxm.vo.RoleVo;
+
+@Service
+@Transactional
+public class RoleServiceImpl implements RoleService
+{
+	@Resource
+	private RoleDao roleDao;
+
+	public Role findById(Integer roleId)
+	{
+		return roleDao.findById(roleId);
+	}
+
+	public void edit(Role role)
+	{
+		Role u = roleDao.findById(role.getRoleId().intValue());
+
+		try
+		{
+			WebUtils.setNotNull(role, u);
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		roleDao.update(u);
+
+	}
+
+	public void add(Role role)
+	{
+		roleDao.add(role);
+	}
+
+	public List<RoleVo> findPaged(Role condition, Pageable pageable)
+	{
+		return roleDao.findPaged(condition, pageable);
+	}
+
+	public void delete(Integer roleId)
+	{
+		roleDao.delele(roleId);
+	}
+
+	public List<Role> findAll()
+	{
+		return roleDao.find(null);
+	}
+
+	public List<Function> findAllFunctions()
+	{
+		return roleDao.findFunctions(null);
+	}
+
+	public void edit_function(Integer roleId, String functionIds)
+	{
+		// 防止空指针
+		if (functionIds == null)
+		{
+			return;
+		}
+		if (functionIds.equals(""))
+		{
+			roleDao.edit_function(roleId, null);
+		}
+		String[] function_ids =
+		{ "" };
+		if (functionIds.indexOf(",") == -1)
+		{
+			function_ids[0] = functionIds;
+		} else
+		{
+			function_ids = functionIds.split(",");
+		}
+		Integer[] ids = new Integer[function_ids.length];
+		for (int i = 0; i < function_ids.length; i++)
+		{
+			ids[i] = Integer.parseInt(function_ids[i]);
+		}
+
+		roleDao.edit_function(roleId, ids);
+	}
+
+	public List<Short> findFunctionsByRoleId(Short roleId)
+	{
+		return roleDao.findFunctionsByRoleId(roleId);
+	}
+
+}

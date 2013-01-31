@@ -1,0 +1,39 @@
+package cc.ywxm.vo;
+
+public class GameVo
+{
+	private Integer game_id;
+	private String gamename;
+	private String game_url;
+
+	public Integer getGame_id()
+	{
+		return game_id;
+	}
+
+	public void setGame_id(Integer game_id)
+	{
+		this.game_id = game_id;
+	}
+
+	public String getGamename()
+	{
+		return gamename;
+	}
+
+	public void setGamename(String gamename)
+	{
+		this.gamename = gamename;
+	}
+
+	public String getGame_url()
+	{
+		return game_url;
+	}
+
+	public void setGame_url(String game_url)
+	{
+		this.game_url = game_url;
+	}
+
+}

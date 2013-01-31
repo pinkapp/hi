@@ -1,0 +1,108 @@
+package cc.ywxm.dao.gop;
+
+import java.util.List;
+
+import cc.ywxm.action.Pageable;
+import cc.ywxm.model.gop.Order;
+import cc.ywxm.vo.DailyChargeUserCount;
+import cc.ywxm.vo.OrderVo;
+import cc.ywxm.vo.UserChargeRank;
+import cc.ywxm.vo.UserPaybankCount;
+import cc.ywxm.vo.UserPaywayCount;
+
+/**
+ * 充值记录访问层
+ * 
+ * @author hdc
+ * 
+ * 
+ */
+public interface OrderDao
+{
+	public void save(Order order);
+
+	public Order findById(Long orderId);
+
+	public List<OrderVo> findByPage(Integer userId, Pageable pageable);
+
+	public List<DailyChargeUserCount> findDailyChargeUserCount(
+			String starttime, String endtime);
+
+	public List<UserChargeRank> findChargeRanklist();
+
+	public List<UserChargeRank> findChargeRanklist(String month);
+
+	public List<UserChargeRank> findChargeRanklist(String sday, String eday);
+
+	public int findChargeTotalUserCount(int startMoney, int endMoney);
+
+	public int findChargeTotalUserCountUp(int money);
+
+	public int findChargeTotalUserCountDown(int money);
+
+	public List<UserPaywayCount> findPaywayCount();
+
+	public List<UserPaybankCount> findPaybankCount();
+
+	/**
+	 * 
+	 * 统计某一天各游戏消费金额总数,日期格式 yyyy-MM-dd
+	 * 
+	 * @return 字符串格式为 ("游戏名称:消费金额,游戏名称:消费金额,...")
+	 *         例如："game1:5000,game2:6000,game3:8668"
+	 */
+	public String findGamesPayMoneyCount(String dateString);
+
+	/**
+	 * 
+	 * 统计某一天某款游戏消费金额总数,
+	 * 
+	 * @return 游戏消费总金额
+	 * @param game_id
+	 *            游戏ID,game_id=null 表示所有游戏
+	 * @param dateString
+	 *            日期字符串，日期格式 yyyy-MM-dd
+	 */
+	public int findGamesPayMoneyCount(Integer game_id, String dateString);
+
+	/**
+	 * 查询每天充值总额
+	 * 
+	 * @param dstring
+	 * @return
+	 */
+	public Integer findRechargeMoneyPerday(String dstring);
+
+	/**
+	 * 查询每天充值人数
+	 * 
+	 * @param currentDstring
+	 * @return
+	 */
+	public Integer findRechargeUsersPerday(String dstring);
+
+	/**
+	 * 查询每天兑换游戏币金额
+	 * 
+	 * @param dstring
+	 * @return
+	 */
+	public Integer findExchangeGameMoneyPerday(String dstring);
+
+	/**
+	 * 查询每天总充值货币
+	 * 
+	 * @param dstring
+	 * @return
+	 */
+	public Integer findRechargeMoney(String dstring);
+
+	/**
+	 * 查询每天总兑换货币
+	 * 
+	 * @param dstring
+	 * @return
+	 */
+	public Integer findExchangMoney(String dstring);
+
+}

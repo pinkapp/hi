@@ -1,0 +1,91 @@
+package cc.ywxm.model;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+/**
+ * 玩家等级
+ */
+@Entity
+@Table(name = "user_rank", catalog = "ywxm")
+public class UserRank implements java.io.Serializable
+{
+
+	// Fields
+
+	private Integer rankId;
+	private User user;
+	private GameOpen gameOpen;
+	private Short rank;
+
+	// Constructors
+
+	/** default constructor */
+	public UserRank()
+	{
+	}
+
+	/** full constructor */
+	public UserRank(User user, GameOpen gameOpen, Short rank)
+	{
+		this.user = user;
+		this.gameOpen = gameOpen;
+		this.rank = rank;
+	}
+
+	// Property accessors
+	@Id
+	@GeneratedValue
+	@Column(name = "rank_id", unique = true, nullable = false)
+	public Integer getRankId()
+	{
+		return this.rankId;
+	}
+
+	public void setRankId(Integer rankId)
+	{
+		this.rankId = rankId;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id")
+	public User getUser()
+	{
+		return this.user;
+	}
+
+	public void setUser(User user)
+	{
+		this.user = user;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "open_id")
+	public GameOpen getGameOpen()
+	{
+		return this.gameOpen;
+	}
+
+	public void setGameOpen(GameOpen gameOpen)
+	{
+		this.gameOpen = gameOpen;
+	}
+
+	@Column(name = "rank")
+	public Short getRank()
+	{
+		return this.rank;
+	}
+
+	public void setRank(Short rank)
+	{
+		this.rank = rank;
+	}
+
+}

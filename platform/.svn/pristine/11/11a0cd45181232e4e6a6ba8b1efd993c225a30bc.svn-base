@@ -1,0 +1,16 @@
+<%@page contentType="text/html;charset=utf-8" isErrorPage="true"%>
+<html>
+<head><title>出现错误</title>
+</head>
+<body>
+     <H2><a href="javascript:void(0);" title="查看详情" onclick="dd();">糟糕，出错了</a>
+	     <script type="text/javascript">
+			function dd(){
+				myWindow=window.open('','','width=800,height=400');
+				myWindow.document.write("<%=exception.getMessage() %>");
+				myWindow.focus();
+			}
+		</script>
+     </H2>
+</body>
+</html>

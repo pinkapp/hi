@@ -1,0 +1,40 @@
+package cc.ywxm.dao.gop;
+
+import java.util.List;
+
+import cc.ywxm.model.gop.Career;
+import cc.ywxm.model.gop.Province;
+import cc.ywxm.vo.BankVo;
+
+/**
+ * 程序基础数据数据访问层
+ * 
+ * @author hdc
+ * 
+ * 
+ */
+public interface BaseDataDao
+{
+	/**
+	 * 查询所有的省以及城市
+	 * 
+	 * @return
+	 */
+	public List<Province> findAllProvinces();
+
+	/**
+	 * 查询所有职业
+	 * 
+	 * @return
+	 */
+	public List<Career> findAllCareers();
+
+	/**
+	 * 查询某种支付方式支持的银行
+	 * 
+	 * @param wayId
+	 * @return
+	 */
+	public List<BankVo> findBanksByWayId(Integer wayId);
+
+}

@@ -1,0 +1,119 @@
+package cc.ywxm.model.gop;
+
+// default package
+
+import java.util.HashSet;
+import java.util.Set;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+/**
+ * Game entity. @author MyEclipse Persistence Tools
+ */
+@Entity
+@Table(name = "game", catalog = "ywxm")
+public class Game implements java.io.Serializable
+{
+
+	// Fields
+
+	private Integer gameId;
+	private String gamename;
+	private String gameLogo;
+	private String gameUrl;
+	private Set<GameNotice> gameNotices = new HashSet<GameNotice>(0);
+	private Set<GameOpen> gameOpens = new HashSet<GameOpen>(0);
+
+	// Constructors
+
+	/** default constructor */
+	public Game()
+	{
+	}
+
+	/** full constructor */
+	public Game(String gamename, String gameLogo, String gameUrl,
+			Set<GameNotice> gameNotices, Set<GameOpen> gameOpens)
+	{
+		this.gamename = gamename;
+		this.gameLogo = gameLogo;
+		this.gameUrl = gameUrl;
+		this.gameNotices = gameNotices;
+		this.gameOpens = gameOpens;
+	}
+
+	// Property accessors
+	@Id
+	@GeneratedValue
+	@Column(name = "game_id", unique = true, nullable = false)
+	public Integer getGameId()
+	{
+		return this.gameId;
+	}
+
+	public void setGameId(Integer gameId)
+	{
+		this.gameId = gameId;
+	}
+
+	@Column(name = "gamename", length = 50)
+	public String getGamename()
+	{
+		return this.gamename;
+	}
+
+	public void setGamename(String gamename)
+	{
+		this.gamename = gamename;
+	}
+
+	@Column(name = "game_logo", length = 50)
+	public String getGameLogo()
+	{
+		return this.gameLogo;
+	}
+
+	public void setGameLogo(String gameLogo)
+	{
+		this.gameLogo = gameLogo;
+	}
+
+	@Column(name = "game_url", length = 100)
+	public String getGameUrl()
+	{
+		return this.gameUrl;
+	}
+
+	public void setGameUrl(String gameUrl)
+	{
+		this.gameUrl = gameUrl;
+	}
+
+	@OneToMany(cascade = {}, fetch = FetchType.EAGER, mappedBy = "game")
+	public Set<GameNotice> getGameNotices()
+	{
+		return this.gameNotices;
+	}
+
+	public void setGameNotices(Set<GameNotice> gameNotices)
+	{
+		this.gameNotices = gameNotices;
+	}
+
+	@OneToMany(cascade = {}, fetch = FetchType.EAGER, mappedBy = "game")
+	public Set<GameOpen> getGameOpens()
+	{
+		return this.gameOpens;
+	}
+
+	public void setGameOpens(Set<GameOpen> gameOpens)
+	{
+		this.gameOpens = gameOpens;
+	}
+
+}

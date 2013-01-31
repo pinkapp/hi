@@ -1,0 +1,378 @@
+package cc.ywxm.model.gop;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+/**
+ * Users entity. @author MyEclipse Persistence Tools
+ */
+@Entity
+@Table(name = "users", catalog = "ywxm")
+public class User implements java.io.Serializable
+{
+
+	// Fields
+
+	private Integer userId;
+	private String username;
+	private String password;
+	private String sex;
+	private String birthday;
+	private String career;
+	private String phone;
+	private String email;
+	private String realname;
+	private String cardId;
+	private String ip;
+	private String lastTime;
+	private String portraitUrl;
+	private String province;
+	private String city;
+	private String source;
+	private Integer logincount;
+	private Integer money;
+	private String regIp;
+	private String nickname;
+	private String closereason;
+	private String closetype;
+	private String closeendtime;
+	private String registertime;
+	private String spasswd;
+	private String statuscode;
+
+	// Constructors
+
+	/** default constructor */
+	public User()
+	{
+	}
+
+	/** full constructor */
+	public User(String username, String password, String sex, String birthday,
+			String career, String phone, String email, String realname,
+			String cardId, String ip, String lastTime, String portraitUrl,
+			String province, String city, String source, Integer logincount,
+			Integer money, String regIp, String nickname, String closereason,
+			String closetype, String closeendtime, String registertime,
+			String spasswd, String statuscode)
+	{
+		this.username = username;
+		this.password = password;
+		this.sex = sex;
+		this.birthday = birthday;
+		this.career = career;
+		this.phone = phone;
+		this.email = email;
+		this.realname = realname;
+		this.cardId = cardId;
+		this.ip = ip;
+		this.lastTime = lastTime;
+		this.portraitUrl = portraitUrl;
+		this.province = province;
+		this.city = city;
+		this.source = source;
+		this.logincount = logincount;
+		this.money = money;
+		this.regIp = regIp;
+		this.nickname = nickname;
+		this.closereason = closereason;
+		this.closetype = closetype;
+		this.closeendtime = closeendtime;
+		this.registertime = registertime;
+		this.spasswd = spasswd;
+		this.statuscode = statuscode;
+	}
+
+	// Property accessors
+	@Id
+	@GeneratedValue
+	@Column(name = "userId", unique = true, nullable = false)
+	public Integer getUserId()
+	{
+		return this.userId;
+	}
+
+	public void setUserId(Integer userId)
+	{
+		this.userId = userId;
+	}
+
+	@Column(name = "username", length = 50)
+	public String getUsername()
+	{
+		return this.username;
+	}
+
+	public void setUsername(String username)
+	{
+		this.username = username;
+	}
+
+	@Column(name = "password", length = 50)
+	public String getPassword()
+	{
+		return this.password;
+	}
+
+	public void setPassword(String password)
+	{
+		this.password = password;
+	}
+
+	@Column(name = "sex")
+	public String getSex()
+	{
+		return this.sex;
+	}
+
+	public void setSex(String sex)
+	{
+		this.sex = sex;
+	}
+
+	@Column(name = "birthday", length = 50)
+	public String getBirthday()
+	{
+		return this.birthday;
+	}
+
+	public void setBirthday(String birthday)
+	{
+		this.birthday = birthday;
+	}
+
+	@Column(name = "career")
+	public String getCareer()
+	{
+		return this.career;
+	}
+
+	public void setCareer(String career)
+	{
+		this.career = career;
+	}
+
+	@Column(name = "phone", length = 50)
+	public String getPhone()
+	{
+		return this.phone;
+	}
+
+	public void setPhone(String phone)
+	{
+		this.phone = phone;
+	}
+
+	@Column(name = "email", length = 50)
+	public String getEmail()
+	{
+		return this.email;
+	}
+
+	public void setEmail(String email)
+	{
+		this.email = email;
+	}
+
+	@Column(name = "realname", length = 50)
+	public String getRealname()
+	{
+		return this.realname;
+	}
+
+	public void setRealname(String realname)
+	{
+		this.realname = realname;
+	}
+
+	@Column(name = "cardId", length = 50)
+	public String getCardId()
+	{
+		return this.cardId;
+	}
+
+	public void setCardId(String cardId)
+	{
+		this.cardId = cardId;
+	}
+
+	@Column(name = "ip", length = 50)
+	public String getIp()
+	{
+		return this.ip;
+	}
+
+	public void setIp(String ip)
+	{
+		this.ip = ip;
+	}
+
+	@Column(name = "lastTime", length = 50)
+	public String getLastTime()
+	{
+		return this.lastTime;
+	}
+
+	public void setLastTime(String lastTime)
+	{
+		this.lastTime = lastTime;
+	}
+
+	@Column(name = "portraitURL", length = 100)
+	public String getPortraitUrl()
+	{
+		return this.portraitUrl;
+	}
+
+	public void setPortraitUrl(String portraitUrl)
+	{
+		this.portraitUrl = portraitUrl;
+	}
+
+	@Column(name = "province", length = 50)
+	public String getProvince()
+	{
+		return this.province;
+	}
+
+	public void setProvince(String province)
+	{
+		this.province = province;
+	}
+
+	@Column(name = "city", length = 50)
+	public String getCity()
+	{
+		return this.city;
+	}
+
+	public void setCity(String city)
+	{
+		this.city = city;
+	}
+
+	@Column(name = "source")
+	public String getSource()
+	{
+		return this.source;
+	}
+
+	public void setSource(String source)
+	{
+		this.source = source;
+	}
+
+	@Column(name = "logincount")
+	public Integer getLogincount()
+	{
+		return this.logincount;
+	}
+
+	public void setLogincount(Integer logincount)
+	{
+		this.logincount = logincount;
+	}
+
+	@Column(name = "money")
+	public Integer getMoney()
+	{
+		return this.money;
+	}
+
+	public void setMoney(Integer money)
+	{
+		this.money = money;
+	}
+
+	@Column(name = "regIp", length = 50)
+	public String getRegIp()
+	{
+		return this.regIp;
+	}
+
+	public void setRegIp(String regIp)
+	{
+		this.regIp = regIp;
+	}
+
+	@Column(name = "nickname", length = 50)
+	public String getNickname()
+	{
+		return this.nickname;
+	}
+
+	public void setNickname(String nickname)
+	{
+		this.nickname = nickname;
+	}
+
+	@Column(name = "closereason", length = 100)
+	public String getClosereason()
+	{
+		return this.closereason;
+	}
+
+	public void setClosereason(String closereason)
+	{
+		this.closereason = closereason;
+	}
+
+	@Column(name = "closetype")
+	public String getClosetype()
+	{
+		return this.closetype;
+	}
+
+	public void setClosetype(String closetype)
+	{
+		this.closetype = closetype;
+	}
+
+	@Column(name = "closeendtime", length = 50)
+	public String getCloseendtime()
+	{
+		return this.closeendtime;
+	}
+
+	public void setCloseendtime(String closeendtime)
+	{
+		this.closeendtime = closeendtime;
+	}
+
+	@Column(name = "registertime", length = 50)
+	public String getRegistertime()
+	{
+		return this.registertime;
+	}
+
+	public void setRegistertime(String registertime)
+	{
+		this.registertime = registertime;
+	}
+
+	@Column(name = "spasswd", length = 100)
+	public String getSpasswd()
+	{
+		return this.spasswd;
+	}
+
+	public void setSpasswd(String spasswd)
+	{
+		this.spasswd = spasswd;
+	}
+
+	@Column(name = "statuscode")
+	public String getStatuscode()
+	{
+		return this.statuscode;
+	}
+
+	public void setStatuscode(String statuscode)
+	{
+		this.statuscode = statuscode;
+	}
+
+}

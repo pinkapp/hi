@@ -1,0 +1,65 @@
+package cc.ywxm.model.gop;
+// default package
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+/**
+ * News entity. @author MyEclipse Persistence Tools
+ */
+@Entity
+@Table(name = "news", catalog = "ywxm")
+public class News implements java.io.Serializable {
+
+	// Fields
+
+	private Integer newsId;
+	private String newstitle;
+	private String newsurl;
+
+	// Constructors
+
+	/** default constructor */
+	public News() {
+	}
+
+	/** full constructor */
+	public News(String newstitle, String newsurl) {
+		this.newstitle = newstitle;
+		this.newsurl = newsurl;
+	}
+
+	// Property accessors
+	@Id
+	@GeneratedValue
+	@Column(name = "news_id", unique = true, nullable = false)
+	public Integer getNewsId() {
+		return this.newsId;
+	}
+
+	public void setNewsId(Integer newsId) {
+		this.newsId = newsId;
+	}
+
+	@Column(name = "newstitle", length = 100)
+	public String getNewstitle() {
+		return this.newstitle;
+	}
+
+	public void setNewstitle(String newstitle) {
+		this.newstitle = newstitle;
+	}
+
+	@Column(name = "newsurl", length = 100)
+	public String getNewsurl() {
+		return this.newsurl;
+	}
+
+	public void setNewsurl(String newsurl) {
+		this.newsurl = newsurl;
+	}
+
+}

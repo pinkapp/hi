@@ -1,0 +1,91 @@
+package cc.ywxm.model;
+// default package
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+/**
+ * GameNotice entity. @author MyEclipse Persistence Tools
+ */
+@Entity
+@Table(name = "game_notice", catalog = "ywxm")
+public class GameNotice implements java.io.Serializable
+{
+
+	// Fields
+
+	private Integer noticeId;
+	private Game game;
+	private String noticetitle;
+	private String noticecontent;
+
+	// Constructors
+
+	/** default constructor */
+	public GameNotice()
+	{
+	}
+
+	/** full constructor */
+	public GameNotice(Game game, String noticetitle, String noticecontent)
+	{
+		this.game = game;
+		this.noticetitle = noticetitle;
+		this.noticecontent = noticecontent;
+	}
+
+	// Property accessors
+	@Id
+	@GeneratedValue
+	@Column(name = "notice_id", unique = true, nullable = false)
+	public Integer getNoticeId()
+	{
+		return this.noticeId;
+	}
+
+	public void setNoticeId(Integer noticeId)
+	{
+		this.noticeId = noticeId;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "game_id")
+	public Game getGame()
+	{
+		return this.game;
+	}
+
+	public void setGame(Game game)
+	{
+		this.game = game;
+	}
+
+	@Column(name = "noticetitle", length = 100)
+	public String getNoticetitle()
+	{
+		return this.noticetitle;
+	}
+
+	public void setNoticetitle(String noticetitle)
+	{
+		this.noticetitle = noticetitle;
+	}
+
+	@Column(name = "noticecontent", length = 65535)
+	public String getNoticecontent()
+	{
+		return this.noticecontent;
+	}
+
+	public void setNoticecontent(String noticecontent)
+	{
+		this.noticecontent = noticecontent;
+	}
+
+}

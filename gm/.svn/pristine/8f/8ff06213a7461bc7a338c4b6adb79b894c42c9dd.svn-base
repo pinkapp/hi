@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"dtds/struts-2.3.dtd">
+
+<struts>
+	<package name="struts-gets" extends="struts-root" namespace="/gets">
+	    <action name="operateLog" class="operateLogAction" method="gets" />
+	</package>
+</struts>

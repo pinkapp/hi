@@ -1,0 +1,441 @@
+package cc.ywxm.action.gm;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.apache.struts2.json.JSONException;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+
+import cc.ywxm.action.PageableAction;
+import cc.ywxm.constant.Const;
+import cc.ywxm.datasource.CustomerContextHolder;
+import cc.ywxm.model.gm.Server;
+import cc.ywxm.model.gm.Manager;
+import cc.ywxm.service.gm.ManagerService;
+import cc.ywxm.share.ShareData;
+import cc.ywxm.utils.JSONtool;
+import cc.ywxm.utils.WebUtils;
+
+/**
+ * 系统用户功能
+ * 
+ * @author hdc
+ * 
+ */
+@SuppressWarnings("serial")
+@Controller
+@Scope("prototype")
+public class ManagerAction extends PageableAction
+{
+	private Integer userId;
+	private String userName;
+	private String password;
+	private Short userType;
+	private Boolean valid;
+	private String note;
+	private Manager manager;
+	private String ipAddress;
+	private List<Server> servers = new ArrayList<Server>();
+	private Object currentServer;
+	@Resource
+	private ManagerService managerService;
+
+	/**
+	 * 首页
+	 * 
+	 * @return
+	 */
+	public String index()
+	{
+		servers = ShareData.getServers();
+		CustomerContextHolder.setCustomerType(Const.DATASOURCE_SYSTEM);
+		Server dbsrv = (Server) session.get(Const.SESSION_DBSRV);
+		currentServer = dbsrv.getName();
+		Object userId = session.get(Const.SESSION_USERID);
+		if (userId == null)
+		{
+			return LOGIN;
+		}
+		manager = managerService.get((Integer) userId);
+		userName = manager.getUserName();
+		ipAddress = WebUtils.getIpAddr(request);
+		userType = Short.parseShort(manager.getUserType());
+		return SUCCESS;
+	}
+
+	/**
+	 * 用户登录
+	 * 
+	 * @return
+	 */
+	public String login()
+	{
+
+		CustomerContextHolder.setCustomerType(Const.DATASOURCE_SYSTEM);
+		int code = 0;
+		code = managerService.login(userName, password);
+		switch (code)
+		{
+		case 1:
+			message = "登录成功";
+			manager = managerService.findByUserName(userName);
+			session.put(Const.SESSION_USERID, manager.getUserId());
+			break;
+		case 2:
+			message = "用户名为空，登录失败";
+			break;
+		case 3:
+			message = "密码为空，登录失败";
+			break;
+		case 4:
+			message = "用户名或密码错误，登录失败";
+			break;
+		default:
+			message = "未知错误，登录失败";
+			break;
+		}
+		response.setContentType("text/html;charset=utf-8");
+		response.setHeader("Cache-Control", "no-cache");
+		PrintWriter out;
+		try
+		{
+			out = response.getWriter();
+			out.append(message);
+			out.close();
+		} catch (IOException e)
+		{
+			log.error(e.getMessage());
+		}
+		return NONE;
+	}
+
+	/**
+	 * 用户登出
+	 * 
+	 * @return
+	 */
+	public String logout()
+	{
+
+		CustomerContextHolder.setCustomerType(Const.DATASOURCE_SYSTEM);
+		session.remove(Const.SESSION_USERID);
+		response.setContentType("text/html;charset=utf-8");
+		response.setHeader("Cache-Control", "no-cache");
+		PrintWriter out;
+		try
+		{
+			out = response.getWriter();
+			out.append(message);
+			out.close();
+		} catch (IOException e)
+		{
+			log.error(e.getMessage());
+		}
+		return NONE;
+	}
+
+	public String managerInfo()
+	{
+		CustomerContextHolder.setCustomerType(Const.DATASOURCE_SYSTEM);
+		Object userId = session.get(Const.SESSION_USERID);
+		manager = managerService.get_((Integer) userId);
+		return SUCCESS;
+	}
+
+	/**
+	 * 用户管理页面
+	 * 
+	 * @return
+	 */
+	public String manager()
+	{
+		return SUCCESS;
+	}
+
+	/**
+	 * 用户添加页面
+	 * 
+	 * @return
+	 */
+	public String add()
+	{
+		return SUCCESS;
+	}
+
+	/**
+	 * 添加
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
+	public String doAdd()
+	{
+		CustomerContextHolder.setCustomerType(Const.DATASOURCE_SYSTEM);
+		int code = 0;
+		code = managerService.add(userName, password, userType, valid, note);
+		switch (code)
+		{
+		case 1:
+			message = "添加成功";
+			break;
+		case 2:
+			message = "用户名重名，添加失败";
+			break;
+		case 3:
+			message = "用户名不能为空,添加失败";
+			break;
+		case 4:
+			message = "密码不能为空，添加失败";
+			break;
+		default:
+			message = "未知错误，添加失败";
+			break;
+		}
+		response.setContentType("text/html;charset=utf-8");
+		response.setHeader("Cache-Control", "no-cache");
+		PrintWriter out;
+		try
+		{
+			out = response.getWriter();
+			out.append(message);
+			out.close();
+		} catch (IOException e)
+		{
+			log.error(e.getMessage());
+		}
+		return NONE;
+	}
+
+	/**
+	 * 用户修改页面
+	 * 
+	 * @return
+	 */
+	public String edit()
+	{
+		CustomerContextHolder.setCustomerType(Const.DATASOURCE_SYSTEM);
+		manager = managerService.get(userId);
+		return SUCCESS;
+	}
+
+	public String doEdit() throws IOException
+	{
+		CustomerContextHolder.setCustomerType(Const.DATASOURCE_SYSTEM);
+		int code = managerService.edit(userId, userName, userType, valid, note);
+		switch (code)
+		{
+		case -1:
+			message = "ID无效";
+			break;
+		case 1:
+			message = "修改成功";
+			break;
+		case 2:
+			message = "用户不存在";
+			break;
+		case 3:
+			message = "用户名重名，修改失败";
+			break;
+		case 4:
+			message = "超级管理员，修改无效";
+			break;
+		default:
+			message = "未知错误，修改失败";
+			break;
+		}
+		if (code == 1)
+		{
+			if (password != null && !"".equals(password))
+			{
+				code = managerService.editPassword(userId, password);
+				switch (code)
+				{
+				case 1:
+					message = "修改成功";
+					break;
+				case 3:
+					message = "密码无效，修改失败";
+					break;
+				default:
+					message = "密码修改未知错误，修改失败";
+					break;
+				}
+			}
+		}
+		response.setContentType("text/html;charset=utf-8");
+		response.setHeader("Cache-Control", "no-cache");
+		PrintWriter out = response.getWriter();
+		out.append(message);
+		out.close();
+		return NONE;
+	}
+
+	public String remove() throws IOException
+	{
+		CustomerContextHolder.setCustomerType(Const.DATASOURCE_SYSTEM);
+		int code = managerService.remove(userId);
+		switch (code)
+		{
+		case -1:
+			message = "无效ID";
+			break;
+		case 1:
+			message = "删除成功";
+			break;
+		case 2:
+			message = "用户不存在";
+			break;
+		case 3:
+			message = "超级管理员，删除无效";
+			break;
+		default:
+			message = "未知错误，删除失败";
+			break;
+		}
+		response.setContentType("text/html;charset=utf-8");
+		response.setHeader("Cache-Control", "no-cache");
+		PrintWriter out = response.getWriter();
+		out.append(message);
+		out.close();
+		return NONE;
+	}
+
+	/**
+	 * 系统用户分页列表（AJAX）
+	 * 
+	 * @return
+	 * @throws IOException
+	 * @throws JSONException
+	 */
+	public String gets() throws IOException, JSONException
+	{
+		CustomerContextHolder.setCustomerType(Const.DATASOURCE_SYSTEM);
+		Map<String, Object> pageList = managerService.gets(rows, page,
+				userName, userType, valid);
+		String result = JSONtool.serialize(pageList);
+		if(log.isDebugEnabled())log.debug(result);
+		response.setCharacterEncoding("utf-8");
+		response.setContentType("text/html;charset=utf-8");
+		response.setHeader("Cache-Control", "no-cache");
+		PrintWriter out = response.getWriter();
+		out.append(result);
+		out.close();
+		return NONE;
+	}
+
+	public Integer getUserId()
+	{
+		return userId;
+	}
+
+	public void setUserId(Integer userId)
+	{
+		this.userId = userId;
+	}
+
+	public String getUserName()
+	{
+		return userName;
+	}
+
+	public void setUserName(String userName)
+	{
+		this.userName = userName;
+	}
+
+	public String getPassword()
+	{
+		return password;
+	}
+
+	public void setPassword(String password)
+	{
+		this.password = password;
+	}
+
+	public Short getUserType()
+	{
+		return userType;
+	}
+
+	public void setUserType(Short userType)
+	{
+		this.userType = userType;
+	}
+
+	public Boolean getValid()
+	{
+		return valid;
+	}
+
+	public void setValid(Boolean valid)
+	{
+		this.valid = valid;
+	}
+
+	public String getNote()
+	{
+		return note;
+	}
+
+	public void setNote(String note)
+	{
+		this.note = note;
+	}
+
+	public ManagerService getUserService()
+	{
+		return managerService;
+	}
+
+	public void setUserService(ManagerService managerService)
+	{
+		this.managerService = managerService;
+	}
+
+	public Manager getUser()
+	{
+		return manager;
+	}
+
+	public void setUser(Manager manager)
+	{
+		this.manager = manager;
+	}
+
+	public String getIpAddress()
+	{
+		return ipAddress;
+	}
+
+	public void setIpAddress(String ipAddress)
+	{
+		this.ipAddress = ipAddress;
+	}
+
+	public Object getCurrentServer()
+	{
+		return currentServer;
+	}
+
+	public void setCurrentServer(Object currentServer)
+	{
+		this.currentServer = currentServer;
+	}
+
+	public List<Server> getServers()
+	{
+		return servers;
+	}
+
+	public void setServers(List<Server> servers)
+	{
+		this.servers = servers;
+	}
+}

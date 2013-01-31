@@ -1,0 +1,21 @@
+package cc.ywxm.service.game;
+
+import java.io.File;
+
+public interface KickService
+{
+	/**
+	 * 批量T
+	 * @param textFile
+	 * @return
+	 */
+	public int textKick(File textFile);
+
+	/**
+	 * 批量T
+	 * @param excelFile
+	 * @return
+	 */
+	public int excelKick(File excelFile);
+
+}

@@ -1,0 +1,79 @@
+package cc.ywxm.model.game;
+
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
+import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
+/**
+ * Prop entity. @author MyEclipse Persistence Tools
+ */
+@Entity
+@Table(name = "prop", catalog = "game")
+public class Prop implements java.io.Serializable
+{
+
+	// Fields
+
+	private PropId id;
+	private Short amount;
+	private Short kind;
+
+	// Constructors
+
+	/** default constructor */
+	public Prop()
+	{
+	}
+
+	/** full constructor */
+	public Prop(PropId id, Short amount, Short kind)
+	{
+		this.id = id;
+		this.amount = amount;
+		this.kind = kind;
+	}
+
+	// Property accessors
+	@EmbeddedId
+	@AttributeOverrides(
+	{
+			@AttributeOverride(name = "player", column = @Column(name = "player", nullable = false)),
+			@AttributeOverride(name = "id", column = @Column(name = "id", nullable = false)),
+			@AttributeOverride(name = "location", column = @Column(name = "location", nullable = false)),
+			@AttributeOverride(name = "area", column = @Column(name = "area", nullable = false)) })
+	public PropId getId()
+	{
+		return this.id;
+	}
+
+	public void setId(PropId id)
+	{
+		this.id = id;
+	}
+
+	@Column(name = "amount", nullable = false)
+	public Short getAmount()
+	{
+		return this.amount;
+	}
+
+	public void setAmount(Short amount)
+	{
+		this.amount = amount;
+	}
+
+	@Column(name = "kind", nullable = false)
+	public Short getKind()
+	{
+		return this.kind;
+	}
+
+	public void setKind(Short kind)
+	{
+		this.kind = kind;
+	}
+
+}

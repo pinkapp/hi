@@ -1,0 +1,121 @@
+package cc.ywxm.action.gop;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+
+import cc.ywxm.action.PageableAction;
+import cc.ywxm.constant.Const;
+import cc.ywxm.model.gop.MoneyAssign;
+import cc.ywxm.service.MoneyAssignService;
+import cc.ywxm.service.UserService;
+
+/**
+ * 通用货币发放
+ * 
+ * @author hdc
+ * 
+ */
+@Controller
+@Scope("prototype")
+public class MoneyAssignAction extends PageableAction
+{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2061053360710686194L;
+	private MoneyAssign moneyAssign;
+	private File file;
+	private String fileContentType;
+	@Resource
+	private MoneyAssignService moneyAssignService;
+	@Resource
+	private UserService userService;
+
+	public String assign()
+	{
+		if (moneyAssign == null)
+		{
+			return INPUT;
+		} else
+		{
+			try
+			{
+				Integer _userId = (Integer) session.get(Const.SESSION_USERID);
+				String assigner = userService.get(_userId).getUsername();
+				moneyAssign.setAssigner(assigner);
+				moneyAssignService.assign(moneyAssign);
+				message = "发放成功";
+				return SUCCESS;
+			} catch (Exception e)
+			{
+				e.printStackTrace();
+				message = "发放失败";
+				return ERROR;
+			}
+		}
+
+	}
+
+	public String bassign()
+	{
+		try
+		{
+			List<String> allowContentTypes = new ArrayList<String>();
+			allowContentTypes.add("application/vnd.ms-excel");
+			if (!allowContentTypes.contains(fileContentType))
+			{
+				message = "请选择正确的EXCEL文件";
+				return INPUT;
+			}
+			System.out.println(fileContentType);
+			Integer _userId = (Integer) session.get(Const.SESSION_USERID);
+			String assigner = userService.get(_userId).getUsername();
+			moneyAssignService.assign(file, assigner);
+			message = "批量发放成功";
+			return SUCCESS;
+		} catch (Exception e)
+		{
+			message = "批量发放失败";
+			e.printStackTrace();
+			return ERROR;
+		}
+
+	}
+
+	public MoneyAssign getMoneyAssign()
+	{
+		return moneyAssign;
+	}
+
+	public void setMoneyAssign(MoneyAssign moneyAssign)
+	{
+		this.moneyAssign = moneyAssign;
+	}
+
+	public File getFile()
+	{
+		return file;
+	}
+
+	public void setFile(File file)
+	{
+		this.file = file;
+	}
+
+	public String getFileContentType()
+	{
+		return fileContentType;
+	}
+
+	public void setFileContentType(String fileContentType)
+	{
+		this.fileContentType = fileContentType;
+	}
+
+}

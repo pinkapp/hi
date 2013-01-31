@@ -1,0 +1,67 @@
+package cc.ywxm.service.impl;
+
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import cc.ywxm.action.Pageable;
+import cc.ywxm.dao.FriendlyLinkDao;
+import cc.ywxm.model.FriendlyLink;
+import cc.ywxm.service.FriendlyLinkService;
+import cc.ywxm.utils.WebUtils;
+import cc.ywxm.vo.FriendlyLinkVo;
+
+@Service
+@Transactional
+public class FriendlyLinkServiceImpl implements FriendlyLinkService
+{
+	@Resource
+	private FriendlyLinkDao friendlyLinkDao;
+
+	public List<FriendlyLink> findAll()
+	{
+		return friendlyLinkDao.findAll();
+	}
+
+	public FriendlyLink findById(Short friendlyLinkId)
+	{
+		return friendlyLinkDao.findById(friendlyLinkId);
+	}
+
+	public void edit(FriendlyLink friendlyLink)
+	{
+		FriendlyLink n = friendlyLinkDao.findById(friendlyLink.getSiteId());
+
+		try
+		{
+			WebUtils.setNotNull(friendlyLink, n);
+		} catch (Exception e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		friendlyLinkDao.update(n);
+
+	}
+
+	public void add(FriendlyLink friendlyLink)
+	{
+		friendlyLinkDao.save(friendlyLink);
+	}
+
+	public List<FriendlyLinkVo> findByPage(FriendlyLinkVo condition,
+			Pageable pageable)
+	{
+		return friendlyLinkDao.findByPage(condition, pageable);
+	}
+
+	public void delete(Short friendlyLinkId)
+	{
+		FriendlyLink friendlyLink = friendlyLinkDao.findById(friendlyLinkId);
+		friendlyLinkDao.delete(friendlyLink);
+	}
+
+}

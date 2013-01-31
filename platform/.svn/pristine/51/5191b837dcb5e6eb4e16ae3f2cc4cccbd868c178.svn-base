@@ -1,0 +1,64 @@
+package cc.ywxm.service.impl;
+
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import cc.ywxm.action.Pageable;
+import cc.ywxm.dao.GameNoticeDao;
+import cc.ywxm.model.GameNotice;
+import cc.ywxm.service.GameNoticeService;
+import cc.ywxm.utils.WebUtils;
+import cc.ywxm.vo.GameNoticeVo;
+
+@Service
+@Transactional
+public class GameNoticeServiceImpl implements GameNoticeService
+{
+	@Resource
+	private GameNoticeDao gameNoticeDao;
+
+	public List<GameNotice> findAll()
+	{
+		return gameNoticeDao.findAll();
+	}
+
+	public GameNotice findById(Integer gameNoticeId)
+	{
+		return gameNoticeDao.findById(gameNoticeId);
+	}
+
+	public void edit(GameNotice gameNotice)
+	{
+		GameNotice n = gameNoticeDao.findById(gameNotice.getNoticeId());
+		try
+		{
+			WebUtils.setNotNull(gameNotice, n);
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+	}
+
+	public void add(GameNotice gameNotice)
+	{
+		gameNoticeDao.save(gameNotice);
+	}
+
+	public List<GameNoticeVo> findByPage(GameNoticeVo condition,
+			Pageable pageable)
+	{
+		return gameNoticeDao.findByPage(condition, pageable);
+	}
+
+	public void delete(Integer gameNoticeId)
+	{
+		GameNotice gameNotice = gameNoticeDao.findById(gameNoticeId);
+		gameNoticeDao.delete(gameNotice);
+	}
+
+}

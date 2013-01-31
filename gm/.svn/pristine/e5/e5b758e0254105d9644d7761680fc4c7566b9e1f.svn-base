@@ -1,0 +1,8 @@
+package cc.ywxm.constant;
+
+public class MethodConst {
+
+	public static int UPDATE_GOLD = 1;
+	public static int KICK = 2;
+
+}

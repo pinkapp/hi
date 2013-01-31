@@ -1,0 +1,54 @@
+package cc.ywxm.service.impl;
+
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import cc.ywxm.dao.gop.GameServerDao;
+import cc.ywxm.model.gop.GameServer;
+import cc.ywxm.service.GameServerService;
+
+@Service
+@Transactional
+public class GameServerServiceImpl implements GameServerService
+{
+	@Resource
+	private GameServerDao gameServerDao;
+
+	public int add(GameServer gameServer)
+	{
+		return 0;
+	}
+
+	public int delete(Integer serverId)
+	{
+		return 0;
+	}
+
+	public int edit(GameServer gameServer)
+	{
+		return 0;
+	}
+
+	public GameServer get(Integer severId)
+	{
+		return null;
+	}
+
+	public List<GameServer> gets()
+	{
+		List<GameServer> result = null;
+		try
+		{
+			result = gameServerDao.findNewest();
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+}

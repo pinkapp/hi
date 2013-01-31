@@ -1,0 +1,41 @@
+package cc.ywxm.vo;
+
+public class UserAreaCount
+{
+
+	private String proName;
+	private Integer usercount;
+
+	public UserAreaCount()
+	{
+		super();
+	}
+
+	public UserAreaCount(String proName, Integer usercount)
+	{
+		super();
+		this.proName = proName;
+		this.usercount = usercount;
+	}
+
+	public String getProName()
+	{
+		return proName;
+	}
+
+	public void setProName(String proName)
+	{
+		this.proName = proName;
+	}
+
+	public Integer getUsercount()
+	{
+		return usercount;
+	}
+
+	public void setUsercount(Integer usercount)
+	{
+		this.usercount = usercount;
+	}
+
+}

@@ -1,0 +1,295 @@
+package cc.ywxm.action;
+
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+
+import cc.ywxm.constant.Const;
+import cc.ywxm.dao.BaseDataDao;
+import cc.ywxm.model.Career;
+import cc.ywxm.model.FriendlyLink;
+import cc.ywxm.model.Game;
+import cc.ywxm.model.GameOpen;
+import cc.ywxm.model.GameServer;
+import cc.ywxm.model.News;
+import cc.ywxm.model.User;
+import cc.ywxm.service.GameServerService;
+import cc.ywxm.service.GameService;
+import cc.ywxm.service.UserService;
+import cc.ywxm.utils.BaseAction;
+
+@Controller
+// 多例模式,默认单例
+@Scope("prototype")
+public class IndexAction extends BaseAction
+{
+	private static final long serialVersionUID = 7946937947224811817L;
+
+	private User user;
+	private List<Career> careers;
+	private List<Game> games;
+	private Integer gameId;
+	private List<GameOpen> gameOpens;
+	private String careerName;
+	private List<FriendlyLink> friendlyLinks;
+	private List<News> newses;
+	private boolean manager = false;// 是否是管理人员
+	private List<String> rolenames;
+	private List<GameServer> gameServers;
+
+	@Resource
+	private UserService userService;
+	@Resource
+	private GameService gameService;
+	@Resource
+	private GameServerService gameServerService;
+	@Resource
+	private BaseDataDao baseDataDao;
+
+	/**
+	 * 个人资料首页
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
+	public String user() throws Exception
+	{
+		Integer uid = (Integer) session.get(Const.SESSION_USERID);
+		if (uid == null)
+		{
+			return "unlogin";
+		}
+		user = userService.findById(uid);
+		Short s = userService.findRoleIdByUserId(uid);
+		if (s != 0)
+		{
+			manager = true;
+		}
+		careers = baseDataDao.findAllCareers();
+		for (Career c : careers)
+		{
+			if (c.getId() == user.getCareerId())
+			{
+				careerName = c.getCareeName();
+				break;
+			}
+		}
+		games = gameService.findAll();
+		return super.execute();
+	}
+
+	/**
+	 * 我要充值
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
+	public String order() throws Exception
+	{
+		games = gameService.findAll();
+		return super.execute();
+	}
+
+	/**
+	 * 游戏大厅
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
+	public String game() throws Exception
+	{
+		games = gameService.findAll();
+		return super.execute();
+	}
+
+	/**
+	 * 客服中心
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
+	public String service() throws Exception
+	{
+		return super.execute();
+	}
+
+	/**
+	 * 游戏论坛
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
+	public String bbs() throws Exception
+	{
+		return super.execute();
+	}
+
+	/**
+	 * 首页
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
+	public String index() throws Exception
+	{
+		if (session.containsKey(Const.SESSION_USERID))
+		{
+			Integer uid = (Integer) session.get(Const.SESSION_USERID);
+			user = userService.findById(uid);
+		}
+		// games = gameService.findAll();
+		gameServers = gameServerService.gets();
+		// gameOpens = gameService.findAllGameOpen();
+		// friendlyLinks = friendlyLinkService.findAll();
+		// newses = newsService.findAll();
+		return SUCCESS;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public String admin_main()
+	{
+		return SUCCESS;
+	}
+
+	/**
+	 * 框架头
+	 * 
+	 * @return
+	 */
+	public String topframe()
+	{
+		Integer userId = (Integer) session.get(Const.SESSION_USERID);
+		user = userService.findById(userId);
+		// 根据用户ID查询用户的角色，目前一个用户只能是一个角色
+		rolenames = userService.getRolenamesByUserId(userId);
+		return SUCCESS;
+	}
+
+	/**
+	 * 我的礼券
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
+	public String giftcard() throws Exception
+	{
+		return "success";
+	}
+
+	/**
+	 * 使用过的礼券
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
+	public String giftcard_history() throws Exception
+	{
+		return "success";
+	}
+
+	public User getUser()
+	{
+		return user;
+	}
+
+	public void setUser(User user)
+	{
+		this.user = user;
+	}
+
+	public String getCareerName()
+	{
+		return careerName;
+	}
+
+	public void setCareerName(String careerName)
+	{
+		this.careerName = careerName;
+	}
+
+	public List<Game> getGames()
+	{
+		return games;
+	}
+
+	public void setGames(List<Game> games)
+	{
+		this.games = games;
+	}
+
+	public List<FriendlyLink> getFriendlyLinks()
+	{
+		return friendlyLinks;
+	}
+
+	public void setFriendlyLinks(List<FriendlyLink> friendlyLinks)
+	{
+		this.friendlyLinks = friendlyLinks;
+	}
+
+	public List<News> getNewses()
+	{
+		return newses;
+	}
+
+	public void setNewses(List<News> newses)
+	{
+		this.newses = newses;
+	}
+
+	public boolean isManager()
+	{
+		return manager;
+	}
+
+	public void setManager(boolean manager)
+	{
+		this.manager = manager;
+	}
+
+	public List<GameOpen> getGameOpens()
+	{
+		return gameOpens;
+	}
+
+	public void setGameOpens(List<GameOpen> gameOpens)
+	{
+		this.gameOpens = gameOpens;
+	}
+
+	public Integer getGameId()
+	{
+		return gameId;
+	}
+
+	public void setGameId(Integer gameId)
+	{
+		this.gameId = gameId;
+	}
+
+	public List<String> getRolenames()
+	{
+		return rolenames;
+	}
+
+	public void setRolenames(List<String> rolenames)
+	{
+		this.rolenames = rolenames;
+	}
+
+	public List<GameServer> getGameServers()
+	{
+		return gameServers;
+	}
+
+	public void setGameServers(List<GameServer> gameServers)
+	{
+		this.gameServers = gameServers;
+	}
+}

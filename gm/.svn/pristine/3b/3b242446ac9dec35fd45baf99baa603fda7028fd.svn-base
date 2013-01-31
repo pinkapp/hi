@@ -1,0 +1,65 @@
+package cc.ywxm.dao.game;
+
+import java.util.List;
+
+/**
+ * 数据库原子操作
+ * 
+ * @author HuangDecai
+ * @since 2012-12-4 13:20:30
+ * 
+ */
+public interface LoginLogDao
+{
+
+	/**
+	 * 登录IP地址相同玩家ID
+	 * 
+	 * @param IP
+	 * @return 玩家ID列表
+	 */
+	List<Integer> listByIP(String IP);
+
+	/**
+	 * 注册用户n天后的登录玩家数量
+	 * 
+	 * @param date
+	 *            日期
+	 * @param n
+	 *            天数
+	 * @return 玩家数量
+	 */
+	int count(String date, int n);
+
+	/**
+	 * 某天登录总玩家数量
+	 * 
+	 * @param date
+	 *            日期
+	 * @return 玩家数量
+	 */
+	int countByDate(String date);
+
+	/**
+	 * 某天登录n次的玩家数量
+	 * 
+	 * @param date
+	 *            日期
+	 * @param n
+	 *            次数
+	 * @return 玩家数量
+	 */
+	int countByDate(String date, int n);
+
+	/**
+	 * 某天登录n次以上的玩家数量
+	 * 
+	 * @param date
+	 *            日期
+	 * @param n
+	 *            次数
+	 * @return 玩家数量
+	 */
+	int countByDateMore(String date, int n);
+
+}

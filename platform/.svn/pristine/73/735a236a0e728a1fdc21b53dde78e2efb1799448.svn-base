@@ -1,0 +1,337 @@
+body { /*IE居中*/
+	text-align: left;
+	font: 12px/1.5 tahoma, arial, sans-serif;
+	margin: 0;
+	padding: 0;
+	margin-left: auto;
+	margin-right: auto;
+}
+input {
+	font-family: '宋体'
+}
+.top {
+	width: 80%;
+	/*FF居中*/
+	
+}
+
+.details {
+	width: 80%;
+	/*FF居中*/
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.cleft {
+	float: left;
+	width: 32%;
+}
+
+.ccenter {
+	margin-left: 10px;
+	float: left;
+	width: 32%;
+}
+
+.cright {
+	margin-left: 10px;
+	float: left;
+	width: 34%;
+}
+
+.adminleft {
+	float: left;
+	width: 28%;
+}
+
+.adminright {
+	margin-left: 10px;
+	float: left;
+	width: 70%;
+}
+
+/* 类似于挂件的东西都用这个 start */
+.widget {
+	border: 1px solid #dadada;
+	border-radius: 3px;
+	-o-border-radius: 3px;
+	-ms-border-radius: 3px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	margin-bottom: 10px;
+	/* 以下是让容器居中 */
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.widget .header {
+	height: 32px;
+	background: url('../images/widget_header.gif') repeat-x;
+	border-bottom: 1px solid #dadada;
+	overflow: hidden;
+}
+
+.widget .header .title {
+	float: left;
+	padding: 8px 10px;
+	font-size: 15px;
+	line-height: 100%;
+	background: url('../images/widget_icon.gif') no-repeat left center;
+	color: #333;
+}
+
+.widget .header .addition {
+	float: right;
+	padding: 10px 0px 8px 10px;
+	margin-right: 5px;
+	font-size: 12px;
+	line-height: 12px;
+}
+
+.widget .body {
+	padding: 10px;
+	text-align: left;
+}
+
+/* 类似于挂件的东西都用这个 end */
+.info {
+	font-size: 12px;
+}
+
+/* 提示信息样式 */
+.highLightInfo {
+	color: red;
+	font-size: 12px;
+}
+
+a:link {
+	color: #000000
+}
+
+a:visited {
+	color: #000000
+}
+
+a:active {
+	color: #000000
+}
+
+a:hover {
+	text-decoration: underline;
+	color: #000000
+}
+
+a {
+	text-decoration: none;
+	cursor: hand;
+	padding-left: 4px;
+	padding-right: 4px;
+	padding-top: 0px;
+	padding-bottom: 0px;
+}
+
+li {
+	list-style-type: none;
+}
+
+div .frame {
+	border-bottom: #ddd 2px solid;
+	border-left: #ddd 2px solid;
+	padding-bottom: 0.8em;
+	padding-left: 0.8em;
+	padding-right: 0.8em;
+	background: #fff;
+	border-top: #ddd 2px solid;
+	border-right: #ddd 2px solid;
+	padding-top: 0.8em;
+}
+
+.container:after {
+	clear: both;
+	content: ".";
+	display: block;
+	height: 0;
+	overflow: hidden;
+	visibility: hidden;
+}
+
+/* div作为外部容器时不能被撑开完美解决 start */
+.clearfix:after {
+	content: ".";
+	display: block;
+	height: 0;
+	clear: both;
+	visibility: hidden;
+}
+
+/* Hides from IE-mac \*/
+* html .clearfix {
+	height: 1%;
+}
+
+/* End hide from IE-mac */
+/* div作为外部容器时不能被撑开完美解决 end */
+.linetitle {
+	border-bottom: solid 1px #ccc;
+}
+
+.tooltip {
+	margin-top: 10px;
+	color: #555;
+	line-height: 150%;
+	font-size: 12px;
+}
+
+td,th {
+	font-size: 12px;
+}
+
+.datatable {
+	border: 1px solid #D6DDE6;
+	border-collapse: collapse;
+	width: 100%;
+}
+
+.datatable td {
+	border: 1px solid #D6DDE6;
+	padding: 5px;
+}
+
+.datatable th {
+	border: 1px solid #828282;
+	background-color: #BCBCBC;
+	text-align: left;
+	padding-left: 0px;
+}
+
+.datatable tr.altrow {
+	background-color: #DFE7F2;
+	color: #000000;
+}
+
+.infotable {
+	border-collapse: collapse;
+	width: 100%;
+}
+
+.infotable td {
+	padding: 5px;
+}
+
+.infotable th {
+	background-color: #BCBCBC;
+	text-align: left;
+	padding-left: 0px;
+}
+
+.container {
+	width: 99.5%;
+	text-align: left;
+	margin-bottom: 2px;
+	background-color: #f5fbff;
+}
+
+.searchtable {
+	border-collapse: collapse;
+	width: 100%;
+}
+
+.searchtable tr {
+	height: 30px;
+	color: #000000;
+}
+
+.searchtable tr th {
+	text-align: right;
+	width: 120px;
+}
+
+.searchtable tr td input[type=text] {
+	width: 200px;
+}
+
+.container {
+	width: 99.5%;
+	text-align: left;
+	margin-bottom: 2px;
+	background-color: #f5fbff;
+}
+
+.asterisk {
+	color: red;
+}
+
+.personCenter {
+	width: 98%;
+	height: 600px;
+}
+
+.pc {
+	width: 80%;
+}
+
+.pcleft {
+	width: 18%;
+	vertical-align: top;
+}
+
+.pcright {
+	vertical-align: top;
+}
+
+.title1 {
+	font-size: 14px;
+	font-weight:bold;
+	padding-top:6px;	
+	margin-left:10px;
+	margin-right:10px;
+	border-bottom: #dadada 1px solid;
+	overflow: hidden;
+}
+
+.title2 {
+	font-size: 15px;
+	padding-top: 6px;
+	margin-left:10px;
+	margin-right:10px;
+	border-bottom: 1px dashed #cccccc;
+	overflow: hidden
+}
+
+.the_menu {
+	display: none;
+	border: 1px solid #1c1c1c;
+	width: 100px;
+}
+
+.menu_class {
+	background: url('../images/arrwd.gif') no-repeat fixed right;
+	white-space: nowrap;
+	padding-right: 12px;
+}
+
+.admin_content {
+	margin: 20px;
+}
+
+.doubleselect br {
+	display: none;
+}
+ul .m1{
+	font-size: 16px;
+	font-weight: bold;
+}
+ul .m2{
+	font-size: 14px;
+}
+#container {margin:0 auto; width:100%;}
+#header { height:100px; margin-bottom:5px;}
+#menu { height:30px;margin-left: 100px;margin-right: 100px;margin-right: 100px;border-left: #dadada 1px solid;border-top:#dadada 1px solid;border-right: #dadada 1px solid; }
+#mainContent { height:500px; margin-bottom:5px;margin-left: 100px;margin-right: 100px;border: #dadada 1px solid;}
+#sidebar { float:left; width:200px; height:500px; border-right: #dadada 1px solid;}
+#content { margin-left:205px !important; margin-left:202px; height:500px;}/*当content设定高度后，3像素会跑到content外侧，这样，我们用!important修正在ie下向左多浮动2像素，加上3像素的bug正好是5像素，所以在火狐和IE下显示是一样的*/
+#footer { height:60px;}
+.contentbody {
+	padding: 10px;
+}
+#page {margin-left: auto; margin-right: auto; width: 950px;}
